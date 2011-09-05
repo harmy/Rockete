@@ -313,6 +313,20 @@ void Rockete::menuSetScreenSizeClicked()
     }
 }
 
+void Rockete::menuLoadFonts()
+{
+    QStringList files = QFileDialog::getOpenFileNames(
+        this,
+        "Open font files...",
+        NULL,
+        "OTF files (*.otf)"
+        );
+        
+    foreach(const QString & file, files)
+    {
+        RocketSystem::getInstance().loadFont(file);
+    }
+}
 // Private:
 
 void Rockete::openFile(const QString & file_path)

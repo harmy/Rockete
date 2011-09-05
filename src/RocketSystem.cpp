@@ -54,8 +54,14 @@ void RocketSystem::loadFonts( const char * directory )
 
     for (int i = 0; i < sizeof(font_names) / sizeof(Rocket::Core::String); i++)
     {
-        Rocket::Core::FontDatabase::LoadFontFace(Rocket::Core::String( directory ) + "/" + font_names[i]);
+        Rocket::Core::String path = Rocket::Core::String( directory ) + "/" + font_names[i];
+        loadFont(path.CString());
     }
+}
+
+void RocketSystem::loadFont(const QString & file)
+{
+    Rocket::Core::FontDatabase::LoadFontFace(file.toStdString().c_str());
 }
 
 void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event & event) 

@@ -31,6 +31,7 @@ public:
     OpenedStyleSheet *getStyleSheetFromFileName(const char * name);
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
     OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
+    
 protected:
     virtual void keyPressEvent(QKeyEvent * e);
 
@@ -43,6 +44,7 @@ private slots:
     void unselectElement();
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
+    void menuLoadFonts();
 
 private:
     void openFile(const QString & file_path);

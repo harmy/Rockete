@@ -137,7 +137,7 @@
      <x>0</x>
      <y>0</y>
      <width>889</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -147,6 +147,8 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionClose"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport_fonts"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -305,6 +307,11 @@
   <action name="actionSet_screen_size">
    <property name="text">
     <string>Set screen size...</string>
+   </property>
+  </action>
+  <action name="actionImport_fonts">
+   <property name="text">
+    <string>Import fonts...</string>
    </property>
   </action>
  </widget>
@@ -483,6 +490,22 @@
    <signal>activated()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuSetScreenSizeClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>444</x>
+     <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionImport_fonts</sender>
+   <signal>activated()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuLoadFonts()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

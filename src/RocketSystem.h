@@ -1,6 +1,7 @@
 #ifndef ROCKETSYSTEM_H
 #define ROCKETSYSTEM_H
 
+#include <QString>
 #include "RocketRenderInterface.h"
 #include <Rocket/Core/SystemInterface.h>
 #include "Rockete.h"
@@ -14,6 +15,7 @@ public:
     bool initialize();
     bool createContext(const int width, const int height);
     void loadFonts(const char * directory);
+    void loadFont(const QString & file);
 
     Context * getContext() 
     {
