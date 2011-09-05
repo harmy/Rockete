@@ -1,0 +1,31 @@
+Rockete - README
+Project started by gogoprog@gmail.com
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+DESCRIPTION
+-----------
+    Rockete is libRocket RML/RCSS files editor.
+    The main purpose is to provide a useful tool to create game graphical user interfaces.
+    The second 'e' means "Editor".
+    It is pronunced like "Machete" ;)
+
+REQUIREMENTS
+------------
+    * Linux
+        Qt4 library
+        libRocket
+    * Windows
+        Qt4 library
+        libRocket
+        ${LIBROCKET} environment variable referring to libRocket root directory
+
+BUILDING
+--------
+    * Linux
+        # qmake
+        # make
+    * Windows (Visual Studio project)
+        # qmake -tp vc rockete.pro
+        Open VS and build project...
+        
+       
