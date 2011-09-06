@@ -35,7 +35,7 @@ QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
     return QVariant("Impossible");
 }
 
-bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & value, int /*role*/)
 {
     if(index.column() == 1)
     {

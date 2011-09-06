@@ -50,7 +50,7 @@ QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
     return QVariant("Impossible");
 }
 
-bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & value, int /*role*/)
 {
     if(index.column() == 1)
     {
@@ -143,7 +143,7 @@ int PropertyTreeModel::rowCount(const QModelIndex &parent) const
     return 0;
 }
 
-int PropertyTreeModel::columnCount(const QModelIndex &parent) const
+int PropertyTreeModel::columnCount(const QModelIndex &/*parent*/) const
 {
     return 2;
 }
@@ -321,7 +321,10 @@ void PropertyTreeModel::buildProperty(const Rocket::Core::String& name, const Ro
     new_property->value = property->ToString().CString();
     new_property->sourceLineNumber = currentPropertySet->sourceLineNumber;
 
-    Q_ASSERT(currentPropertySet->sourceFile != "inline" && currentPropertySet->sourceFile == property->source.CString());
+    if(currentPropertySet->sourceFile != "inline")
+    {
+        Q_ASSERT(currentPropertySet->sourceFile == property->source.CString());
+    }
 
     currentPropertySet->propertyList.push_back(new_property);
 }
