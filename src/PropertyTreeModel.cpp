@@ -3,12 +3,18 @@
 #include "PropertyTreeModel.h"
 #include "Rockete.h"
 #include "OpenedFile.h"
+#ifndef QT_NO_DEBUG
+#include "modeltest/modeltest.h"
+#endif
 
 #define PROPERTY_SET_ID -1
 
 PropertyTreeModel::PropertyTreeModel(QObject *parent)
 : QAbstractItemModel(parent)
 {
+#ifndef QT_NO_DEBUG
+    new ModelTest(this);
+#endif
 }
 
 PropertyTreeModel::~PropertyTreeModel()
@@ -18,10 +24,7 @@ PropertyTreeModel::~PropertyTreeModel()
 
 QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
-
-    if (role != Qt::DisplayRole)
+    if (!index.isValid() || role != Qt::DisplayRole)
         return QVariant();
 
     if(index.internalId() == PROPERTY_SET_ID)
@@ -50,12 +53,15 @@ QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
     return QVariant("Impossible");
 }
 
-bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & value, int /*role*/)
+bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
+    if(role != Qt::EditRole || !index.isValid())
+        return false;
+
     if(index.column() == 1)
     {
         const PropertySet * property_set = propertySetList[index.internalId()];
-        const Property * property =  property_set->propertyList[index.row()];
+        Property * property =  property_set->propertyList[index.row()];
 
         OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(property_set->sourceFile.toStdString().c_str(), true);
 
@@ -69,18 +75,18 @@ bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & valu
 
             opened_file->replaceLine(source_line_number, new_line);
 
+            property->value = value.toString();
+
             opened_file->save();
             Rockete::getInstance().reloadCurrentDocument();
-        }
 
-        // :TODO: find something else to refresh the view
-        Rockete::getInstance().fillPropertyView();
+            emit dataChanged(index,index);
+
+            return true;
+        }
     }
 
-
-
-
-    return true;
+    return false;
 }
 
 Qt::ItemFlags PropertyTreeModel::flags(const QModelIndex &index) const
@@ -214,26 +220,30 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
 
     if (!property_map.empty())
     {
-        currentPropertySet = new PropertySet();
-
         // Inherited?
-        if (element != primary_element)
-        {
-            currentPropertySet->itIsInherited = true;
-            currentPropertySet->baseElement = element->GetTagName().CString();
-        }
-        else
-        {
-            currentPropertySet->itIsInherited = false;
-        }
-
+//         if (element != primary_element)
+//         {
+//             currentPropertySet->itIsInherited = true;
+//             currentPropertySet->baseElement = element->GetTagName().CString();
+//         }
+//         else
+//         {
+//             currentPropertySet->itIsInherited = false;
+//         }
 
         NamedPropertyMap::iterator base_properties = property_map.find(Rocket::Core::PseudoClassList());
         if (base_properties != property_map.end())
+        {
+            currentPropertySet = new PropertySet();
+            propertySetList.push_back(currentPropertySet);
             buildProperties((*base_properties).second);
+        }
 
         for (NamedPropertyMap::iterator i = property_map.begin(); i != property_map.end(); ++i)
         {
+            currentPropertySet = new PropertySet();
+            propertySetList.push_back(currentPropertySet);
+
             // Skip the base property list, we've already printed it.
             if (i == base_properties)
                 continue;
@@ -246,8 +256,6 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
 
             buildProperties((*i).second);
         }
-
-        propertySetList.push_back(currentPropertySet);
     }
 
     if (element->GetParentNode() != NULL)
@@ -321,7 +329,7 @@ void PropertyTreeModel::buildProperty(const Rocket::Core::String& name, const Ro
     new_property->value = property->ToString().CString();
     new_property->sourceLineNumber = currentPropertySet->sourceLineNumber;
 
-    if(currentPropertySet->sourceFile != "inline")
+    //if(currentPropertySet->sourceFile != "inline")
     {
         Q_ASSERT(currentPropertySet->sourceFile == property->source.CString());
     }

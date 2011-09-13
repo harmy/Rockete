@@ -107,7 +107,7 @@ int AttributeTreeModel::rowCount(const QModelIndex &parent) const
     return propertyNameList.size()+1;
 }
 
-int AttributeTreeModel::columnCount(const QModelIndex &parent) const
+int AttributeTreeModel::columnCount(const QModelIndex &/*parent*/) const
 {
     return 2;
 }
