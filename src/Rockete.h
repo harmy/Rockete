@@ -45,6 +45,7 @@ private slots:
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
     void menuLoadFonts();
+    void propertyViewClicked(const QModelIndex & index);
 
 private:
     void openFile(const QString & file_path);

@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = rockete
 DESTDIR = ./debug
 QT += gui core opengl
-CONFIG += debug console
+CONFIG += debug console qtestlib
 DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 SOURCES += \
  ./src/AttributeTreeModel.cpp \
@@ -55,3 +55,5 @@ win32 {
 unix {
     LIBS += -lRocketCore
 }
+
+include(./src/modeltest/modeltest.pri)

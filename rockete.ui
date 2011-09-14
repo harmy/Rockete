@@ -137,7 +137,7 @@
      <x>0</x>
      <y>0</y>
      <width>889</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -327,7 +327,7 @@
  <connections>
   <connection>
    <sender>actionOpen</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuOpenClicked()</slot>
    <hints>
@@ -343,7 +343,7 @@
   </connection>
   <connection>
    <sender>actionClose</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuCloseClicked()</slot>
    <hints>
@@ -359,7 +359,7 @@
   </connection>
   <connection>
    <sender>actionSave</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuSaveClicked()</slot>
    <hints>
@@ -375,7 +375,7 @@
   </connection>
   <connection>
    <sender>actionExit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>close()</slot>
    <hints>
@@ -407,7 +407,7 @@
   </connection>
   <connection>
    <sender>actionZoom_in</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>renderingView</receiver>
    <slot>zoomIn()</slot>
    <hints>
@@ -423,7 +423,7 @@
   </connection>
   <connection>
    <sender>actionZoom_out</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>renderingView</receiver>
    <slot>zoomOut()</slot>
    <hints>
@@ -439,7 +439,7 @@
   </connection>
   <connection>
    <sender>actionZoom_reset</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>renderingView</receiver>
    <slot>zoomReset()</slot>
    <hints>
@@ -455,7 +455,7 @@
   </connection>
   <connection>
    <sender>actionUnselect</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>unselectElement()</slot>
    <hints>
@@ -471,7 +471,7 @@
   </connection>
   <connection>
    <sender>actionReload</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuReloadClicked()</slot>
    <hints>
@@ -487,7 +487,7 @@
   </connection>
   <connection>
    <sender>actionSet_screen_size</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuSetScreenSizeClicked()</slot>
    <hints>
@@ -503,13 +503,29 @@
   </connection>
   <connection>
    <sender>actionImport_fonts</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuLoadFonts()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>444</x>
+     <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>propertyTreeView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>propertyViewClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>213</x>
+     <y>744</y>
     </hint>
     <hint type="destinationlabel">
      <x>444</x>

@@ -28,8 +28,6 @@ struct LocalScreenSizeItem
     int height;
 };
 
-
-
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags)
 {
@@ -50,6 +48,7 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
 
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
+
     ui.attributeTreeView->setModel(attributeTreeModel);
 }
 
@@ -327,6 +326,15 @@ void Rockete::menuLoadFonts()
         RocketSystem::getInstance().loadFont(file);
     }
 }
+
+void Rockete::propertyViewClicked(const QModelIndex & index)
+{
+    if(index.internalId() != -1 && index.column() == 1)
+    {
+        //ui.propertyTreeView->model()->setData(index, QVariant("test"), Qt::DisplayRole);
+    }
+}
+
 // Private:
 
 void Rockete::openFile(const QString & file_path)
