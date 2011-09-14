@@ -2,6 +2,7 @@
 
 #include "AttributeTreeModel.h"
 #include "Rockete.h"
+#include "ActionManager.h"
 
 AttributeTreeModel::AttributeTreeModel(QObject *parent)
 : QAbstractItemModel(parent)
@@ -21,10 +22,12 @@ QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if(index.row() == propertyNameList.size())
-        if( index.column() == 0)
+    {
+        if(index.column() == 0)
             return QVariant("Add...");
         else
             return QVariant();
+    }
 
     if(index.column() == 0)
         return QVariant(propertyNameList[index.row()]); 
@@ -35,14 +38,21 @@ QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
     return QVariant("Impossible");
 }
 
-bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & value, int /*role*/)
+bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
+    if(role != Qt::EditRole || !index.isValid())
+        return false;
+
     if(index.column() == 1)
     {
         element->SetAttribute(propertyNameList[index.row()].toStdString().c_str(), value.toByteArray().data());
-        propertyValueList[index.row()] = value.toString();
 
+
+        ActionManager::getInstance().applyNew(new Action(NULL, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
+
+        propertyValueList[index.row()] = value.toString();
         Rockete::getInstance().repaintRenderingView();
+        emit dataChanged(index,index);
     }
     else
     {
@@ -51,8 +61,7 @@ bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & val
         propertyValueList.push_back("");
         propertyNameList.push_back(value.toByteArray().data());
 
-        // :TODO: find something else to refresh the view
-        Rockete::getInstance().fillAttributeView();
+        emit dataChanged(index,index);
     }
 
     return true;

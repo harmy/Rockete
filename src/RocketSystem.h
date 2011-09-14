@@ -24,9 +24,7 @@ public:
 
     static RocketSystem & getInstance()
     {
-        static RocketSystem
-            instance;
-
+        static RocketSystem instance;
         return instance;
     }
 

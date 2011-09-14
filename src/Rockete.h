@@ -45,6 +45,8 @@ private slots:
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
     void menuLoadFonts();
+    void menuUndoClicked();
+    void menuRedoClicked();
     void propertyViewClicked(const QModelIndex & index);
 
 private:

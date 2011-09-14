@@ -6,6 +6,7 @@
 #include <QInputDialog>
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
+#include "ActionManager.h"
 
 struct LocalScreenSizeItem
 {
@@ -325,6 +326,20 @@ void Rockete::menuLoadFonts()
     {
         RocketSystem::getInstance().loadFont(file);
     }
+}
+
+void Rockete::menuUndoClicked()
+{
+    ActionManager::getInstance().applyPrevious();
+    //reloadCurrentDocument();
+    fillAttributeView();
+}
+
+void Rockete::menuRedoClicked()
+{
+    ActionManager::getInstance().applyNext();
+    //reloadCurrentDocument();
+    fillAttributeView();
 }
 
 void Rockete::propertyViewClicked(const QModelIndex & index)

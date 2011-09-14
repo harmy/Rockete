@@ -5,6 +5,8 @@ QT += gui core opengl
 CONFIG += debug console qtestlib
 DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 SOURCES += \
+ ./src/Action.cpp \
+ ./src/ActionManager.cpp \
  ./src/AttributeTreeModel.cpp \
  ./src/GraphicSystem.cpp \
  ./src/main.cpp \
@@ -17,6 +19,7 @@ SOURCES += \
  ./src/RocketRenderInterface.cpp \
  ./src/RocketSystem.cpp
 HEADERS += \
+ ./src/Action.h \
  ./src/AttributeTreeModel.h \
  ./src/GraphicSystem.h \
  ./src/OpenedDocument.h \
