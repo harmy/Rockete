@@ -379,6 +379,8 @@ void Rockete::openDocument(const char * file_path)
     new_document = new OpenedDocument;
     new_text_edit = new QTextEdit;
     new_text_edit->setAcceptRichText(false);
+    new_text_edit->setFontFamily("Courier");
+    new_text_edit->setLineWrapMode(QTextEdit::NoWrap);
 
     new_document->textEdit = new_text_edit;
 
@@ -408,6 +410,8 @@ void Rockete::openStyleSheet(const char * file_path)
     new_style_sheet = new OpenedStyleSheet;
     new_text_edit = new QTextEdit;
     new_text_edit->setAcceptRichText(false);
+    new_text_edit->setFontFamily("Courier");
+    new_text_edit->setLineWrapMode(QTextEdit::NoWrap);
 
     new_style_sheet->textEdit = new_text_edit;
 

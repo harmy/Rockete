@@ -29,13 +29,21 @@ QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
 
     if(index.internalId() == PROPERTY_SET_ID)
     {
+        PropertySet * property_set = propertySetList[index.row()];
         if(index.column() == 0)
         {
-            return QVariant(propertySetList[index.row()]->displayedName);
+            if(property_set->itIsInherited)
+            {
+                return QVariant("inherit");
+            }
+            else
+            {
+                return QVariant(property_set->displayedName);
+            }
         }
         else
         {
-            return QVariant(propertySetList[index.row()]->sourceFile);
+            return QVariant(property_set->sourceFile);
         }
     }
     else
@@ -160,6 +168,7 @@ void PropertyTreeModel::setupData(Element * _element)
     currentElement = _element;
     if(currentElement)
     {
+        currentPropertySet = NULL;
         buildElementProperties(_element, _element);
     }
 }
@@ -221,15 +230,18 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
     if (!property_map.empty())
     {
         // Inherited?
-//         if (element != primary_element)
-//         {
-//             currentPropertySet->itIsInherited = true;
-//             currentPropertySet->baseElement = element->GetTagName().CString();
-//         }
-//         else
-//         {
-//             currentPropertySet->itIsInherited = false;
-//         }
+        if( currentPropertySet )
+        {
+            if (element != primary_element)
+            {
+                currentPropertySet->itIsInherited = true;
+                currentPropertySet->baseElement = element->GetTagName().CString();
+            }
+            else
+            {
+                currentPropertySet->itIsInherited = false;
+            }
+        }
 
         NamedPropertyMap::iterator base_properties = property_map.find(Rocket::Core::PseudoClassList());
         if (base_properties != property_map.end())
@@ -329,7 +341,7 @@ void PropertyTreeModel::buildProperty(const Rocket::Core::String& name, const Ro
     new_property->value = property->ToString().CString();
     new_property->sourceLineNumber = currentPropertySet->sourceLineNumber;
 
-    //if(currentPropertySet->sourceFile != "inline")
+    if(currentPropertySet->sourceLineNumber != -1)
     {
         Q_ASSERT(currentPropertySet->sourceFile == property->source.CString());
     }
