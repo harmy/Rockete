@@ -7,6 +7,7 @@
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
+#include "StyleSheet.h"
 
 struct LocalScreenSizeItem
 {
@@ -427,6 +428,10 @@ void Rockete::openStyleSheet(const char * file_path)
     openedFileList.push_back(new_style_sheet);
 
     new_style_sheet->fillTextEdit();
+
+    StyleSheet style_sheet;
+    style_sheet.parse(new_text_edit->toPlainText());
+
 }
 
 Rockete *Rockete::instance = NULL;

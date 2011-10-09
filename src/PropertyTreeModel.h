@@ -12,7 +12,7 @@ class PropertyTreeModel : public QAbstractItemModel
 
 public:
     PropertyTreeModel(QObject *parent = 0);
-    ~PropertyTreeModel();
+    virtual ~PropertyTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);

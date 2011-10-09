@@ -17,7 +17,8 @@ SOURCES += \
  ./src/Rockete.cpp \
  ./src/RocketHelper.cpp \
  ./src/RocketRenderInterface.cpp \
- ./src/RocketSystem.cpp
+ ./src/RocketSystem.cpp \
+ ./src/StyleSheet.cpp
 HEADERS += \
  ./src/Action.h \
  ./src/AttributeTreeModel.h \
@@ -31,7 +32,8 @@ HEADERS += \
  ./src/Rockete.h \
  ./src/RocketHelper.h \
  ./src/RocketRenderInterface.h \
- ./src/RocketSystem.h
+ ./src/RocketSystem.h \
+ ./src/StyleSheet.h
 FORMS += ./rockete.ui
 INCLUDEPATH = ./src
 win32 {
