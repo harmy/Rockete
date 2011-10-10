@@ -3,6 +3,8 @@
 
 #include "RocketHelper.h"
 #include "OpenedFile.h"
+#include "StyleSheet.h"
+#include <QList>
 
 class OpenedDocument : public OpenedFile
 {
@@ -14,6 +16,7 @@ public:
 
     RMLDocument * rocketDocument;
     Element * selectedElement;
+    QList<StyleSheet*> styleSheetList;
 };
 
 #endif

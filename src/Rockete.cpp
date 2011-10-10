@@ -68,6 +68,8 @@ void Rockete::repaintRenderingView()
 
 void Rockete::fillAttributeView()
 {
+    return;
+
     attributeTreeModel->setupData(currentDocument->selectedElement);
     ui.attributeTreeView->reset();
     ui.attributeTreeView->setModel(attributeTreeModel);
@@ -75,6 +77,8 @@ void Rockete::fillAttributeView()
 
 void Rockete::fillPropertyView()
 {
+    return;
+
     propertyTreeModel->setupData(currentDocument->selectedElement);
     ui.propertyTreeView->reset();
     ui.propertyTreeView->setModel(propertyTreeModel);
@@ -429,9 +433,14 @@ void Rockete::openStyleSheet(const char * file_path)
 
     new_style_sheet->fillTextEdit();
 
+    // :TODO: remove test
+    /*
     StyleSheet style_sheet;
     style_sheet.parse(new_text_edit->toPlainText());
 
+    QList<StyleSheet::PropertyBlock*> test;
+    style_sheet.findMatchingProperties(test,getDocumentFromTabIndex(0)->selectedElement);
+    */
 }
 
 Rockete *Rockete::instance = NULL;
