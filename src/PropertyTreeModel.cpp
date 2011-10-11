@@ -193,11 +193,12 @@ void PropertyTreeModel::clearData()
 void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, Rocket::Core::Element* primary_element)
 {
     NamedPropertyMap property_map;
-
     int property_index = 0;
     Rocket::Core::String property_name;
     Rocket::Core::PseudoClassList property_pseudo_classes;
     const Rocket::Core::Property* property;
+    itWillBeInherited = false;
+    futurePseudoClassList.clear();
 
     while (element->IterateProperties(property_index, property_pseudo_classes, property_name, property))
     {
@@ -232,18 +233,15 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
         NamedPropertyMap::iterator base_properties = property_map.find(Rocket::Core::PseudoClassList());
         if (base_properties != property_map.end())
         {
-            currentPropertySet = new PropertySet();
-            propertySetList.push_back(currentPropertySet);
-
-             // Inherited?
+            // Inherited?
             if (element != primary_element)
             {
-                currentPropertySet->itIsInherited = true;
-                currentPropertySet->baseElement = element->GetTagName().CString();
+                itWillBeInherited = true;
+                futureBaseName = element->GetTagName().CString();
             }
             else
             {
-                currentPropertySet->itIsInherited = false;
+                itWillBeInherited = false;
             }
 
             buildProperties((*base_properties).second);
@@ -255,13 +253,10 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
             if (i == base_properties)
                 continue;
 
-            currentPropertySet = new PropertySet();
-            propertySetList.push_back(currentPropertySet);
-
             // Pseudo-class list.
             for (Rocket::Core::PseudoClassList::const_iterator j = (*i).first.begin(); j != (*i).first.end(); ++j)
             {
-                currentPropertySet->pseudoClassList.push_back((*j).CString());
+                futurePseudoClassList.push_back((*j).CString());
             }
 
             buildProperties((*i).second);
@@ -285,6 +280,17 @@ void PropertyTreeModel::buildProperties(const NamedPropertyList& properties)
         {
             last_source = properties[i].second->source;
             last_source_line = properties[i].second->source_line_number;
+
+            currentPropertySet = new PropertySet();
+            propertySetList.push_back(currentPropertySet);
+
+            if(itWillBeInherited)
+            {
+                currentPropertySet->itIsInherited = true;
+                currentPropertySet->baseElement = futureBaseName;
+            }
+
+            currentPropertySet->pseudoClassList = futurePseudoClassList;
 
             // Inline or from source?
             if (last_source.Empty() && last_source_line == 0)

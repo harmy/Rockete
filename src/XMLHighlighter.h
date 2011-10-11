@@ -15,11 +15,9 @@ public:
 
 
 protected:
-
     void highlightBlock(const QString &text);
 
 private:
-
     QList<QPair<QRegExp,QTextCharFormat>> highlightingRules;
     QTextCharFormat valueFormat;
     QRegExp valueStartExpression;

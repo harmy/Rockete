@@ -16,9 +16,8 @@ XMLHighlighter::XMLHighlighter(QTextDocument *document)
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp(">"), keywordFormat));
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("<"), keywordFormat));
 
-
     xmlElementFormat.setFontWeight(QFont::Bold);
-    xmlElementFormat.setForeground(Qt::green);
+    xmlElementFormat.setForeground(Qt::darkGreen);
 
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("\\b[A-Za-z0-9_]+(?=[\\s/>])"), xmlElementFormat));
 

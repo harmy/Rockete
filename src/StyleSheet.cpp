@@ -194,7 +194,7 @@ StyleSheet::PropertyOwner *StyleSheet::parseOwner(const QString & content)
             current_owner = new PropertyOwner;
             current_owner->tagName = unparsed_owner.mid(0,index).trimmed();
             current_owner->className = unparsed_owner.mid(index+1).trimmed();
-            current_owner->special = special;
+            current_owner->pseudoClassName = special;
         }
 
         index = unparsed_owner.indexOf('#');
@@ -204,14 +204,14 @@ StyleSheet::PropertyOwner *StyleSheet::parseOwner(const QString & content)
             current_owner = new PropertyOwner;
             current_owner->tagName = unparsed_owner.mid(0,index).trimmed();
             current_owner->identifier = unparsed_owner.mid(index+1).trimmed();
-            current_owner->special = special;
+            current_owner->pseudoClassName = special;
         }
 
         if(!current_owner)
         {
             current_owner = new PropertyOwner;
             current_owner->tagName = unparsed_owner.trimmed();
-            current_owner->special = special;
+            current_owner->pseudoClassName = special;
         }
 
         if(last_owner)

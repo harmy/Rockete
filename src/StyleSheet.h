@@ -12,25 +12,22 @@ public:
     StyleSheet();
     ~StyleSheet();
 
-    struct PropertyOwner
-    {
+    struct PropertyOwner{
         PropertyOwner() : ancester(NULL) {};
         ~PropertyOwner() { if(ancester) delete ancester; }
         PropertyOwner *ancester;
         QString tagName;
         QString className;
         QString identifier;
-        QString special;
+        QString pseudoClassName;
     };
 
-    struct Property
-    {
+    struct Property{
         QString name;
         QString value;
     };
 
-    struct PropertyBlock
-    {
+    struct PropertyBlock{
         QList<PropertyOwner*> ownerList;
         QList<Property*> propertyList;
     };

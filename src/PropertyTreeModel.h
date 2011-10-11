@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <QStringList>
 #include "RocketHelper.h"
 
 class PropertyTreeModel : public QAbstractItemModel
@@ -35,6 +36,7 @@ private:
         int sourceLineNumber;
     };
     struct PropertySet {
+        PropertySet() : itIsInherited(false) {};
         QString displayedName;
         QString sourceFile;
         QString baseElement;
@@ -51,6 +53,9 @@ private:
     Element * currentElement;
     QList<PropertySet*> propertySetList;
     PropertySet * currentPropertySet;
+    bool itWillBeInherited;
+    QString futureBaseName;
+    QStringList futurePseudoClassList;
 
 
 };
