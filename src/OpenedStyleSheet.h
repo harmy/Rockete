@@ -8,6 +8,7 @@ class OpenedStyleSheet : public OpenedFile
 {
 public:
     OpenedStyleSheet();
+    void initialize();
 };
 
 #endif

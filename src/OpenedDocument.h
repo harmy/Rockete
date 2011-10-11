@@ -9,10 +9,9 @@
 class OpenedDocument : public OpenedFile
 {
 public:
-    OpenedDocument()
-    {
-        selectedElement = NULL;
-    }
+    OpenedDocument();
+
+    void initialize();
 
     RMLDocument * rocketDocument;
     Element * selectedElement;

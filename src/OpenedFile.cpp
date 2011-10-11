@@ -17,8 +17,9 @@ void OpenedFile::fillTextEdit()
     file.open(QIODevice::ReadOnly);
     content = file.readAll().data();
     content.replace("\t", "    ");
-    textEdit->setPlainText(content);
+    textDocument->setPlainText(content);
 
+    textEdit->setDocument(textDocument);
     file.close();
 }
 

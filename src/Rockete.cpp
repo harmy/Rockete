@@ -4,10 +4,10 @@
 #include <QTextEdit>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QTextDocument>
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
-#include "StyleSheet.h"
 
 struct LocalScreenSizeItem
 {
@@ -68,8 +68,6 @@ void Rockete::repaintRenderingView()
 
 void Rockete::fillAttributeView()
 {
-    return;
-
     attributeTreeModel->setupData(currentDocument->selectedElement);
     ui.attributeTreeView->reset();
     ui.attributeTreeView->setModel(attributeTreeModel);
@@ -77,8 +75,6 @@ void Rockete::fillAttributeView()
 
 void Rockete::fillPropertyView()
 {
-    return;
-
     propertyTreeModel->setupData(currentDocument->selectedElement);
     ui.propertyTreeView->reset();
     ui.propertyTreeView->setModel(propertyTreeModel);
@@ -378,16 +374,9 @@ void Rockete::openFile(const QString & file_path)
 void Rockete::openDocument(const char * file_path)
 {
     OpenedDocument * new_document;
-    QTextEdit * new_text_edit;
     QFileInfo file_info(file_path);
 
     new_document = new OpenedDocument;
-    new_text_edit = new QTextEdit;
-    new_text_edit->setAcceptRichText(false);
-    new_text_edit->setFontFamily("Courier");
-    new_text_edit->setLineWrapMode(QTextEdit::NoWrap);
-
-    new_document->textEdit = new_text_edit;
 
     // :TODO: Check if document exists.
     new_document->rocketDocument = RocketHelper::loadDocument(file_path);
@@ -398,27 +387,21 @@ void Rockete::openDocument(const char * file_path)
     }
 
     new_document->fileInfo = file_info;
-    new_document->tabIndex = ui.codeTabWidget->addTab(new_text_edit, file_info.fileName());
 
     documentList.push_back(new_document);
     openedFileList.push_back(new_document);
 
-    new_document->fillTextEdit();
+    new_document->initialize();
+    new_document->tabIndex = ui.codeTabWidget->addTab(new_document->textEdit, file_info.fileName());
+
 }
 
 void Rockete::openStyleSheet(const char * file_path)
 {
     OpenedStyleSheet * new_style_sheet;
-    QTextEdit * new_text_edit;
     QFileInfo file_info(file_path);
 
     new_style_sheet = new OpenedStyleSheet;
-    new_text_edit = new QTextEdit;
-    new_text_edit->setAcceptRichText(false);
-    new_text_edit->setFontFamily("Courier");
-    new_text_edit->setLineWrapMode(QTextEdit::NoWrap);
-
-    new_style_sheet->textEdit = new_text_edit;
 
     if(documentList.isEmpty() && styleSheetList.isEmpty())
     {
@@ -426,21 +409,13 @@ void Rockete::openStyleSheet(const char * file_path)
     }
 
     new_style_sheet->fileInfo = file_info;
-    new_style_sheet->tabIndex = ui.codeTabWidget->addTab(new_text_edit, file_info.fileName());
 
     styleSheetList.push_back(new_style_sheet);
     openedFileList.push_back(new_style_sheet);
 
-    new_style_sheet->fillTextEdit();
+    new_style_sheet->initialize();
+    new_style_sheet->tabIndex = ui.codeTabWidget->addTab(new_style_sheet->textEdit, file_info.fileName());
 
-    // :TODO: remove test
-    /*
-    StyleSheet style_sheet;
-    style_sheet.parse(new_text_edit->toPlainText());
-
-    QList<StyleSheet::PropertyBlock*> test;
-    style_sheet.findMatchingProperties(test,getDocumentFromTabIndex(0)->selectedElement);
-    */
 }
 
 Rockete *Rockete::instance = NULL;

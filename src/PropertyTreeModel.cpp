@@ -34,7 +34,7 @@ QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
         {
             if(property_set->itIsInherited)
             {
-                return QVariant("inherit");
+                return QVariant(property_set->baseElement);
             }
             else
             {
@@ -229,9 +229,13 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
 
     if (!property_map.empty())
     {
-        // Inherited?
-        if( currentPropertySet )
+        NamedPropertyMap::iterator base_properties = property_map.find(Rocket::Core::PseudoClassList());
+        if (base_properties != property_map.end())
         {
+            currentPropertySet = new PropertySet();
+            propertySetList.push_back(currentPropertySet);
+
+             // Inherited?
             if (element != primary_element)
             {
                 currentPropertySet->itIsInherited = true;
@@ -241,24 +245,18 @@ void PropertyTreeModel::buildElementProperties(Rocket::Core::Element* element, R
             {
                 currentPropertySet->itIsInherited = false;
             }
-        }
 
-        NamedPropertyMap::iterator base_properties = property_map.find(Rocket::Core::PseudoClassList());
-        if (base_properties != property_map.end())
-        {
-            currentPropertySet = new PropertySet();
-            propertySetList.push_back(currentPropertySet);
             buildProperties((*base_properties).second);
         }
 
         for (NamedPropertyMap::iterator i = property_map.begin(); i != property_map.end(); ++i)
         {
-            currentPropertySet = new PropertySet();
-            propertySetList.push_back(currentPropertySet);
-
             // Skip the base property list, we've already printed it.
             if (i == base_properties)
                 continue;
+
+            currentPropertySet = new PropertySet();
+            propertySetList.push_back(currentPropertySet);
 
             // Pseudo-class list.
             for (Rocket::Core::PseudoClassList::const_iterator j = (*i).first.begin(); j != (*i).first.end(); ++j)

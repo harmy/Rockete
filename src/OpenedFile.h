@@ -3,6 +3,7 @@
 
 #include <QTextEdit>
 #include <QFileInfo>
+#include <QTextDocument>
 
 class OpenedFile
 {
@@ -16,6 +17,7 @@ public:
 
     int tabIndex;
     QTextEdit * textEdit;
+    QTextDocument * textDocument;
     QFileInfo fileInfo;
 };
 

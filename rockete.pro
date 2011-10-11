@@ -8,8 +8,10 @@ SOURCES += \
  ./src/Action.cpp \
  ./src/ActionManager.cpp \
  ./src/AttributeTreeModel.cpp \
+ ./src/CSSHighlighter.cpp \
  ./src/GraphicSystem.cpp \
  ./src/main.cpp \
+ ./src/OpenedDocument.cpp \
  ./src/OpenedFile.cpp \
  ./src/OpenedStyleSheet.cpp \
  ./src/PropertyTreeModel.cpp \
@@ -18,10 +20,12 @@ SOURCES += \
  ./src/RocketHelper.cpp \
  ./src/RocketRenderInterface.cpp \
  ./src/RocketSystem.cpp \
- ./src/StyleSheet.cpp
+ ./src/StyleSheet.cpp \
+ ./src/XMLHighlighter.cpp
 HEADERS += \
  ./src/Action.h \
  ./src/AttributeTreeModel.h \
+ ./src/CSSHighlighter.h \
  ./src/GraphicSystem.h \
  ./src/OpenedDocument.h \
  ./src/OpenedFile.h \
@@ -33,7 +37,8 @@ HEADERS += \
  ./src/RocketHelper.h \
  ./src/RocketRenderInterface.h \
  ./src/RocketSystem.h \
- ./src/StyleSheet.h
+ ./src/StyleSheet.h \
+ ./src/XMLHighlighter.h
 FORMS += ./rockete.ui
 INCLUDEPATH = ./src
 win32 {
