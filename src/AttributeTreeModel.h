@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QVariant>
 #include "RocketHelper.h"
+#include "OpenedDocument.h"
 
 class AttributeTreeModel : public QAbstractItemModel
 {
@@ -23,10 +24,11 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-    void setupData(Element * _element);
+    void setupData(OpenedDocument *_document, Element * _element);
 
 private:
 
+    OpenedDocument *document;
     Element * element;
     QList<QString> propertyNameList;
     QList<QString> propertyValueList;

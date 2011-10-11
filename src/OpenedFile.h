@@ -9,6 +9,7 @@ class OpenedFile
 {
 public:
     OpenedFile();
+    virtual ~OpenedFile();
     void fillTextEdit();
     QString getLine(const int line_number);
     int findLineNumber(const QString & str, const int start_line_number=0);

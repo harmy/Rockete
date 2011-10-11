@@ -3,6 +3,7 @@
 #include "PropertyTreeModel.h"
 #include "Rockete.h"
 #include "OpenedFile.h"
+#include "ActionManager.h"
 #ifndef QT_NO_DEBUG
 #include "modeltest/modeltest.h"
 #endif
@@ -71,27 +72,11 @@ bool PropertyTreeModel::setData(const QModelIndex & index, const QVariant & valu
         const PropertySet * property_set = propertySetList[index.internalId()];
         Property * property =  property_set->propertyList[index.row()];
 
-        OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(property_set->sourceFile.toStdString().c_str(), true);
+        ActionManager::getInstance().applyNew(new Action(document, currentElement, property, property->value, value.toString()));
 
-        if(opened_file)
-        {
-            int source_line_number;
-            QString new_line;
+        emit dataChanged(index,index);
 
-            source_line_number = opened_file->findLineNumber(property->name,property->sourceLineNumber);
-            new_line = "    " + property->name + ": " + value.toString() + ";";
-
-            opened_file->replaceLine(source_line_number, new_line);
-
-            property->value = value.toString();
-
-            opened_file->save();
-            Rockete::getInstance().reloadCurrentDocument();
-
-            emit dataChanged(index,index);
-
-            return true;
-        }
+        return true;
     }
 
     return false;
@@ -162,9 +147,10 @@ int PropertyTreeModel::columnCount(const QModelIndex &/*parent*/) const
     return 2;
 }
 
-void PropertyTreeModel::setupData(Element * _element)
+void PropertyTreeModel::setupData(OpenedDocument *_document, Element * _element)
 {
     clearData();
+    document = _document;
     currentElement = _element;
     if(currentElement)
     {
@@ -298,6 +284,7 @@ void PropertyTreeModel::buildProperties(const NamedPropertyList& properties)
                 currentPropertySet->displayedName = "inline";
                 currentPropertySet->sourceFile = "inline";
                 currentPropertySet->sourceLineNumber = -1;
+                currentPropertySet->itIsInlined = true;
             }
             else
             {
@@ -344,6 +331,7 @@ void PropertyTreeModel::buildProperty(const Rocket::Core::String& name, const Ro
     new_property->name = name.CString();
     new_property->value = property->ToString().CString();
     new_property->sourceLineNumber = currentPropertySet->sourceLineNumber;
+    new_property->sourceFile = currentPropertySet->sourceFile;
 
     if(currentPropertySet->sourceLineNumber != -1)
     {

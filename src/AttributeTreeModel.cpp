@@ -47,8 +47,7 @@ bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & val
     {
         element->SetAttribute(propertyNameList[index.row()].toStdString().c_str(), value.toByteArray().data());
 
-
-        ActionManager::getInstance().applyNew(new Action(NULL, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
+        ActionManager::getInstance().applyNew(new Action(document, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
 
         propertyValueList[index.row()] = value.toString();
         Rockete::getInstance().repaintRenderingView();
@@ -121,11 +120,12 @@ int AttributeTreeModel::columnCount(const QModelIndex &/*parent*/) const
     return 2;
 }
 
-void AttributeTreeModel::setupData(Element * _element)
+void AttributeTreeModel::setupData(OpenedDocument *_document, Element * _element)
 {
     Rocket::Core::String name, value;
     int index = 0;
 
+    document = _document;
     element = _element;
 
     propertyNameList.clear();

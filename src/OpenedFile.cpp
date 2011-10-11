@@ -6,7 +6,10 @@
 
 OpenedFile::OpenedFile()
 {
+}
 
+OpenedFile::~OpenedFile()
+{
 }
 
 void OpenedFile::fillTextEdit()

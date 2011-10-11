@@ -224,9 +224,6 @@
    <property name="text">
     <string>Exit</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
-   </property>
   </action>
   <action name="actionZoom_in">
    <property name="text">
@@ -330,7 +327,7 @@
     <string>Redo</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Ctrl+Y</string>
    </property>
   </action>
  </widget>

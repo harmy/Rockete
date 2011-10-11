@@ -68,14 +68,14 @@ void Rockete::repaintRenderingView()
 
 void Rockete::fillAttributeView()
 {
-    attributeTreeModel->setupData(currentDocument->selectedElement);
+    attributeTreeModel->setupData(currentDocument, currentDocument->selectedElement);
     ui.attributeTreeView->reset();
     ui.attributeTreeView->setModel(attributeTreeModel);
 }
 
 void Rockete::fillPropertyView()
 {
-    propertyTreeModel->setupData(currentDocument->selectedElement);
+    propertyTreeModel->setupData(currentDocument, currentDocument->selectedElement);
     ui.propertyTreeView->reset();
     ui.propertyTreeView->setModel(propertyTreeModel);
     ui.propertyTreeView->expandAll();
