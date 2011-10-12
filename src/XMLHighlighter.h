@@ -18,7 +18,8 @@ protected:
     void highlightBlock(const QString &text);
 
 private:
-    QList<QPair<QRegExp,QTextCharFormat>> highlightingRules;
+    typedef QPair<QRegExp,QTextCharFormat> RulePair;
+    QList<RulePair> highlightingRules;
     QTextCharFormat valueFormat;
     QRegExp valueStartExpression;
     QRegExp valueEndExpression;
