@@ -58,6 +58,9 @@
            <property name="currentIndex">
             <number>0</number>
            </property>
+           <property name="tabsClosable">
+            <bool>false</bool>
+           </property>
            <widget class="QWidget" name="tab">
             <attribute name="title">
              <string>New...</string>
@@ -82,6 +85,9 @@
            </property>
            <property name="currentIndex">
             <number>3</number>
+           </property>
+           <property name="tabsClosable">
+            <bool>false</bool>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="title">
@@ -108,7 +114,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_4">
+           <widget class="QWidget" name="currentToolTab">
             <attribute name="title">
              <string>Current tool</string>
             </attribute>
@@ -211,6 +217,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
@@ -219,6 +229,10 @@
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -308,8 +322,12 @@
    </property>
   </action>
   <action name="actionReload">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+   </property>
    <property name="text">
-    <string>Reload</string>
+    <string>Refresh</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -326,6 +344,10 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/undo.png</normaloff>:/images/undo.png</iconset>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -334,6 +356,10 @@
    </property>
   </action>
   <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/redo.png</normaloff>:/images/redo.png</iconset>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
@@ -350,7 +376,9 @@
    <header>RenderingView.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="rockete.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionOpen</sender>

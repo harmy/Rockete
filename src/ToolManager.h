@@ -20,10 +20,10 @@ public:
     }
 
     void initialize();
-    void fillToolBar(QToolBar *tool_bar);
-    void fillMenuBar(QMenu *menu);
+    void setup(QToolBar *tool_bar,QMenu *menu);
     void changeCurrentTool(const int index);
     void changeCurrentTool(Tool *tool);
+
 private:
     QList<Tool*> toolList;
     Tool *currentTool;

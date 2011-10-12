@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QWidget>
+#include <QLayout>
 #include <QAction>
 #include "RocketHelper.h"
 
@@ -27,7 +27,7 @@ public slots:
 protected:
     QString name;
     QString imageName;
-    QWidget *widget;
+    QLayout *layout;
     QAction *action;
 };
 

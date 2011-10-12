@@ -4,6 +4,7 @@ DESTDIR = ./debug
 QT += gui core opengl
 CONFIG += debug console qtestlib
 DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
+RESOURCES = rockete.qrc
 SOURCES += \
  ./src/Action.cpp \
  ./src/ActionManager.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
  ./src/RocketSystem.cpp \
  ./src/StyleSheet.cpp \
  ./src/Tool.cpp \
+ ./src/ToolDiv.cpp \
  ./src/ToolManager.cpp \
  ./src/ToolSelecter.cpp \
  ./src/XMLHighlighter.cpp
@@ -44,6 +46,7 @@ HEADERS += \
  ./src/StyleSheet.h \
  ./src/Tool.h \
  ./src/ToolManager.h \
+ ./src/ToolDiv.h \
  ./src/ToolSelecter.h \
  ./src/XMLHighlighter.h
 FORMS += ./rockete.ui

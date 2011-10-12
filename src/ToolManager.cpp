@@ -1,6 +1,7 @@
 #include "ToolManager.h"
 
 #include "ToolSelecter.h"
+#include "ToolDiv.h"
 
 ToolManager::ToolManager()
 {
@@ -15,22 +16,10 @@ ToolManager::~ToolManager()
 void ToolManager::initialize()
 {
     toolList.push_back(new ToolSelecter());
-    toolList.push_back(new ToolSelecter());
-    toolList.push_back(new ToolSelecter());
+    toolList.push_back(new ToolDiv());
 }
 
-void ToolManager::fillToolBar(QToolBar *toolbar)
-{
-    foreach(Tool *tool, toolList)
-    {
-        tool->setAction(toolbar->addAction(QIcon(tool->getImageName()), tool->getName(), tool, SLOT(onActionTriggered())));
-        tool->getAction()->setCheckable(true);
-    }
-
-    changeCurrentTool(0);
-}
-
-void ToolManager::fillMenuBar(QMenu *menu)
+void ToolManager::setup(QToolBar *tool_bar,QMenu *menu)
 {
     QString shortcut_string;
     Tool *tool;
@@ -38,10 +27,18 @@ void ToolManager::fillMenuBar(QMenu *menu)
     for(int tool_index=0; tool_index<toolList.size(); ++tool_index)
     {
         tool = toolList[tool_index];
+
+        tool->setAction(tool_bar->addAction(QIcon(tool->getImageName()), tool->getName(), tool, SLOT(onActionTriggered())));
+
         menu->addAction(tool->getAction());
+
         shortcut_string = "F" + QString::number(tool_index+1);
+
         tool->getAction()->setShortcut(QKeySequence(shortcut_string));
+        tool->getAction()->setCheckable(true);
     }
+
+    changeCurrentTool(0);
 }
 
 void ToolManager::changeCurrentTool(const int index)

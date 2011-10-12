@@ -31,6 +31,7 @@ public:
     OpenedStyleSheet *getStyleSheetFromFileName(const char * name);
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
     OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
+    QWidget *getCurrentToolTab() { return ui.currentToolTab; }
 
 protected:
     virtual void keyPressEvent(QKeyEvent * e);
@@ -40,7 +41,6 @@ private slots:
     void menuSaveClicked();
     void menuCloseClicked();
     void codeTabChanged(int index);
-    void insertImage();
     void unselectElement();
     void menuReloadClicked();
     void menuSetScreenSizeClicked();

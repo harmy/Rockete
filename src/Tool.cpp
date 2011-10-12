@@ -1,8 +1,10 @@
 #include "Tool.h"
+
 #include "ToolManager.h"
+#include "Rockete.h"
 
 Tool::Tool()
-: QObject(), widget(NULL)
+: QObject(), layout(NULL)
 {
 
 }
@@ -14,9 +16,9 @@ Tool::~Tool()
 
 void Tool::onSelect()
 {
-    if(widget)
+    if(layout)
     {
-        //:TODO: Add widget to current tool tab.
+        Rockete::getInstance().getCurrentToolTab()->setLayout(layout);
     }
 }
 

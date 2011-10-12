@@ -43,13 +43,16 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     renderingView = ui.renderingView;
 
     // Toolbar.
-    ui.mainToolBar->addAction(QIcon("images/open.png"), "Open", this, SLOT(menuOpenClicked()));
-    ui.mainToolBar->addAction(QIcon("images/open.png"), "Save", this, SLOT(menuSaveClicked()));
-    ui.mainToolBar->addAction(QIcon("images/open.png"), "Close", this, SLOT(menuCloseClicked()));
+    ui.mainToolBar->addAction(ui.actionOpen);
+    ui.mainToolBar->addAction(ui.actionSave);
+    ui.mainToolBar->addSeparator();
+    ui.mainToolBar->addAction(ui.actionReload);
+    ui.mainToolBar->addSeparator();
+    ui.mainToolBar->addAction(ui.actionUndo);
+    ui.mainToolBar->addAction(ui.actionRedo);
     ui.mainToolBar->addSeparator();
 
-    ToolManager::getInstance().fillToolBar(ui.mainToolBar);
-    ToolManager::getInstance().fillMenuBar(ui.menuTools);
+    ToolManager::getInstance().setup(ui.mainToolBar, ui.menuTools);
 
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
@@ -239,7 +242,7 @@ void Rockete::menuSaveClicked()
 
 void Rockete::menuCloseClicked()
 {
-
+    // :TODO:
 }
 
 void Rockete::codeTabChanged( int index )
@@ -252,11 +255,6 @@ void Rockete::codeTabChanged( int index )
     }
 }
 
-void Rockete::insertImage()
-{
-
-}
-
 void Rockete::unselectElement()
 {
     if(!currentDocument)
@@ -265,6 +263,7 @@ void Rockete::unselectElement()
     currentDocument->selectedElement = NULL;
     renderingView->repaint();
     fillAttributeView();
+    fillPropertyView();
 }
 
 void Rockete::menuReloadClicked()
