@@ -5,6 +5,7 @@
 #include <QString>
 #include <QLayout>
 #include <QAction>
+#include <QWidget>
 #include "RocketHelper.h"
 
 class Tool : public QObject
@@ -27,7 +28,7 @@ public slots:
 protected:
     QString name;
     QString imageName;
-    QLayout *layout;
+    QWidget *widget;
     QAction *action;
 };
 

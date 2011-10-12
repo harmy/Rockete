@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QTextDocument>
+#include <QGridLayout>
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
@@ -37,6 +38,8 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     instance = this;
 
     ui.setupUi(this);
+
+    ui.currentToolTab->setLayout(new QGridLayout());
 
     // :TODO: Load recent files
 
