@@ -14,7 +14,7 @@ public:
 
     bool initialize();
     bool createContext(const int width, const int height);
-    void loadFonts(const char * directory);
+    void loadFonts(const char * directory_path);
     void loadFont(const QString & file);
 
     Context * getContext() 

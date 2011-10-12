@@ -12,8 +12,8 @@ void OpenedDocument::initialize()
 {
     textEdit = new QTextEdit;
     textEdit->setAcceptRichText(false);
-    textEdit->setFontFamily("Courier");
     textEdit->setLineWrapMode(QTextEdit::NoWrap);
+    textEdit->setTabChangesFocus(false);
 
     textDocument = new QTextDocument();
     textDocument->setDefaultFont(QFont("Courier",10));

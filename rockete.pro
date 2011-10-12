@@ -21,9 +21,13 @@ SOURCES += \
  ./src/RocketRenderInterface.cpp \
  ./src/RocketSystem.cpp \
  ./src/StyleSheet.cpp \
+ ./src/Tool.cpp \
+ ./src/ToolManager.cpp \
+ ./src/ToolSelecter.cpp \
  ./src/XMLHighlighter.cpp
 HEADERS += \
  ./src/Action.h \
+ ./src/ActionManager.h \
  ./src/AttributeTreeModel.h \
  ./src/CSSHighlighter.h \
  ./src/GraphicSystem.h \
@@ -38,6 +42,9 @@ HEADERS += \
  ./src/RocketRenderInterface.h \
  ./src/RocketSystem.h \
  ./src/StyleSheet.h \
+ ./src/Tool.h \
+ ./src/ToolManager.h \
+ ./src/ToolSelecter.h \
  ./src/XMLHighlighter.h
 FORMS += ./rockete.ui
 INCLUDEPATH = ./src

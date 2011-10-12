@@ -81,7 +81,7 @@
             <enum>QTabWidget::Triangular</enum>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="title">
@@ -107,6 +107,11 @@
               <widget class="QTreeView" name="propertyTreeView"/>
              </item>
             </layout>
+           </widget>
+           <widget class="QWidget" name="tab_4">
+            <attribute name="title">
+             <string>Current tool</string>
+            </attribute>
            </widget>
           </widget>
          </widget>
@@ -137,7 +142,7 @@
      <x>0</x>
      <y>0</y>
      <width>889</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -186,9 +191,15 @@
     <addaction name="separator"/>
     <addaction name="actionUnselect"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

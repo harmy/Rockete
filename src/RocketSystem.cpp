@@ -1,6 +1,8 @@
 #include "RocketSystem.h"
 
 #include <Rocket/Core.h>
+#include <QDir>
+#include "ToolManager.h"
 
 float RocketSystem::GetElapsedTime()
 {
@@ -40,22 +42,23 @@ bool RocketSystem::createContext(const int width, const int height)
     return true;
 }
 
-void RocketSystem::loadFonts( const char * directory )
+void RocketSystem::loadFonts(const char *directory_path)
 {
-    Rocket::Core::String 
-        font_names[4];
+    QDir directory(directory_path);
+    QStringList name_filter_list;
+    QStringList file_list;
+    QString prefix;
 
-    // :TODO: Load all existing otf files...
+    name_filter_list << "*.otf" << "*.ttf",
 
-    font_names[0] = "Delicious-Roman.otf";
-    font_names[1] = "Delicious-Italic.otf";
-    font_names[2] = "Delicious-Bold.otf";
-    font_names[3] = "Delicious-BoldItalic.otf";
+    file_list = directory.entryList(name_filter_list);
 
-    for (int i = 0; i < sizeof(font_names) / sizeof(Rocket::Core::String); i++)
+    prefix = directory_path;
+    prefix += "/";
+
+    foreach(const QString &file_name, file_list)
     {
-        Rocket::Core::String path = Rocket::Core::String( directory ) + "/" + font_names[i];
-        loadFont(path.CString());
+        loadFont(prefix + file_name);
     }
 }
 
@@ -66,5 +69,5 @@ void RocketSystem::loadFont(const QString & file)
 
 void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event & event) 
 {
-    Rockete::getInstance().selectElement(event.GetTargetElement());
+    ToolManager::getInstance().getCurrentTool()->onElementClicked(event.GetTargetElement());
 }

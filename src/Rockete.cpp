@@ -8,6 +8,7 @@
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
+#include "ToolManager.h"
 
 struct LocalScreenSizeItem
 {
@@ -31,7 +32,7 @@ struct LocalScreenSizeItem
 };
 
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags)
+    : QMainWindow(parent, flags), currentDocument(NULL)
 {
     instance = this;
 
@@ -42,11 +43,13 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     renderingView = ui.renderingView;
 
     // Toolbar.
-    ui.mainToolBar->addAction( QIcon("images/open.png"), "Open", this, SLOT( menuOpenClicked() ) );
-    ui.mainToolBar->addAction( QIcon("images/open.png"), "Save", this, SLOT( menuSaveClicked() ) );
-    ui.mainToolBar->addAction( QIcon("images/open.png"), "Close", this, SLOT( menuCloseClicked() ) );
+    ui.mainToolBar->addAction(QIcon("images/open.png"), "Open", this, SLOT(menuOpenClicked()));
+    ui.mainToolBar->addAction(QIcon("images/open.png"), "Save", this, SLOT(menuSaveClicked()));
+    ui.mainToolBar->addAction(QIcon("images/open.png"), "Close", this, SLOT(menuCloseClicked()));
     ui.mainToolBar->addSeparator();
-    ui.mainToolBar->addAction( QIcon("images/open.png"), "Img", this, SLOT( insertImage() ) );
+
+    ToolManager::getInstance().fillToolBar(ui.mainToolBar);
+    ToolManager::getInstance().fillMenuBar(ui.menuTools);
 
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
@@ -245,7 +248,7 @@ void Rockete::codeTabChanged( int index )
     if((document = getDocumentFromTabIndex(index)))
     {
         renderingView->changeCurrentDocument(document);
-        currentDocument =document;
+        currentDocument = document;
     }
 }
 
