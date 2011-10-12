@@ -1,6 +1,7 @@
 #include "OpenedDocument.h"
 
 #include "XMLHighlighter.h"
+#include "RocketSystem.h"
 
 OpenedDocument::OpenedDocument() : selectedElement(NULL)
 {
@@ -44,8 +45,7 @@ void OpenedDocument::replaceInnerRMLFromId(const QString & tag_name, const QStri
 
     content.replace(start_index+1, end_index-start_index-1,new_content);
 
-    textDocument->setPlainText(content);
-    textEdit->setDocument(textDocument);
+    setTextEditContent(content);
 }
 
 void OpenedDocument::replaceInnerRMLFromTagName(const QString & tag_name, const QString & new_content)
@@ -70,16 +70,21 @@ void OpenedDocument::replaceInnerRMLFromTagName(const QString & tag_name, const 
 
     content.replace(start_index+1, end_index-start_index-1,new_content);
 
-    textDocument->setPlainText(content);
-    textEdit->setDocument(textDocument);
+    setTextEditContent(content);
 }
 
 void OpenedDocument::regenerateBodyContent()
 {
-    QString content;
     Rocket::Core::String rocket_string_content;
+    Element *content_element;
 
-    rocketDocument->GetInnerRML(rocket_string_content);
+    RocketSystem::getInstance().getContext()->Update();
 
-    textDocument->setPlainText(content);
+    content_element = rocketDocument->GetElementById("content");
+
+    Q_ASSERT(content_element); // :TODO: Handle document without template.
+
+    content_element->GetInnerRML(rocket_string_content);
+
+    replaceInnerRMLFromTagName("body",QString(rocket_string_content.CString()));
 }

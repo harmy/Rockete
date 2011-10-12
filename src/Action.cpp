@@ -2,6 +2,7 @@
 
 #include "OpenedFile.h"
 #include "Rockete.h"
+class ElementStyle;
 
 Action::Action(OpenedDocument * document, Element * element, const QString & variable_name, const QString & current_value, const QString & new_value)
 {
@@ -11,6 +12,7 @@ Action::Action(OpenedDocument * document, Element * element, const QString & var
     oldValue = current_value;
     newValue = new_value;
     variableName = variable_name;
+    addedLineNumber = -1;
 }
 
 Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property * property, const QString &current_value, const QString &new_value)
@@ -21,6 +23,7 @@ Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Pr
     oldValue = current_value;
     newValue = new_value;
     targetProperty = property;
+    addedLineNumber = -1;
 }
 
 void Action::apply()
@@ -31,10 +34,9 @@ void Action::apply()
         {
             if(targetProperty->sourceFile == "inline")
             {
-                targetElement->SetProperty(targetProperty->name.toStdString().c_str(),newValue.toStdString().c_str());
-
+                targetProperty->value = newValue;
+                RocketHelper::replaceInlinedProperty(targetElement,targetProperty->name, newValue);
                 dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
-
                 Rockete::getInstance().repaintRenderingView();
             }
             else
@@ -46,10 +48,17 @@ void Action::apply()
                     int source_line_number;
                     QString new_line;
 
-                    source_line_number = opened_file->findLineNumber(targetProperty->name,targetProperty->sourceLineNumber);
+                    source_line_number = opened_file->findLineNumber(targetProperty->name, targetProperty->sourceLineNumber);
                     new_line = "    " + targetProperty->name + ": " + newValue + ";";
 
-                    opened_file->replaceLine(source_line_number, new_line);
+                    if(source_line_number != -1)
+                    {
+                        opened_file->replaceLine(source_line_number, new_line);
+                    }
+                    else
+                    {
+                        addedLineNumber = opened_file->insertLineBeforeBracket(targetProperty->sourceLineNumber, new_line);
+                    }
 
                     targetProperty->value = newValue;
 
@@ -63,6 +72,7 @@ void Action::apply()
         break;
     case ActionSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), newValue.toStdString().c_str());
+        dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
     default:
         break;
@@ -77,7 +87,9 @@ void Action::unapply()
         {
             if(targetProperty->sourceFile == "inline")
             {
-                targetElement->SetProperty(targetProperty->name.toStdString().c_str(),oldValue.toStdString().c_str());
+                targetProperty->value = oldValue;
+                RocketHelper::replaceInlinedProperty(targetElement,targetProperty->name, oldValue);
+                dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
                 Rockete::getInstance().repaintRenderingView();
             }
             else
@@ -86,15 +98,22 @@ void Action::unapply()
 
                 if(opened_file)
                 {
-                    int source_line_number;
-                    QString new_line;
+                    if(addedLineNumber!= -1)
+                    {
+                        opened_file->removeLine(addedLineNumber);
+                    }
+                    else
+                    {
+                        int source_line_number;
+                        QString new_line;
 
-                    source_line_number = opened_file->findLineNumber(targetProperty->name,targetProperty->sourceLineNumber);
-                    new_line = "    " + targetProperty->name + ": " + oldValue + ";";
+                        source_line_number = opened_file->findLineNumber(targetProperty->name,targetProperty->sourceLineNumber);
+                        new_line = "    " + targetProperty->name + ": " + oldValue + ";";
 
-                    opened_file->replaceLine(source_line_number, new_line);
+                        opened_file->replaceLine(source_line_number, new_line);
 
-                    targetProperty->value = oldValue;
+                        targetProperty->value = oldValue;
+                    }
 
                     opened_file->save();
                     Rockete::getInstance().reloadCurrentDocument();
@@ -104,6 +123,7 @@ void Action::unapply()
         break;
     case ActionSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), oldValue.toStdString().c_str());
+        dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
     default:
         break;

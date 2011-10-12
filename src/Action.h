@@ -35,6 +35,7 @@ private:
     Element *targetElement;
     PropertyTreeModel::Property * targetProperty;
     Type type;
+    int addedLineNumber;
 };
 
 #endif

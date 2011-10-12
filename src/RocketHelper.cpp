@@ -37,3 +37,23 @@ void RocketHelper::highlightElement(Element * element)
     }
 }
 
+void RocketHelper::replaceInlinedProperty(Element *element,const QString &property_name, const QString &property_value)
+{
+    QString properties;
+    int property_index;
+    int start_index;
+    int end_index;
+
+    properties = (element->GetAttribute<Rocket::Core::String>("style","")).CString();
+
+    property_index = properties.indexOf(property_name);
+    Q_ASSERT(property_index != -1);
+    start_index = properties.indexOf(':',property_index);
+    Q_ASSERT(start_index != -1);
+    end_index = properties.indexOf(';',start_index);
+    Q_ASSERT(end_index != -1);
+
+    properties.replace(start_index + 1,end_index - start_index - 1,property_value);
+
+    element->SetAttribute("style",properties.toStdString().c_str());
+}
