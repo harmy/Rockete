@@ -31,6 +31,7 @@ void Tool::onSelect()
         Rockete::getInstance().getCurrentToolTab()->layout()->addWidget(widget);
     }
 
+    Rockete::getInstance().unselectElement();
     Rockete::getInstance().repaintRenderingView();
 }
 

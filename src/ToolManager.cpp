@@ -45,6 +45,11 @@ void ToolManager::changeCurrentTool(const int index)
 {
     Q_ASSERT(index < toolList.size());
 
+    if(currentTool == toolList[index])
+    {
+        return;
+    }
+
     foreach(Tool *tool, toolList)
     {
         tool->getAction()->setChecked(false);

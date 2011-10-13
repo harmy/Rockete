@@ -102,13 +102,6 @@ void RenderingView::paintGL()
     }
 
     ToolManager::getInstance().getCurrentTool()->onRender();
-
-    glEnable(GL_BLEND);
-
-    if(currentDocument->selectedElement)
-    {
-        RocketHelper::highlightElement(currentDocument->selectedElement);
-    }
 }
 
 void RenderingView::mousePressEvent(QMouseEvent *event) 

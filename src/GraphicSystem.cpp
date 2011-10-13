@@ -55,7 +55,9 @@ void GraphicSystem::resize( const int _width, const int _height )
 bool GraphicSystem::generateTexture(Rocket::Core::TextureHandle& texture_handle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& source_dimensions)
 {
     GLuint texture_id = 0;
+
     glGenTextures(1, &texture_id);
+
     if (texture_id == 0)
     {
         printf("Failed to generate textures\n");
@@ -80,16 +82,16 @@ bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle& texture_handle, Roc
 {
     unsigned char * bytes = NULL;
 
-    if( source.Substring( source.Length() - 3 , 3 ) == "tga" )
+    if(source.Substring(source.Length() - 3 , 3 ) == "tga")
     {
-        bytes = loadTGA( source.CString(), texture_dimensions );
+        bytes = loadTGA(source.CString(), texture_dimensions);
     }
     else
     {
-        bytes = loadOther( source.CString(), texture_dimensions );
+        bytes = loadOther(source.CString(), texture_dimensions);
     }
 
-    if( !bytes )
+    if(!bytes)
     {
         return false;
     }
@@ -124,10 +126,10 @@ void GraphicSystem::putYAxisVertices(const float x)
     glVertex2f(x,6666.0f);
 }
 
-void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, const Color4b& color)
+void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, const Color4b& color, const bool filled)
 {
     glColor4ub(color.red, color.green, color.blue, color.alpha);
-    glBegin(GL_POLYGON);
+    glBegin(filled ? GL_POLYGON : GL_LINE_LOOP);
     glVertex2f(origin.x, origin.y);
     glVertex2f(origin.x+dimensions.x, origin.y);
     glVertex2f(origin.x+dimensions.x, origin.y+dimensions.y);
@@ -139,26 +141,26 @@ void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, 
 {
     // Top box.
     float top_y_dimensions = hole_origin.y - origin.y;
-    if (top_y_dimensions > 0)
+    if(top_y_dimensions > 0)
     {
         drawBox(origin, Vector2f(dimensions.x, top_y_dimensions), color);
     }
 
     // Bottom box.
     float bottom_y_dimensions = (origin.y + dimensions.y) - (hole_origin.y + hole_dimensions.y);
-    if (bottom_y_dimensions > 0)
+    if(bottom_y_dimensions > 0)
     {
         drawBox(Vector2f(origin.x, hole_origin.y + hole_dimensions.y), Vector2f(dimensions.x, bottom_y_dimensions), color);
     }
 
-    // Left box.
+    //Left box.
     float left_x_dimensions = hole_origin.x - origin.x;
     if (left_x_dimensions > 0)
     {
         drawBox(Vector2f(origin.x, hole_origin.y), Vector2f(left_x_dimensions, hole_dimensions.y), color);
     }
 
-    // Right box.
+    //Right box.
     float right_x_dimensions = (origin.x + dimensions.x) - (hole_origin.x + hole_dimensions.x);
     if (right_x_dimensions > 0)
     {
@@ -173,6 +175,7 @@ unsigned char * GraphicSystem::loadTGA(const char * path, Rocket::Core::Vector2i
 {
     Rocket::Core::FileInterface* file_interface = Rocket::Core::GetFileInterface();
     Rocket::Core::FileHandle file_handle = file_interface->Open(path);
+
     if (!file_handle)
     {
         return false;
@@ -241,7 +244,7 @@ unsigned char * GraphicSystem::loadOther(const char * path, Rocket::Core::Vector
     QImage image;
     unsigned char * bytes;
 
-    if( image.load( path ) )
+    if(image.load( path ))
     {
         image = image.rgbSwapped();
         image.convertToFormat(QImage::Format_ARGB32);

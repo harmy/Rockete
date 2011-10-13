@@ -34,10 +34,7 @@ public:
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
     OpenedDocument *getCurrentDocument() { return currentDocument; }
 
-protected:
-    virtual void keyPressEvent(QKeyEvent * e);
-
-private slots:
+public slots:
     void menuOpenClicked();
     void menuSaveClicked();
     void menuCloseClicked();
@@ -49,6 +46,9 @@ private slots:
     void menuUndoClicked();
     void menuRedoClicked();
     void propertyViewClicked(const QModelIndex & index);
+
+protected:
+    virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     void openFile(const QString & file_path);

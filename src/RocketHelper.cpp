@@ -1,5 +1,6 @@
 #include "RocketHelper.h"
 
+#include <QtCore>
 #include <Rocket/Core.h>
 #include "RocketSystem.h"
 
@@ -16,24 +17,35 @@ void RocketHelper::unloadDocument(RMLDocument * rml_document)
 
 void RocketHelper::highlightElement(Element * element)
 {
-    if (element)
+    Q_ASSERT(element);
+
+    for (int i = 0; i < element->GetNumBoxes(); i++)
     {
-        for (int i = 0; i < element->GetNumBoxes(); i++)
-        {
-            const Rocket::Core::Box element_box = element->GetBox(i);
+        const Rocket::Core::Box element_box = element->GetBox(i);
 
-            // Content area:
-            GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), Color4b(158, 214, 237, 128));
+        // Content area:
+        GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), Color4b(158, 214, 237, 128));
 
-            // Padding area:
-            GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::PADDING), element_box.GetSize(Rocket::Core::Box::PADDING), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), Color4b(135, 122, 214, 128));
+        // Padding area:
+        GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::PADDING), element_box.GetSize(Rocket::Core::Box::PADDING), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), Color4b(135, 122, 214, 128));
 
-            // Border area:
-            GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::BORDER), element_box.GetSize(Rocket::Core::Box::BORDER), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::PADDING), element_box.GetSize(Rocket::Core::Box::PADDING), Color4b(133, 133, 133, 128));
+        // Border area:
+        GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::BORDER), element_box.GetSize(Rocket::Core::Box::BORDER), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::PADDING), element_box.GetSize(Rocket::Core::Box::PADDING), Color4b(133, 133, 133, 128));
 
-            // Border area:
-            GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::MARGIN), element_box.GetSize(Rocket::Core::Box::MARGIN), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::BORDER), element_box.GetSize(Rocket::Core::Box::BORDER), Color4b(240, 255, 131, 128));
-        }
+        // Border area:
+        GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::MARGIN), element_box.GetSize(Rocket::Core::Box::MARGIN), element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::BORDER), element_box.GetSize(Rocket::Core::Box::BORDER), Color4b(240, 255, 131, 128));
+    }
+}
+
+void RocketHelper::drawBoxAroundElement(Element *element, const Color4b &color)
+{
+    Q_ASSERT(element);
+
+    for (int i = 0; i < element->GetNumBoxes(); i++)
+    {
+        const Rocket::Core::Box element_box = element->GetBox(i);
+
+        GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), color, false);
     }
 }
 

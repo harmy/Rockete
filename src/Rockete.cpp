@@ -215,14 +215,7 @@ OpenedFile *Rockete::getOpenedFileFromTabIndex(const int tab_index)
     return NULL;
 }
 
-// Protected:
-
-void Rockete::keyPressEvent ( QKeyEvent * e )
-{
-    renderingView->keyPressEvent(e);
-}
-
-// Private slots:
+// Public slots:
 
 void Rockete::menuOpenClicked()
 {
@@ -354,6 +347,13 @@ void Rockete::propertyViewClicked(const QModelIndex & index)
     {
         //ui.propertyTreeView->model()->setData(index, QVariant("test"), Qt::DisplayRole);
     }
+}
+
+// Protected:
+
+void Rockete::keyPressEvent(QKeyEvent *event)
+{
+    renderingView->keyPressEvent(event);
 }
 
 // Private:

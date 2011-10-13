@@ -15,6 +15,7 @@ public:
     static RMLDocument * loadDocument(const char *file_path);
     static void unloadDocument(RMLDocument *rml_document);
     static void highlightElement(Element *element);
+    static void drawBoxAroundElement(Element *element, const Color4b &color);
 
     static void replaceInlinedProperty(Element *element,const QString &property_name, const QString &property_value);
 };

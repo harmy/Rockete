@@ -14,7 +14,7 @@ public:
     static void scissor(int x, int y, int width, int height);
     static void putXAxisVertices(const float y);
     static void putYAxisVertices(const float x);
-    static void drawBox(const Vector2f& origin, const Vector2f& dimensions, const Color4b& color);
+    static void drawBox(const Vector2f& origin, const Vector2f& dimensions, const Color4b& color, const bool filled=true);
     static void drawBox(const Vector2f& origin, const Vector2f& dimensions, const Vector2f& hole_origin, const Vector2f& hole_dimensions, const Color4b& color);
 
     static Vector2f scissorOffset;
