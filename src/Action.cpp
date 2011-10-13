@@ -2,22 +2,14 @@
 
 #include "OpenedFile.h"
 #include "Rockete.h"
-class ElementStyle;
 
-Action::Action(OpenedDocument * document, Element * element, const QString & variable_name, const QString & current_value, const QString & new_value)
+Action::Action()
 {
-    type = ActionSetAttribute;
-    targetElement = element;
-    targetFile = document;
-    oldValue = current_value;
-    newValue = new_value;
-    variableName = variable_name;
-    addedLineNumber = -1;
 }
 
 Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property * property, const QString &current_value, const QString &new_value)
 {
-    type = ActionSetProperty;
+    type = ActionTypeSetProperty;
     targetElement = element;
     targetFile = document;
     oldValue = current_value;
@@ -26,20 +18,35 @@ Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Pr
     addedLineNumber = -1;
 }
 
+Action::Action(OpenedDocument * document, Element * element, const QString & variable_name, const QString & current_value, const QString & new_value)
+{
+    type = ActionTypeSetAttribute;
+    targetElement = element;
+    targetFile = document;
+    oldValue = current_value;
+    newValue = new_value;
+    variableName = variable_name;
+    addedLineNumber = -1;
+}
+
 Action::Action(OpenedDocument *document, Element *element, Element *element_to_insert)
 {
-    type = ActionInsertElement;
+    type = ActionTypeInsertElement;
     targetElement = element;
     targetFile = document;
     elementToInsert = element_to_insert;
     addedLineNumber = -1;
 }
 
+Action::~Action()
+{
+}
+
 void Action::apply()
 {
     switch(type)
     {
-    case ActionSetProperty:
+    case ActionTypeSetProperty:
         {
             if(targetProperty->sourceFile == "inline")
             {
@@ -80,12 +87,12 @@ void Action::apply()
         }
         break;
 
-    case ActionSetAttribute:
+    case ActionTypeSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), newValue.toStdString().c_str());
         dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
 
-    case ActionInsertElement:
+    case ActionTypeInsertElement:
         targetElement->AppendChild(elementToInsert);
         dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         Rockete::getInstance().repaintRenderingView();
@@ -100,7 +107,7 @@ void Action::unapply()
 {
     switch(type)
     {
-    case ActionSetProperty:
+    case ActionTypeSetProperty:
         {
             if(targetProperty->sourceFile == "inline")
             {
@@ -139,12 +146,12 @@ void Action::unapply()
         }
         break;
 
-    case ActionSetAttribute:
+    case ActionTypeSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), oldValue.toStdString().c_str());
         dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
 
-    case ActionInsertElement:
+    case ActionTypeInsertElement:
         targetElement->RemoveChild(elementToInsert);
         if(dynamic_cast<OpenedDocument*>(targetFile)->selectedElement == elementToInsert)
         {

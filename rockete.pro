@@ -7,6 +7,7 @@ DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 RESOURCES = rockete.qrc
 SOURCES += \
  ./src/Action.cpp \
+ ./src/ActionSetInlineProperty.cpp \
  ./src/ActionManager.cpp \
  ./src/AttributeTreeModel.cpp \
  ./src/CSSHighlighter.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
 HEADERS += \
  ./src/Action.h \
  ./src/ActionManager.h \
+ ./src/ActionSetInlineProperty.h \
  ./src/AttributeTreeModel.h \
  ./src/CSSHighlighter.h \
  ./src/GraphicSystem.h \

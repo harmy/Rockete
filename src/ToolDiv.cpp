@@ -4,20 +4,28 @@
 #include "RocketHelper.h"
 #include "OpenedDocument.h"
 #include "ActionManager.h"
+#include "ActionSetInlineProperty.h"
 #include <QLabel>
-#include <QGridLayout>
+#include <QLabel>
+#include <QToolBar>
 
 ToolDiv::ToolDiv()
 : Tool()
 {
-    QLayout *layout;
-
+    QToolBar *tool_bar;
     name = "Div tool";
-    imageName = "images/tool_div.png";
-    layout = new QGridLayout();
-    layout->addWidget(new QLabel("Div tool"));
-    widget = new QWidget();
-    widget->setLayout(layout);
+    imageName = ":/images/tool_div.png";
+
+    widget = tool_bar = new QToolBar();
+    tool_bar->setOrientation(Qt::Vertical);
+
+    tool_bar->addWidget(new QLabel("Insert:"));
+
+    tool_bar->addAction(QIcon(), "Insert div", this, SLOT(insertDiv()));
+
+    tool_bar->addWidget(new QLabel("Modify:"));
+
+    tool_bar->addAction(QIcon(), "Expand width", this, SLOT(expandWidth()));
 }
 
 void ToolDiv::onElementClicked(Element *_element)
@@ -64,6 +72,25 @@ void ToolDiv::onMousePress(const Qt::MouseButton button, const Vector2f &/*posit
     }
 }
 
+// Private slots:
+
+void ToolDiv::insertDiv()
+{
+    insertDiv(Rockete::getInstance().getCurrentDocument()->selectedElement);
+}
+
+void ToolDiv::expandWidth()
+{
+    OpenedDocument *document;
+
+    document = Rockete::getInstance().getCurrentDocument();
+
+    if(document && document->selectedElement)
+    {
+        ActionManager::getInstance().applyNew(new ActionSetInlineProperty(document, document->selectedElement, "width", "100%"));
+    }
+}
+
 // Private:
 
 void ToolDiv::processElement(Element *element)
@@ -75,7 +102,7 @@ void ToolDiv::processElement(Element *element)
 
     for(int child_index=0; child_index < element->GetNumChildren(); ++child_index)
     {
-        processElement( element->GetChild(child_index));
+        processElement(element->GetChild(child_index));
     }
 }
 

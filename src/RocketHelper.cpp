@@ -69,3 +69,64 @@ void RocketHelper::replaceInlinedProperty(Element *element,const QString &proper
 
     element->SetAttribute("style",properties.toStdString().c_str());
 }
+
+void RocketHelper::addInlinedProperty(Element *element,const QString &property_name, const QString &property_value)
+{
+    QString properties;
+    QString string_to_append;
+
+    properties = (element->GetAttribute<Rocket::Core::String>("style","")).CString();
+
+    string_to_append = property_name;
+    string_to_append.append(":");
+    string_to_append.append(property_value);
+    string_to_append.append(";");
+
+    properties.append(string_to_append);
+
+    element->SetAttribute("style", properties.toStdString().c_str());
+}
+
+void RocketHelper::removeInlinedProperty(Element *element, const QString &property_name)
+{
+    QString properties;
+    int property_index;
+    int end_index;
+
+    properties = (element->GetAttribute<Rocket::Core::String>("style","")).CString();
+
+    property_index = properties.indexOf(property_name);
+    Q_ASSERT(property_index != -1);
+    end_index = properties.indexOf(';',property_index);
+    Q_ASSERT(end_index != -1);
+
+    properties.remove(property_index, property_index - end_index - 1);
+    element->SetAttribute("style",properties.toStdString().c_str());
+}
+
+bool RocketHelper::getInlinedProperty(QString & property_value, Element *element, const QString &property_name)
+{
+    QString properties;
+    int property_index;
+    int start_index;
+    int end_index;
+
+    properties = (element->GetAttribute<Rocket::Core::String>("style","")).CString();
+
+    property_index = properties.indexOf(property_name);
+
+    if (property_index != -1)
+    {
+        Q_ASSERT(property_index != -1);
+        start_index = properties.indexOf(':', property_index);
+        Q_ASSERT(start_index != -1);
+        end_index = properties.indexOf(';', start_index);
+        Q_ASSERT(end_index != -1);
+
+        property_value = properties.mid(start_index + 1, end_index - start_index - 1);
+
+        return true;
+    }
+
+    return false;
+}

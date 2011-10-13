@@ -17,7 +17,10 @@ public:
     static void highlightElement(Element *element);
     static void drawBoxAroundElement(Element *element, const Color4b &color);
 
-    static void replaceInlinedProperty(Element *element,const QString &property_name, const QString &property_value);
+    static void replaceInlinedProperty(Element *element, const QString &property_name, const QString &property_value);
+    static void addInlinedProperty(Element *element, const QString &property_name, const QString &property_value);
+    static void removeInlinedProperty(Element *element, const QString &property_name);
+    static bool getInlinedProperty(QString & property_value, Element *element, const QString &property_name);
 };
 
 #endif
