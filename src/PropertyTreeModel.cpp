@@ -25,7 +25,7 @@ PropertyTreeModel::~PropertyTreeModel()
 
 QVariant PropertyTreeModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || role != Qt::DisplayRole || role != Qt::EditRole)
+    if(!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole))
         return QVariant();
 
     if(index.internalId() == PROPERTY_SET_ID)

@@ -15,7 +15,7 @@ AttributeTreeModel::~AttributeTreeModel()
 
 QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || role != Qt::DisplayRole || role != Qt::EditRole)
+    if(!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole))
         return QVariant();
 
     if(index.row() == propertyNameList.size())
