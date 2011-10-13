@@ -22,6 +22,9 @@ public:
     void setAction(QAction *_action) { action = _action; }
     virtual void onElementClicked(Element *){}
     virtual void onRender(){}
+    virtual void onMousePress(const Qt::MouseButton, const Vector2f &) {}
+    virtual void onMouseRelease(const Qt::MouseButton, const Vector2f &) {}
+    virtual void onMouseMove(const Vector2f &) {}
 
 public slots:
     void onActionTriggered();

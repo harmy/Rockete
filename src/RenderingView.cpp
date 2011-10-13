@@ -120,9 +120,17 @@ void RenderingView::mousePressEvent(QMouseEvent *event)
         return;
     }
 
+    Vector2f mouse_position = getMousePositionInDocument(event->x(), event->y());
+
     RocketSystem::getInstance().getContext()->ProcessMouseButtonDown(event->button()-1, 0);
+
+    ToolManager::getInstance().getCurrentTool()->onMousePress(event->button(), mouse_position);
+
     repaint();
 
+    // :TODO: Remove following code.
+
+    /*
     if(event->button() == Qt::RightButton)
     {
         if(currentDocument->selectedElement)
@@ -165,6 +173,7 @@ void RenderingView::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+    */
 }
 
 void RenderingView::mouseReleaseEvent(QMouseEvent *event) 
@@ -175,7 +184,12 @@ void RenderingView::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
 
+    Vector2f mouse_position = getMousePositionInDocument(event->x(), event->y());
+
     RocketSystem::getInstance().getContext()->ProcessMouseButtonUp(event->button()-1, 0);
+
+    ToolManager::getInstance().getCurrentTool()->onMouseRelease(event->button(), mouse_position);
+
     repaint();
 }
 
@@ -191,7 +205,11 @@ void RenderingView::mouseMoveEvent(QMouseEvent *event)
     }
 
     Vector2f mouse_position = getMousePositionInDocument(event->x(), event->y());
+
     RocketSystem::getInstance().getContext()->ProcessMouseMove(mouse_position.x,mouse_position.y, 0);
+
+    ToolManager::getInstance().getCurrentTool()->onMouseMove(mouse_position);
+
     repaint();
 }
 
@@ -209,9 +227,12 @@ void RenderingView::keyPressEvent(QKeyEvent* event)
         break;
 
     case Qt::Key_Delete:
-        currentDocument->selectedElement->GetParentNode()->RemoveChild( currentDocument->selectedElement );
-        currentDocument->selectedElement = 0;
-        repaint();
+        if( currentDocument->selectedElement )
+        {
+            currentDocument->selectedElement->GetParentNode()->RemoveChild(currentDocument->selectedElement);
+            Rockete::getInstance().unselectElement();
+            repaint();
+        }
         break;
 
     default:

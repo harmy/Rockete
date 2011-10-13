@@ -3,6 +3,7 @@
 #include "Rockete.h"
 #include "RocketHelper.h"
 #include "OpenedDocument.h"
+#include "ActionManager.h"
 #include <QLabel>
 #include <QGridLayout>
 
@@ -55,6 +56,16 @@ void ToolDiv::onRender()
     }
 }
 
+void ToolDiv::onMousePress(const Qt::MouseButton button, const Vector2f &/*position*/)
+{
+    if(button == Qt::RightButton)
+    {
+        insertDiv(Rockete::getInstance().getCurrentDocument()->selectedElement);
+    }
+}
+
+// Private:
+
 void ToolDiv::processElement(Element *element)
 {
     if(element->GetTagName() == "div")
@@ -66,4 +77,15 @@ void ToolDiv::processElement(Element *element)
     {
         processElement( element->GetChild(child_index));
     }
+}
+
+void ToolDiv::insertDiv(Element *element)
+{
+    Element *div;
+
+    div = new Element("div");
+    div->SetAttribute("style", "width:85%; height:66px;");
+
+    ActionManager::getInstance().applyNew(new Action(Rockete::getInstance().getCurrentDocument(), element, div));
+    Rockete::getInstance().selectElement(div);
 }

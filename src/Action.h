@@ -15,11 +15,13 @@ public:
     {
         ActionUnknown,
         ActionSetProperty,
-        ActionSetAttribute
+        ActionSetAttribute,
+        ActionInsertElement
     };
 
     Action(OpenedDocument *document, Element *element, const QString &variable_name, const QString &current_value, const QString &new_value);
     Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property * property, const QString &current_value, const QString &new_value);
+    Action(OpenedDocument *document, Element *element, Element *element_to_insert);
 
     Type getType() const { return type; };
 
@@ -33,6 +35,7 @@ private:
     QString newValue;
     OpenedFile *targetFile;
     Element *targetElement;
+    Element *elementToInsert;
     PropertyTreeModel::Property * targetProperty;
     Type type;
     int addedLineNumber;

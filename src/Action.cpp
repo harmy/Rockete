@@ -26,6 +26,15 @@ Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Pr
     addedLineNumber = -1;
 }
 
+Action::Action(OpenedDocument *document, Element *element, Element *element_to_insert)
+{
+    type = ActionInsertElement;
+    targetElement = element;
+    targetFile = document;
+    elementToInsert = element_to_insert;
+    addedLineNumber = -1;
+}
+
 void Action::apply()
 {
     switch(type)
@@ -70,10 +79,18 @@ void Action::apply()
 
         }
         break;
+
     case ActionSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), newValue.toStdString().c_str());
         dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
+
+    case ActionInsertElement:
+        targetElement->AppendChild(elementToInsert);
+        dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
+        Rockete::getInstance().repaintRenderingView();
+        break;
+
     default:
         break;
     }
@@ -121,10 +138,22 @@ void Action::unapply()
             }
         }
         break;
+
     case ActionSetAttribute:
         targetElement->SetAttribute(variableName.toStdString().c_str(), oldValue.toStdString().c_str());
         dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
         break;
+
+    case ActionInsertElement:
+        targetElement->RemoveChild(elementToInsert);
+        if(dynamic_cast<OpenedDocument*>(targetFile)->selectedElement == elementToInsert)
+        {
+            dynamic_cast<OpenedDocument*>(targetFile)->selectedElement = NULL;
+        }
+        dynamic_cast<OpenedDocument*>(targetFile)->regenerateBodyContent();
+        Rockete::getInstance().repaintRenderingView();
+        break;
+
     default:
         break;
     }
