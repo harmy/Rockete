@@ -8,6 +8,7 @@
 #include "RocketSystem.h"
 #include "GraphicSystem.h"
 #include "RocketHelper.h"
+#include "ToolManager.h"
 
 // Public:
 
@@ -99,6 +100,8 @@ void RenderingView::paintGL()
     {
         return;
     }
+
+    ToolManager::getInstance().getCurrentTool()->onRender();
 
     glEnable(GL_BLEND);
 

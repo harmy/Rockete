@@ -32,6 +32,7 @@ public:
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
     OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
+    OpenedDocument *getCurrentDocument() { return currentDocument; }
 
 protected:
     virtual void keyPressEvent(QKeyEvent * e);

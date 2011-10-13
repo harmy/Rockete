@@ -243,9 +243,8 @@ unsigned char * GraphicSystem::loadOther(const char * path, Rocket::Core::Vector
 
     if( image.load( path ) )
     {
+        image = image.rgbSwapped();
         image.convertToFormat(QImage::Format_ARGB32);
-
-        // :TODO: Convert to RGBA8
 
         texture_dimensions.x = image.width();
         texture_dimensions.y = image.height();

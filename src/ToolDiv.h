@@ -8,6 +8,10 @@ class ToolDiv : public Tool
 public:
     ToolDiv();
     virtual void onElementClicked(Element *element);
+    virtual void onRender();
+
+private:
+    void processElement(Element *element);
 };
 
 

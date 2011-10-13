@@ -21,6 +21,7 @@ public:
     void onSelect();
     void setAction(QAction *_action) { action = _action; }
     virtual void onElementClicked(Element *){}
+    virtual void onRender(){}
 
 public slots:
     void onActionTriggered();

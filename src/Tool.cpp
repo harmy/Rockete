@@ -30,6 +30,8 @@ void Tool::onSelect()
         last_added_widget = widget;
         Rockete::getInstance().getCurrentToolTab()->layout()->addWidget(widget);
     }
+
+    Rockete::getInstance().repaintRenderingView();
 }
 
 void Tool::onActionTriggered()
