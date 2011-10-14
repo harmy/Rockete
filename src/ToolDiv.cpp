@@ -8,24 +8,33 @@
 #include <QLabel>
 #include <QLabel>
 #include <QToolBar>
+#include <QVBoxLayout>
 
 ToolDiv::ToolDiv()
 : Tool()
 {
+    QVBoxLayout *layout;
     QToolBar *tool_bar;
+
     name = "Div tool";
     imageName = ":/images/tool_div.png";
 
-    widget = tool_bar = new QToolBar();
-    tool_bar->setOrientation(Qt::Vertical);
+    widget = new QWidget();
+    layout = new QVBoxLayout();
+    layout->setSizeConstraint(QLayout::SetMinimumSize);
 
-    tool_bar->addWidget(new QLabel("Insert:"));
-
+    tool_bar = new QToolBar();
     tool_bar->addAction(QIcon(), "Insert div", this, SLOT(insertDiv()));
+    layout->addWidget(new QLabel("Insert:"));
+    layout->addWidget(tool_bar);
 
-    tool_bar->addWidget(new QLabel("Modify:"));
-
+    tool_bar = new QToolBar();
     tool_bar->addAction(QIcon(), "Expand width", this, SLOT(expandWidth()));
+    layout->addWidget(new QLabel("Modify:"));
+    layout->addWidget(tool_bar);
+
+
+    widget->setLayout(layout);
 }
 
 void ToolDiv::onElementClicked(Element *_element)

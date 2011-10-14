@@ -1,18 +1,18 @@
 <template name="window" content="content">
 <head>
-	<link type="text/rcss" href="rkt.rcss"/>
-	<link type="text/rcss" href="invader.rcss"/>
+    <link type="text/rcss" href="rkt.rcss"/>
+    <link type="text/rcss" href="invader.rcss"/>
 </head>
 <body class="window">
-	<div id="title_bar">
-		<handle move_target="#document">
-			<div id="icon"></div>
-			<span id="title">Title</span>
-		</handle>
-	</div>
-	<div id="window">
-		<div id="content">
-		</div>
-	</div>
+    <div id="title_bar">
+        <handle move_target="#document">
+            <div id="icon"></div>
+            <span id="title">Title</span>
+        </handle>
+    </div>
+    <div id="window">
+        <div id="content">
+        </div>
+    </div>
 </body>
 </template>

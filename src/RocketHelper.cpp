@@ -58,6 +58,8 @@ void RocketHelper::replaceInlinedProperty(Element *element,const QString &proper
 
     properties = (element->GetAttribute<Rocket::Core::String>("style","")).CString();
 
+    // :TODO: Ensure found property is the right one.
+
     property_index = properties.indexOf(property_name);
     Q_ASSERT(property_index != -1);
     start_index = properties.indexOf(':',property_index);
