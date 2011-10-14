@@ -16,13 +16,9 @@ ActionSetInlineProperty::ActionSetInlineProperty(OpenedDocument *document, Eleme
 void ActionSetInlineProperty::apply()
 {
     if (!propertyExists)
-    {
         RocketHelper::addInlinedProperty(targetElement, propertyName, newValue);
-    }
     else
-    {
         RocketHelper::replaceInlinedProperty(targetElement, propertyName, newValue);
-    }
 
     targetDocument->regenerateBodyContent();
     Rockete::getInstance().repaintRenderingView();
@@ -31,13 +27,9 @@ void ActionSetInlineProperty::apply()
 void ActionSetInlineProperty::unapply()
 {
     if (!propertyExists)
-    {
         RocketHelper::removeInlinedProperty(targetElement, propertyName);
-    }
     else
-    {
         RocketHelper::replaceInlinedProperty(targetElement, propertyName, oldValue);
-    }
 
     targetDocument->regenerateBodyContent();
     Rockete::getInstance().repaintRenderingView();

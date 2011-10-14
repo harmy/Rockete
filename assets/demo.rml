@@ -50,5 +50,5 @@ Clicker sur le bouton ( <img height="25" src="present.tga" width="25" /> ) pour 
         <p /><img class="fliptest" height="256" src="present.tga" width="256" /><p /><div class="monstyle" id="test">
         block testfdgdfgdfgdfdfgdfgdfgdfgfg
 <br />test blabla
-<div style="width:85%; height:66px;" /></div><div style="width:166px;" id="emptyblock" /><img height="256" src="present.tga" width="256" /><p /><img height="256" src="present.tga" width="256" /><p /><img height="256" src="present.tga" width="256" /><p /></body>
+<div style="width:50px; height:50px;display:inline-block;float:right;" >Hehe</div><div style="width:50px; height:50px;display:inline-block;float:right;" /><div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /></div><div id="emptyblock" style="width:166px;" /><p /></body>
 </rml>

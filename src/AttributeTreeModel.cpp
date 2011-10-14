@@ -15,33 +15,31 @@ AttributeTreeModel::~AttributeTreeModel()
 
 QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole))
+    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole))
         return QVariant();
 
-    if(index.row() == propertyNameList.size())
-    {
+    if (index.row() == propertyNameList.size()) {
         if(index.column() == 0)
             return QVariant("Add...");
         else
             return QVariant();
     }
 
-    if(index.column() == 0)
+    if (index.column() == 0)
         return QVariant(propertyNameList[index.row()]); 
 
-    if(index.column() == 1)
+    if (index.column() == 1)
         return QVariant(propertyValueList[index.row()]); 
 
     return QVariant("Impossible");
 }
 
-bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool AttributeTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(role != Qt::EditRole || !index.isValid())
+    if (role != Qt::EditRole || !index.isValid())
         return false;
 
-    if(index.column() == 1)
-    {
+    if (index.column() == 1) {
         element->SetAttribute(propertyNameList[index.row()].toStdString().c_str(), value.toByteArray().data());
 
         ActionManager::getInstance().applyNew(new Action(document, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
@@ -50,8 +48,7 @@ bool AttributeTreeModel::setData(const QModelIndex & index, const QVariant & val
         Rockete::getInstance().repaintRenderingView();
         emit dataChanged(index,index);
     }
-    else
-    {
+    else {
         // :TODO: Check if already exists.
         element->SetAttribute(value.toByteArray().data(), "");
         propertyValueList.push_back("");
@@ -68,7 +65,7 @@ Qt::ItemFlags AttributeTreeModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return 0;
 
-    if(index.row() == propertyNameList.size() || index.column() == 1 )
+    if (index.row() == propertyNameList.size() || index.column() == 1)
         return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
@@ -76,8 +73,7 @@ Qt::ItemFlags AttributeTreeModel::flags(const QModelIndex &index) const
 
 QVariant AttributeTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         if( section == 0 )
             return QVariant("Name");
 
@@ -98,7 +94,7 @@ QModelIndex AttributeTreeModel::index(int row, int column, const QModelIndex &pa
 
 QModelIndex AttributeTreeModel::parent(const QModelIndex &index) const
 {
-    if(!index.isValid() || index.internalId() == -1)
+    if (!index.isValid() || index.internalId() == -1)
         return QModelIndex();
 
     return createIndex(index.internalId(),0,-1);
@@ -117,7 +113,7 @@ int AttributeTreeModel::columnCount(const QModelIndex &/*parent*/) const
     return 2;
 }
 
-void AttributeTreeModel::setupData(OpenedDocument *_document, Element * _element)
+void AttributeTreeModel::setupData(OpenedDocument *_document, Element *_element)
 {
     Rocket::Core::String name, value;
     int index = 0;
@@ -128,10 +124,8 @@ void AttributeTreeModel::setupData(OpenedDocument *_document, Element * _element
     propertyNameList.clear();
     propertyValueList.clear();
 
-    if(element)
-    {
-        while(element->IterateAttributes(index, name, value))
-        {
+    if (element) {
+        while (element->IterateAttributes(index, name, value)) {
             propertyNameList.push_back(name.CString());
             propertyValueList.push_back(value.CString());
         }

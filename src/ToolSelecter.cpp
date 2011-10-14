@@ -25,7 +25,5 @@ void ToolSelecter::onElementClicked(Element *element)
 void ToolSelecter::onRender()
 {
     if(Rockete::getInstance().getCurrentDocument() && Rockete::getInstance().getCurrentDocument()->selectedElement)
-    {
         RocketHelper::highlightElement(Rockete::getInstance().getCurrentDocument()->selectedElement);
-    }
 }

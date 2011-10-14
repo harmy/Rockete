@@ -3,6 +3,7 @@
 
 #include <Rocket/Core.h>
 #include <QString>
+class OpenedDocument;
 
 typedef Rocket::Core::Element Element;
 typedef Rocket::Core::ElementDocument RMLDocument;
@@ -21,6 +22,8 @@ public:
     static void addInlinedProperty(Element *element, const QString &property_name, const QString &property_value);
     static void removeInlinedProperty(Element *element, const QString &property_name);
     static bool getInlinedProperty(QString & property_value, Element *element, const QString &property_name);
+    static void incrementInlinedDimensions(OpenedDocument *document, Element *element, const Vector2f &value);
+    static Vector2f getBottomRightPosition(Element *element);
 };
 
 #endif

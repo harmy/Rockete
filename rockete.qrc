@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/tool_image.png</file>
     <file>images/window_icon.png</file>
     <file>images/zoom_in.png</file>
     <file>images/zoom_out.png</file>

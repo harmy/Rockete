@@ -19,8 +19,7 @@ struct LocalScreenSizeItem
         height = _height;
         displayedString = QString::number(width) + "x" + QString::number(height);
 
-        if(text)
-        {
+        if (text) {
             displayedString += " (";
             displayedString += text;
             displayedString += ")";
@@ -33,7 +32,7 @@ struct LocalScreenSizeItem
 };
 
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags), currentDocument(NULL)
+: QMainWindow(parent, flags), currentDocument(NULL)
 {
     instance = this;
 
@@ -94,10 +93,9 @@ void Rockete::fillPropertyView()
     ui.propertyTreeView->expandAll();
 }
 
-void Rockete::selectElement(Element * element)
+void Rockete::selectElement(Element *element)
 {
-    if(element != currentDocument->selectedElement)
-    {
+    if(element != currentDocument->selectedElement) {
         currentDocument->selectedElement = element;
         renderingView->repaint();
         fillAttributeView();
@@ -107,8 +105,7 @@ void Rockete::selectElement(Element * element)
 
 void Rockete::clear()
 {
-    for(int i=0;i<openedFileList.size();++i)
-    {
+    for (int i=0;i<openedFileList.size();++i) {
         delete openedFileList[i];
     }
 
@@ -121,8 +118,7 @@ void Rockete::clear()
 
 void Rockete::reloadCurrentDocument()
 {
-    if(currentDocument)
-    {
+    if (currentDocument) {
         // :TODO: Clean this part.
         renderingView->changeCurrentDocument(NULL);
         currentDocument->selectedElement = NULL;
@@ -135,12 +131,9 @@ void Rockete::reloadCurrentDocument()
 
 OpenedDocument *Rockete::getDocumentFromTabIndex(const int tab_index)
 {
-    for (int i = 0; i < documentList.size(); ++i)
-    {
-        if(documentList[i]->tabIndex == tab_index)
-        {
+    for (int i = 0; i < documentList.size(); ++i) {
+        if (documentList[i]->tabIndex == tab_index)
             return documentList[i];
-        }
     }
 
     return NULL;
@@ -148,12 +141,9 @@ OpenedDocument *Rockete::getDocumentFromTabIndex(const int tab_index)
 
 OpenedStyleSheet *Rockete::getStyleSheetFromTabIndex(const int tab_index)
 {
-    for (int i = 0; i < styleSheetList.size(); ++i)
-    {
-        if(styleSheetList[i]->tabIndex == tab_index)
-        {
+    for (int i = 0; i < styleSheetList.size(); ++i) {
+        if (styleSheetList[i]->tabIndex == tab_index)
             return styleSheetList[i];
-        }
     }
 
     return NULL;
@@ -161,12 +151,9 @@ OpenedStyleSheet *Rockete::getStyleSheetFromTabIndex(const int tab_index)
 
 OpenedDocument *Rockete::getDocumentFromFileName(const char * name)
 {
-    for (int i = 0; i < documentList.size(); ++i)
-    {
-        if(documentList[i]->fileInfo.fileName() == name)
-        {
+    for (int i = 0; i < documentList.size(); ++i) {
+        if (documentList[i]->fileInfo.fileName() == name)
             return documentList[i];
-        }
     }
 
     return NULL;
@@ -174,12 +161,9 @@ OpenedDocument *Rockete::getDocumentFromFileName(const char * name)
 
 OpenedStyleSheet *Rockete::getStyleSheetFromFileName(const char * name)
 {
-    for (int i = 0; i < styleSheetList.size(); ++i)
-    {
-        if(styleSheetList[i]->fileInfo.fileName() == name)
-        {
+    for (int i = 0; i < styleSheetList.size(); ++i) {
+        if (styleSheetList[i]->fileInfo.fileName() == name)
             return styleSheetList[i];
-        }
     }
 
     return NULL;
@@ -189,16 +173,12 @@ OpenedFile *Rockete::getOpenedFile(const char * file_path, const bool try_to_ope
 {
     QFileInfo file_info(file_path);
 
-    for (int i = 0; i < openedFileList.size(); ++i)
-    {
-        if(openedFileList[i]->fileInfo.fileName() == file_info.fileName())
-        {
+    for (int i = 0; i < openedFileList.size(); ++i) {
+        if (openedFileList[i]->fileInfo.fileName() == file_info.fileName())
             return openedFileList[i];
-        }
     }
 
-    if (try_to_open)
-    {
+    if (try_to_open) {
         openFile(file_info.filePath());
         return getOpenedFile(file_path);
     }
@@ -208,12 +188,9 @@ OpenedFile *Rockete::getOpenedFile(const char * file_path, const bool try_to_ope
 
 OpenedFile *Rockete::getOpenedFileFromTabIndex(const int tab_index)
 {
-    for (int i = 0; i < openedFileList.size(); ++i)
-    {
+    for (int i = 0; i < openedFileList.size(); ++i) {
         if (openedFileList[i]->tabIndex == tab_index)
-        {
             return openedFileList[i];
-        }
     }
 
     return NULL;
@@ -226,18 +203,14 @@ void Rockete::menuOpenClicked()
     QString file_path = QFileDialog::getOpenFileName(this, tr("Open libRocket file..."), "", tr("libRocket files (*.rml *.rcss)"));
 
     if (!file_path.isEmpty())
-    {
         openFile(file_path);
-    }
 }
 
 void Rockete::menuSaveClicked()
 {
-    OpenedFile * current_file;
+    OpenedFile *current_file;
     if ((current_file = getOpenedFileFromTabIndex(ui.codeTabWidget->currentIndex())))
-    {
         current_file->save();
-    }
 }
 
 void Rockete::menuCloseClicked()
@@ -248,8 +221,7 @@ void Rockete::menuCloseClicked()
 void Rockete::codeTabChanged( int index )
 {
     OpenedDocument *document;
-    if ((document = getDocumentFromTabIndex(index)))
-    {
+    if ((document = getDocumentFromTabIndex(index))) {
         renderingView->changeCurrentDocument(document);
         currentDocument = document;
     }
@@ -285,24 +257,18 @@ void Rockete::menuSetScreenSizeClicked()
     item_list.push_back(new LocalScreenSizeItem(1600, 1024));
     item_list.push_back(new LocalScreenSizeItem(1920, 1080, "HD"));
 
-    for (int i=0; i<item_list.size(); ++i)
-    {
+    for (int i=0; i<item_list.size(); ++i) {
         LocalScreenSizeItem *item = item_list[i];
         item_string_list << item->displayedString;
         if(item->width == RocketSystem::getInstance().getContext()->GetDimensions().x && item->height == RocketSystem::getInstance().getContext()->GetDimensions().y)
-        {
             index_to_select = i;
-        }
     }
 
     bool ok;
     QString item_selected = QInputDialog::getItem(this, tr("Set screen size..."), tr("Size: "), item_string_list, index_to_select, false, &ok);
-    if (ok && !item_selected.isEmpty())
-    {
-        foreach(LocalScreenSizeItem * item, item_list)
-        {
-            if(item_selected == item->displayedString)
-            {
+    if (ok && !item_selected.isEmpty()) {
+        foreach (LocalScreenSizeItem * item, item_list) {
+            if (item_selected == item->displayedString) {
                 RocketSystem::getInstance().createContext(item->width, item->height);
                 reloadCurrentDocument();
                 break;
@@ -310,8 +276,7 @@ void Rockete::menuSetScreenSizeClicked()
         }
     }
 
-    foreach (LocalScreenSizeItem * item, item_list)
-    {
+    foreach (LocalScreenSizeItem * item, item_list) {
        delete item;
     }
 }
@@ -324,9 +289,8 @@ void Rockete::menuLoadFonts()
         NULL,
         "OTF files (*.otf)"
         );
-        
-    foreach (const QString & file, files)
-    {
+
+    foreach (const QString & file, files) {
         RocketSystem::getInstance().loadFont(file);
     }
 }
@@ -345,12 +309,8 @@ void Rockete::menuRedoClicked()
     fillAttributeView();
 }
 
-void Rockete::propertyViewClicked(const QModelIndex & index)
+void Rockete::propertyViewClicked(const QModelIndex &/*index*/)
 {
-    if(index.internalId() != -1 && index.column() == 1)
-    {
-        //ui.propertyTreeView->model()->setData(index, QVariant("test"), Qt::DisplayRole);
-    }
 }
 
 // Protected:
@@ -362,27 +322,25 @@ void Rockete::keyPressEvent(QKeyEvent *event)
 
 // Private:
 
-void Rockete::openFile(const QString & file_path)
+void Rockete::openFile(const QString &file_path)
 {
     QFileInfo file_info(file_path);
 
-    if(file_info.suffix() == "rml")
-    {
+    if (file_info.suffix() == "rml") {
         openDocument(file_path.toStdString().c_str());
         renderingView->changeCurrentDocument(documentList.last());
         currentDocument = documentList.last();
         ui.codeTabWidget->setCurrentIndex(currentDocument->tabIndex);
     }
-    else if(file_info.suffix() == "rcss")
-    {
+    else if (file_info.suffix() == "rcss") {
         openStyleSheet(file_path.toStdString().c_str());
         ui.codeTabWidget->setCurrentIndex(styleSheetList.last()->tabIndex);
     }
 }
 
-void Rockete::openDocument(const char * file_path)
+void Rockete::openDocument(const char *file_path)
 {
-    OpenedDocument * new_document;
+    OpenedDocument *new_document;
     QFileInfo file_info(file_path);
 
     new_document = new OpenedDocument;
@@ -390,10 +348,8 @@ void Rockete::openDocument(const char * file_path)
     // :TODO: Check if document exists.
     new_document->rocketDocument = RocketHelper::loadDocument(file_path);
 
-    if(documentList.isEmpty() && styleSheetList.isEmpty())
-    {
+    if (documentList.isEmpty() && styleSheetList.isEmpty())
         ui.codeTabWidget->clear();
-    }
 
     new_document->fileInfo = file_info;
 
@@ -405,17 +361,15 @@ void Rockete::openDocument(const char * file_path)
 
 }
 
-void Rockete::openStyleSheet(const char * file_path)
+void Rockete::openStyleSheet(const char *file_path)
 {
-    OpenedStyleSheet * new_style_sheet;
+    OpenedStyleSheet *new_style_sheet;
     QFileInfo file_info(file_path);
 
     new_style_sheet = new OpenedStyleSheet;
 
-    if(documentList.isEmpty() && styleSheetList.isEmpty())
-    {
+    if (documentList.isEmpty() && styleSheetList.isEmpty())
         ui.codeTabWidget->clear();
-    }
 
     new_style_sheet->fileInfo = file_info;
 

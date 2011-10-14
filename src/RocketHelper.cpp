@@ -3,6 +3,11 @@
 #include <QtCore>
 #include <Rocket/Core.h>
 #include "RocketSystem.h"
+#include "ActionManager.h"
+#include "ActionGroup.h"
+#include "ActionSetInlineProperty.h"
+#include <QString>
+#include "OpenedDocument.h"
 
 RMLDocument * RocketHelper::loadDocument(const char * file_path)
 {
@@ -21,7 +26,7 @@ void RocketHelper::highlightElement(Element * element)
 
     for (int i = 0; i < element->GetNumBoxes(); i++)
     {
-        const Rocket::Core::Box element_box = element->GetBox(i);
+        const Rocket::Core::Box & element_box = element->GetBox(i);
 
         // Content area:
         GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), Color4b(158, 214, 237, 128));
@@ -43,7 +48,7 @@ void RocketHelper::drawBoxAroundElement(Element *element, const Color4b &color)
 
     for (int i = 0; i < element->GetNumBoxes(); i++)
     {
-        const Rocket::Core::Box element_box = element->GetBox(i);
+        const Rocket::Core::Box & element_box = element->GetBox(i);
 
         GraphicSystem::drawBox(element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT), element_box.GetSize(), color, false);
     }
@@ -131,4 +136,47 @@ bool RocketHelper::getInlinedProperty(QString & property_value, Element *element
     }
 
     return false;
+}
+
+void RocketHelper::incrementInlinedDimensions(OpenedDocument *document, Element *element, const Vector2f &value)
+{
+    float width;
+    float height;
+
+    width = element->GetProperty<float>("width");
+    height = element->GetProperty<float>("height");
+
+    width += value.x;
+    height += value.y;
+
+    // :TODO: Do something about minimum values.
+
+    if (width < 10)
+        width = 10;
+
+    if (height < 10)
+        height = 10;
+
+    ActionGroup *actionGroup = new ActionGroup();
+
+    actionGroup->add(new ActionSetInlineProperty(document,element,"width", QString::number(width)));
+    actionGroup->add(new ActionSetInlineProperty(document,element,"height", QString::number(height)));
+
+    ActionManager::getInstance().applyNew(actionGroup);
+}
+
+Vector2f RocketHelper::getBottomRightPosition(Element *element)
+{
+    Vector2f result;
+
+    result.x = 0.0f;
+    result.y = 0.0f;
+
+    for (int i = 0; i < element->GetNumBoxes(); i++)
+    {
+        const Rocket::Core::Box & element_box = element->GetBox(i);
+        result = element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT) + element_box.GetSize();
+    }
+
+    return result;
 }

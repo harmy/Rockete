@@ -22,15 +22,12 @@ bool RocketSystem::initialize()
 
 bool RocketSystem::createContext(const int width, const int height)
 {
-    if(context)
-    {
+    if (context)
         context->RemoveReference();
-    }
 
     context = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(width, height));
 
-    if(context == NULL)
-    {
+    if (context == NULL) {
         Rocket::Core::Shutdown();
         return false;
     }
@@ -56,18 +53,17 @@ void RocketSystem::loadFonts(const char *directory_path)
     prefix = directory_path;
     prefix += "/";
 
-    foreach(const QString &file_name, file_list)
-    {
+    foreach(const QString &file_name, file_list) {
         loadFont(prefix + file_name);
     }
 }
 
-void RocketSystem::loadFont(const QString & file)
+void RocketSystem::loadFont(const QString &file)
 {
     Rocket::Core::FontDatabase::LoadFontFace(file.toStdString().c_str());
 }
 
-void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event & event) 
+void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event &event) 
 {
     ToolManager::getInstance().getCurrentTool()->onElementClicked(event.GetTargetElement());
 }

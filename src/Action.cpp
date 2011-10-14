@@ -7,7 +7,7 @@ Action::Action()
 {
 }
 
-Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property * property, const QString &current_value, const QString &new_value)
+Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property *property, const QString &current_value, const QString &new_value)
 {
     type = ActionTypeSetProperty;
     targetElement = element;
@@ -18,7 +18,7 @@ Action::Action(OpenedDocument *document, Element *element, PropertyTreeModel::Pr
     addedLineNumber = -1;
 }
 
-Action::Action(OpenedDocument * document, Element * element, const QString & variable_name, const QString & current_value, const QString & new_value)
+Action::Action(OpenedDocument *document, Element *element, const QString &variable_name, const QString &current_value, const QString &new_value)
 {
     type = ActionTypeSetAttribute;
     targetElement = element;

@@ -9,10 +9,8 @@
 class StyleSheet
 {
 public:
-    StyleSheet();
-    ~StyleSheet();
-
-    struct PropertyOwner{
+    struct PropertyOwner
+    {
         PropertyOwner() : ancester(NULL) {};
         ~PropertyOwner() { if(ancester) delete ancester; }
         PropertyOwner *ancester;
@@ -21,26 +19,26 @@ public:
         QString identifier;
         QString pseudoClassName;
     };
-
-    struct Property{
+    struct Property
+    {
         QString name;
         QString value;
     };
-
-    struct PropertyBlock{
+    struct PropertyBlock
+    {
         QList<PropertyOwner*> ownerList;
         QList<Property*> propertyList;
     };
-
-    bool parse(const QString & content);
+    StyleSheet();
+    ~StyleSheet();
+    bool parse(const QString &content);
     void clear();
-    bool findMatchingProperties(QList<PropertyBlock*> & result, const Element *element) const;
+    bool findMatchingProperties(QList<PropertyBlock*> &result, const Element *element) const;
 
 private:
-
     const Element *findDirectInheriter(const PropertyOwner *owner, const Element *element) const;
-    PropertyOwner *parseOwner(const QString & content);
-    Property *parseProperty(const QString & content);
+    PropertyOwner *parseOwner(const QString &content);
+    Property *parseProperty(const QString &content);
 
     QList<PropertyBlock*> propertyBlockList;
 };

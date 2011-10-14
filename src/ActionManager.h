@@ -14,7 +14,6 @@ public:
         static ActionManager instance;
         return instance;
     }
-
     void applyNew(Action * action);
     void applyPrevious();
     void applyNext();
@@ -22,7 +21,6 @@ public:
 private:
     QList<Action*> previousActionList;
     QList<Action*> nextActionList;
-
 };
 
 #endif

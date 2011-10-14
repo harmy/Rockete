@@ -14,7 +14,6 @@ public:
     void add(Action *action);
 
 private:
-
     QList<Action*> actionList;
 };
 

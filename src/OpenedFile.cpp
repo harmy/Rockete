@@ -37,7 +37,7 @@ QString OpenedFile::getLine(const int line_number)
     return lines[line_number];
 }
 
-int OpenedFile::findLineNumber(const QString & str, const int start_line_number)
+int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
 {
     QStringList lines;
 
@@ -45,18 +45,15 @@ int OpenedFile::findLineNumber(const QString & str, const int start_line_number)
 
     Q_ASSERT(start_line_number < lines.size());
 
-    for(int i=start_line_number; i<lines.size(); ++i)
-    {
+    for (int i=start_line_number; i<lines.size(); ++i) {
         if(lines[i].contains(str))
-        {
             return i;
-        }
     }
 
     return -1;
 }
 
-void OpenedFile::replaceLine(const int line_number, const QString & new_line)
+void OpenedFile::replaceLine(const int line_number, const QString &new_line)
 {
     QStringList lines;
 
@@ -74,7 +71,7 @@ void OpenedFile::replaceLine(const int line_number, const QString & new_line)
     textEdit->textCursor().setPosition(1);
 }
 
-int OpenedFile::insertLineBeforeBracket(const int start_line, const QString & new_line)
+int OpenedFile::insertLineBeforeBracket(const int start_line, const QString &new_line)
 {
     QStringList lines;
     int line_number;
@@ -83,12 +80,9 @@ int OpenedFile::insertLineBeforeBracket(const int start_line, const QString & ne
 
     Q_ASSERT(start_line < lines.size());
 
-    for(line_number=start_line;line_number<lines.size();++line_number)
-    {
+    for (line_number=start_line;line_number<lines.size();++line_number) {
         if(lines[line_number].indexOf('}') != -1)
-        {
             break;
-        }
     }
 
     lines.insert(line_number,new_line);
@@ -120,14 +114,13 @@ void OpenedFile::save()
 {
     QFile file(fileInfo.filePath());
 
-    if(file.open(QFile::WriteOnly|QFile::Truncate))
-    {
+    if (file.open(QFile::WriteOnly|QFile::Truncate)) {
         file.write(textEdit->toPlainText().toStdString().c_str());
         file.close();
     }
 }
 
-void OpenedFile::setTextEditContent(const QString & content)
+void OpenedFile::setTextEditContent(const QString &content)
 {
     textDocument->setPlainText(content);
     textEdit->setDocument(textDocument);

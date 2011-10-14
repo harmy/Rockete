@@ -40,7 +40,7 @@ void GraphicSystem::initialize()
     glLoadIdentity();
 }
 
-void GraphicSystem::resize( const int _width, const int _height )
+void GraphicSystem::resize(const int _width, const int _height)
 {
     width = _width;
     height = _height;
@@ -52,14 +52,13 @@ void GraphicSystem::resize( const int _width, const int _height )
     glLoadIdentity();
 }
 
-bool GraphicSystem::generateTexture(Rocket::Core::TextureHandle& texture_handle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& source_dimensions)
+bool GraphicSystem::generateTexture(Rocket::Core::TextureHandle &texture_handle, const Rocket::Core::byte *source, const Rocket::Core::Vector2i &source_dimensions)
 {
     GLuint texture_id = 0;
 
     glGenTextures(1, &texture_id);
 
-    if (texture_id == 0)
-    {
+    if (texture_id == 0) {
         printf("Failed to generate textures\n");
         return false;
     }
@@ -78,23 +77,17 @@ bool GraphicSystem::generateTexture(Rocket::Core::TextureHandle& texture_handle,
     return true;
 }
 
-bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle& texture_handle, Rocket::Core::Vector2i& texture_dimensions, const Rocket::Core::String& source)
+bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Rocket::Core::Vector2i &texture_dimensions, const Rocket::Core::String &source)
 {
-    unsigned char * bytes = NULL;
+    unsigned char *bytes = NULL;
 
-    if(source.Substring(source.Length() - 3 , 3 ) == "tga")
-    {
+    if (source.Substring(source.Length() - 3 , 3 ) == "tga")
         bytes = loadTGA(source.CString(), texture_dimensions);
-    }
     else
-    {
         bytes = loadOther(source.CString(), texture_dimensions);
-    }
 
-    if(!bytes)
-    {
+    if (!bytes)
         return false;
-    }
 
     bool success = generateTexture(texture_handle, bytes, texture_dimensions);
 
@@ -126,7 +119,7 @@ void GraphicSystem::putYAxisVertices(const float x)
     glVertex2f(x,6666.0f);
 }
 
-void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, const Color4b& color, const bool filled)
+void GraphicSystem::drawBox(const Vector2f &origin, const Vector2f &dimensions, const Color4b &color, const bool filled)
 {
     glColor4ub(color.red, color.green, color.blue, color.alpha);
     glBegin(filled ? GL_POLYGON : GL_LINE_LOOP);
@@ -137,49 +130,39 @@ void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, 
     glEnd();
 }
 
-void GraphicSystem::drawBox(const Vector2f& origin, const Vector2f& dimensions, const Vector2f& hole_origin, const Vector2f& hole_dimensions, const Color4b& color)
+void GraphicSystem::drawBox(const Vector2f &origin, const Vector2f &dimensions, const Vector2f &hole_origin, const Vector2f &hole_dimensions, const Color4b &color)
 {
     // Top box.
     float top_y_dimensions = hole_origin.y - origin.y;
-    if(top_y_dimensions > 0)
-    {
+    if (top_y_dimensions > 0)
         drawBox(origin, Vector2f(dimensions.x, top_y_dimensions), color);
-    }
 
     // Bottom box.
     float bottom_y_dimensions = (origin.y + dimensions.y) - (hole_origin.y + hole_dimensions.y);
-    if(bottom_y_dimensions > 0)
-    {
+    if (bottom_y_dimensions > 0)
         drawBox(Vector2f(origin.x, hole_origin.y + hole_dimensions.y), Vector2f(dimensions.x, bottom_y_dimensions), color);
-    }
 
     //Left box.
     float left_x_dimensions = hole_origin.x - origin.x;
     if (left_x_dimensions > 0)
-    {
         drawBox(Vector2f(origin.x, hole_origin.y), Vector2f(left_x_dimensions, hole_dimensions.y), color);
-    }
 
     //Right box.
     float right_x_dimensions = (origin.x + dimensions.x) - (hole_origin.x + hole_dimensions.x);
     if (right_x_dimensions > 0)
-    {
         drawBox(Vector2f(hole_origin.x + hole_dimensions.x, hole_origin.y), Vector2f(right_x_dimensions, hole_dimensions.y), color);
-    }
 }
 
 
 // Private:
 
-unsigned char * GraphicSystem::loadTGA(const char * path, Rocket::Core::Vector2i& texture_dimensions)
+unsigned char * GraphicSystem::loadTGA(const char *path, Rocket::Core::Vector2i &texture_dimensions)
 {
-    Rocket::Core::FileInterface* file_interface = Rocket::Core::GetFileInterface();
+    Rocket::Core::FileInterface *file_interface = Rocket::Core::GetFileInterface();
     Rocket::Core::FileHandle file_handle = file_interface->Open(path);
 
     if (!file_handle)
-    {
         return false;
-    }
 
     file_interface->Seek(file_handle, 0, SEEK_END);
     size_t buffer_size = file_interface->Tell(file_handle);
@@ -195,15 +178,13 @@ unsigned char * GraphicSystem::loadTGA(const char * path, Rocket::Core::Vector2i
     int color_mode = header.bitsPerPixel / 8;
     int image_size = header.width * header.height * 4; // We always make 32bit textures 
 
-    if (header.dataType != 2)
-    {
+    if (header.dataType != 2) {
         Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24/32bit uncompressed TGAs are supported.");
         return false;
     }
 
     // Ensure we have at least 3 colors
-    if (color_mode < 3)
-    {
+    if (color_mode < 3) {
         Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24 and 32bit textures are supported");
         return false;
     }
@@ -212,12 +193,10 @@ unsigned char * GraphicSystem::loadTGA(const char * path, Rocket::Core::Vector2i
     unsigned char* image_dest = new unsigned char[image_size];
 
     // Targa is BGR, swap to RGB and flip Y axis
-    for (long y = 0; y < header.height; y++)
-    {
+    for (long y = 0; y < header.height; y++) {
         long read_index = y * header.width * color_mode;
         long write_index = ((header.imageDescriptor & 32) != 0) ? read_index : (header.height - y - 1) * header.width * color_mode;
-        for (long x = 0; x < header.width; x++)
-        {
+        for (long x = 0; x < header.width; x++) {
             image_dest[write_index] = image_src[read_index+2];
             image_dest[write_index+1] = image_src[read_index+1];
             image_dest[write_index+2] = image_src[read_index];
@@ -239,13 +218,12 @@ unsigned char * GraphicSystem::loadTGA(const char * path, Rocket::Core::Vector2i
     return image_dest;
 }
 
-unsigned char * GraphicSystem::loadOther(const char * path, Rocket::Core::Vector2i& texture_dimensions)
+unsigned char * GraphicSystem::loadOther(const char *path, Rocket::Core::Vector2i &texture_dimensions)
 {
     QImage image;
     unsigned char * bytes;
 
-    if(image.load( path ))
-    {
+    if (image.load( path )) {
         image = image.rgbSwapped();
         image.convertToFormat(QImage::Format_ARGB32);
 
@@ -263,6 +241,7 @@ unsigned char * GraphicSystem::loadOther(const char * path, Rocket::Core::Vector
 }
 
 Vector2f GraphicSystem::scissorOffset;
-float GraphicSystem::scaleFactor=1.0f;
-int GraphicSystem::width, GraphicSystem::height;
+float GraphicSystem::scaleFactor = 1.0f;
+int GraphicSystem::width;
+int GraphicSystem::height;
 

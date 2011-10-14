@@ -9,25 +9,20 @@
 class RocketSystem : public Rocket::Core::SystemInterface
 {
 public:
-
     typedef Rocket::Core::Context Context;
-
     bool initialize();
     bool createContext(const int width, const int height);
-    void loadFonts(const char * directory_path);
-    void loadFont(const QString & file);
-
-    Context * getContext() 
+    void loadFonts(const char *directory_path);
+    void loadFont(const QString &file);
+    Context *getContext() 
     {
         return context;
     }
-
     static RocketSystem & getInstance()
     {
         static RocketSystem instance;
         return instance;
     }
-
     virtual float GetElapsedTime();
 
 private:
@@ -35,19 +30,17 @@ private:
     class EventListener : public Rocket::Core::EventListener
     {
     public:
-        EventListener() {
-        }
-
+        EventListener() {}
         virtual void ProcessEvent(Rocket::Core::Event & event);
-
-        virtual void OnDetach(Rocket::Core::Element *) {
+        virtual void OnDetach(Rocket::Core::Element *)
+        {
             delete this;
         }
     };
 
     RocketRenderInterface renderInterface;
-    Context * context;
-    EventListener * eventListener;
+    Context *context;
+    EventListener *eventListener;
 
 };
 

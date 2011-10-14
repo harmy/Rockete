@@ -21,17 +21,15 @@ RenderingView::RenderingView(QWidget *parent) : QGLWidget(parent)
     positionOffset.y=0;
 }
 
-void RenderingView::changeCurrentDocument(OpenedDocument * document)
+void RenderingView::changeCurrentDocument(OpenedDocument *document)
 {
-    if (currentDocument) {
+    if (currentDocument)
         currentDocument->rocketDocument->Hide();
-    }
 
     currentDocument = document;
 
-    if (document) {
+    if (document)
         document->rocketDocument->Show();
-    }
 
     repaint();
 }
@@ -65,7 +63,7 @@ void RenderingView::initializeGL()
 
 void RenderingView::resizeGL(int w, int h) 
 {
-    GraphicSystem::resize( w, h );
+    GraphicSystem::resize(w, h);
 }
 
 void RenderingView::paintGL() 

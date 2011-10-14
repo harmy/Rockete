@@ -13,16 +13,14 @@ ActionGroup::ActionGroup(QList<Action*> &action_list)
 
 void ActionGroup::apply()
 {
-    for (int i=0; i<actionList.size(); ++i)
-    {
+    for (int i=0; i<actionList.size(); ++i) {
         actionList[i]->apply();
     }
 }
 
 void ActionGroup::unapply()
 {
-    for (int i=actionList.size()-1; i>=0; --i)
-    {
+    for (int i=actionList.size()-1; i>=0; --i) {
         actionList[i]->unapply();
     }
 }

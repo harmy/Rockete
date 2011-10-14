@@ -5,7 +5,6 @@
 
 OpenedDocument::OpenedDocument() : selectedElement(NULL)
 {
-
 }
 
 void OpenedDocument::initialize()
@@ -22,7 +21,7 @@ void OpenedDocument::initialize()
     fillTextEdit();
 }
 
-void OpenedDocument::replaceInnerRMLFromId(const QString & tag_name, const QString & id, const QString & new_content)
+void OpenedDocument::replaceInnerRMLFromId(const QString &tag_name, const QString &id, const QString &new_content)
 {
     QString content;
     QString id_string;
@@ -48,7 +47,7 @@ void OpenedDocument::replaceInnerRMLFromId(const QString & tag_name, const QStri
     setTextEditContent(content);
 }
 
-void OpenedDocument::replaceInnerRMLFromTagName(const QString & tag_name, const QString & new_content)
+void OpenedDocument::replaceInnerRMLFromTagName(const QString &tag_name, const QString &new_content)
 {
     QString content;
     QString tag;
@@ -86,5 +85,5 @@ void OpenedDocument::regenerateBodyContent()
 
     content_element->GetInnerRML(rocket_string_content);
 
-    replaceInnerRMLFromTagName("body",QString(rocket_string_content.CString()));
+    replaceInnerRMLFromTagName("body", QString(rocket_string_content.CString()));
 }

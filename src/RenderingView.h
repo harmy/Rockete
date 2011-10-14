@@ -13,7 +13,7 @@ class RenderingView : public QGLWidget
 public:
     RenderingView(QWidget *parent = NULL);
     void keyPressEvent(QKeyEvent *event);
-    void changeCurrentDocument(OpenedDocument * document);
+    void changeCurrentDocument(OpenedDocument *document);
 
 public slots:
     void zoomIn();
@@ -34,13 +34,13 @@ private:
     inline Vector2f getMousePositionInDocument(const int x, const int y) const {
         Vector2f result;
 
-        result.x = x/GraphicSystem::scaleFactor-int(positionOffset.x);
-        result.y = y/GraphicSystem::scaleFactor-int(positionOffset.y);
+        result.x = x / GraphicSystem::scaleFactor - int(positionOffset.x);
+        result.y = y / GraphicSystem::scaleFactor - int(positionOffset.y);
 
         return result;
     }
 
-    OpenedDocument * currentDocument;
+    OpenedDocument *currentDocument;
     Vector2f positionOffset;
     Vector2f oldPositionOffset;
     Vector2f startMousePosition;

@@ -2,6 +2,7 @@
 
 #include "ToolSelecter.h"
 #include "ToolDiv.h"
+#include "ToolImage.h"
 
 ToolManager::ToolManager()
 {
@@ -17,6 +18,7 @@ void ToolManager::initialize()
 {
     toolList.push_back(new ToolSelecter());
     toolList.push_back(new ToolDiv());
+    toolList.push_back(new ToolImage());
 }
 
 void ToolManager::setup(QToolBar *tool_bar,QMenu *menu)
