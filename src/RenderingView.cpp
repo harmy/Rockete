@@ -21,17 +21,15 @@ RenderingView::RenderingView(QWidget *parent) : QGLWidget(parent)
     positionOffset.y=0;
 }
 
-void RenderingView::changeCurrentDocument( OpenedDocument * document )
+void RenderingView::changeCurrentDocument(OpenedDocument * document)
 {
-    if( currentDocument )
-    {
+    if (currentDocument) {
         currentDocument->rocketDocument->Hide();
     }
 
     currentDocument = document;
 
-    if( document )
-    {
+    if (document) {
         document->rocketDocument->Show();
     }
 
@@ -96,10 +94,8 @@ void RenderingView::paintGL()
     glScalef(GraphicSystem::scaleFactor,GraphicSystem::scaleFactor,1.0f);
     glTranslatef(positionOffset.x,positionOffset.y,0.0f);
 
-    if(!currentDocument)
-    {
+    if (!currentDocument)
         return;
-    }
 
     ToolManager::getInstance().getCurrentTool()->onRender();
 }
@@ -108,11 +104,10 @@ void RenderingView::mousePressEvent(QMouseEvent *event)
 {
     Rockete::getInstance().setFocus(Qt::MouseFocusReason);
 
-    if( !currentDocument )
+    if (!currentDocument)
         return;
 
-    if(event->button()==Qt::MidButton)
-    {
+    if (event->button()==Qt::MidButton) {
         startMousePosition.x = event->x();
         startMousePosition.y = event->y();
         oldPositionOffset = positionOffset;
@@ -127,59 +122,11 @@ void RenderingView::mousePressEvent(QMouseEvent *event)
     ToolManager::getInstance().getCurrentTool()->onMousePress(event->button(), mouse_position);
 
     repaint();
-
-    // :TODO: Remove following code.
-
-    /*
-    if(event->button() == Qt::RightButton)
-    {
-        if(currentDocument->selectedElement)
-        {
-            if(currentDocument->selectedElement && currentDocument->selectedElement->HasAttribute("width") && currentDocument->selectedElement->HasAttribute("height"))
-            {
-                Rocket::Core::Vector2f
-                    new_extent;
-
-                new_extent.x = event->x() - currentDocument->selectedElement->GetAbsoluteOffset().x;
-                new_extent.y = event->y() - currentDocument->selectedElement->GetAbsoluteOffset().y;
-
-                currentDocument->selectedElement->SetAttribute< float >("width", new_extent.x);
-                currentDocument->selectedElement->SetAttribute< float >("height", new_extent.y);
-
-                repaint();
-            }
-            else if( currentDocument->selectedElement->GetTagName() == "div" )
-            {
-                bool
-                    ok;
-                Rocket::Core::String
-                    content;
-
-                currentDocument->selectedElement->GetInnerRML( content );
-
-                QString text = QInputDialog::getText(
-                    this,
-                    "Edit div",
-                    "Content:",
-                    QLineEdit::Normal,
-                    content.CString(), 
-                    &ok
-                    );
-
-                if ( ok )
-                {
-                    currentDocument->selectedElement->SetInnerRML( text.toStdString().c_str() );
-                }
-            }
-        }
-    }
-    */
 }
 
 void RenderingView::mouseReleaseEvent(QMouseEvent *event) 
 {
-    if(event->button()==Qt::MidButton)
-    {
+    if (event->button()==Qt::MidButton) {
         itMustUpdatePositionOffset=false;
         return;
     }
@@ -195,8 +142,7 @@ void RenderingView::mouseReleaseEvent(QMouseEvent *event)
 
 void RenderingView::mouseMoveEvent(QMouseEvent *event) 
 {
-    if(itMustUpdatePositionOffset)
-    {
+    if (itMustUpdatePositionOffset) {
         mousePositionOffset.x=event->x()-startMousePosition.x;
         mousePositionOffset.y=event->y()-startMousePosition.y;
         positionOffset=oldPositionOffset+mousePositionOffset;
@@ -215,20 +161,17 @@ void RenderingView::mouseMoveEvent(QMouseEvent *event)
 
 void RenderingView::keyPressEvent(QKeyEvent* event) 
 {
-    if( !currentDocument )
+    if (!currentDocument)
         return;
 
-    switch(event->key()) 
-    {
-
+    switch (event->key()) {
     case Qt::Key_Escape:
         currentDocument->selectedElement = 0;
         repaint();
         break;
 
     case Qt::Key_Delete:
-        if( currentDocument->selectedElement )
-        {
+        if (currentDocument->selectedElement) {
             currentDocument->selectedElement->GetParentNode()->RemoveChild(currentDocument->selectedElement);
             Rockete::getInstance().unselectElement();
             repaint();

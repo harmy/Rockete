@@ -49,10 +49,14 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     ui.mainToolBar->addAction(ui.actionOpen);
     ui.mainToolBar->addAction(ui.actionSave);
     ui.mainToolBar->addSeparator();
-    ui.mainToolBar->addAction(ui.actionReload);
-    ui.mainToolBar->addSeparator();
     ui.mainToolBar->addAction(ui.actionUndo);
     ui.mainToolBar->addAction(ui.actionRedo);
+    ui.mainToolBar->addSeparator();
+    ui.mainToolBar->addAction(ui.actionReload);
+    ui.mainToolBar->addSeparator();
+    ui.mainToolBar->addAction(ui.actionZoom_in);
+    ui.mainToolBar->addAction(ui.actionZoom_out);
+
     ui.mainToolBar->addSeparator();
 
     ToolManager::getInstance().setup(ui.mainToolBar, ui.menuTools);
@@ -193,7 +197,7 @@ OpenedFile *Rockete::getOpenedFile(const char * file_path, const bool try_to_ope
         }
     }
 
-    if(try_to_open)
+    if (try_to_open)
     {
         openFile(file_info.filePath());
         return getOpenedFile(file_path);
@@ -206,7 +210,7 @@ OpenedFile *Rockete::getOpenedFileFromTabIndex(const int tab_index)
 {
     for (int i = 0; i < openedFileList.size(); ++i)
     {
-        if(openedFileList[i]->tabIndex == tab_index)
+        if (openedFileList[i]->tabIndex == tab_index)
         {
             return openedFileList[i];
         }
@@ -221,7 +225,7 @@ void Rockete::menuOpenClicked()
 {
     QString file_path = QFileDialog::getOpenFileName(this, tr("Open libRocket file..."), "", tr("libRocket files (*.rml *.rcss)"));
 
-    if(!file_path.isEmpty())
+    if (!file_path.isEmpty())
     {
         openFile(file_path);
     }
@@ -230,7 +234,7 @@ void Rockete::menuOpenClicked()
 void Rockete::menuSaveClicked()
 {
     OpenedFile * current_file;
-    if((current_file = getOpenedFileFromTabIndex(ui.codeTabWidget->currentIndex())))
+    if ((current_file = getOpenedFileFromTabIndex(ui.codeTabWidget->currentIndex())))
     {
         current_file->save();
     }
@@ -244,7 +248,7 @@ void Rockete::menuCloseClicked()
 void Rockete::codeTabChanged( int index )
 {
     OpenedDocument *document;
-    if((document = getDocumentFromTabIndex(index)))
+    if ((document = getDocumentFromTabIndex(index)))
     {
         renderingView->changeCurrentDocument(document);
         currentDocument = document;
@@ -253,7 +257,7 @@ void Rockete::codeTabChanged( int index )
 
 void Rockete::unselectElement()
 {
-    if(!currentDocument)
+    if (!currentDocument)
         return;
 
     currentDocument->selectedElement = NULL;
@@ -281,7 +285,7 @@ void Rockete::menuSetScreenSizeClicked()
     item_list.push_back(new LocalScreenSizeItem(1600, 1024));
     item_list.push_back(new LocalScreenSizeItem(1920, 1080, "HD"));
 
-    for(int i=0; i<item_list.size(); ++i)
+    for (int i=0; i<item_list.size(); ++i)
     {
         LocalScreenSizeItem *item = item_list[i];
         item_string_list << item->displayedString;
@@ -306,7 +310,7 @@ void Rockete::menuSetScreenSizeClicked()
         }
     }
 
-    foreach(LocalScreenSizeItem * item, item_list)
+    foreach (LocalScreenSizeItem * item, item_list)
     {
        delete item;
     }
@@ -321,7 +325,7 @@ void Rockete::menuLoadFonts()
         "OTF files (*.otf)"
         );
         
-    foreach(const QString & file, files)
+    foreach (const QString & file, files)
     {
         RocketSystem::getInstance().loadFont(file);
     }

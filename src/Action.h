@@ -13,12 +13,14 @@
 class Action
 {
 public:
-    enum Type{
+    enum Type
+    {
         ActionTypeUnknown,
         ActionTypeSetProperty,
         ActionTypeSetInlineProperty,
         ActionTypeSetAttribute,
-        ActionTypeInsertElement
+        ActionTypeInsertElement,
+        ActionTypeGroup
     };
     Action();
     Action(OpenedDocument *document, Element *element, PropertyTreeModel::Property * property, const QString &current_value, const QString &new_value);

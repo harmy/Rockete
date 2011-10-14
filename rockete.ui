@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Rockete - libRocket RML/RCSS file editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="rockete.qrc">
+    <normaloff>:/images/window_icon.png</normaloff>:/images/window_icon.png</iconset>
+  </property>
   <widget class="QWidget" name="horizontalLayoutWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
@@ -251,6 +255,10 @@
    </property>
   </action>
   <action name="actionZoom_in">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/zoom_in.png</normaloff>:/images/zoom_in.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom in</string>
    </property>
@@ -259,6 +267,10 @@
    </property>
   </action>
   <action name="actionZoom_out">
+   <property name="icon">
+    <iconset resource="rockete.qrc">
+     <normaloff>:/images/zoom_out.png</normaloff>:/images/zoom_out.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom out</string>
    </property>

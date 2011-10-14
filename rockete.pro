@@ -7,6 +7,7 @@ DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 RESOURCES = rockete.qrc
 SOURCES += \
  ./src/Action.cpp \
+ ./src/ActionGroup.cpp \
  ./src/ActionSetInlineProperty.cpp \
  ./src/ActionManager.cpp \
  ./src/AttributeTreeModel.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
  ./src/XMLHighlighter.cpp
 HEADERS += \
  ./src/Action.h \
+ ./src/ActionGroup.h \
  ./src/ActionManager.h \
  ./src/ActionSetInlineProperty.h \
  ./src/AttributeTreeModel.h \
@@ -72,10 +74,11 @@ win32 {
         -lwinspool \
         -lopengl32 \
         -lglu32 \
-        -lRocketCore_d
+        -lRocketCore_d \
+        -lRocketControls_d
 }
 unix {
-    LIBS += -lRocketCore
+    LIBS += -lRocketCore_d -lRocketControls_d
 }
 
 include(./src/modeltest/modeltest.pri)

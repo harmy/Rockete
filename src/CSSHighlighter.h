@@ -6,6 +6,7 @@
 class CssHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
+
 public:
     explicit CssHighlighter(QTextDocument *document);
 
@@ -14,8 +15,19 @@ protected:
     void highlight(const QString&, int, int, int/*State*/);
 
 private:
-    enum State { Selector, Property, Value, Pseudo, Pseudo1, Pseudo2, Quote, 
-                 MaybeComment, Comment, MaybeCommentEnd };
+    enum State 
+    {
+        Selector,
+        Property,
+        Value,
+        Pseudo,
+        Pseudo1,
+        Pseudo2,
+        Quote,
+        MaybeComment,
+        Comment,
+        MaybeCommentEnd
+    };
 };
 
 #endif

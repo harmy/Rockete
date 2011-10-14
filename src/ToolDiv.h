@@ -17,6 +17,8 @@ public:
 private slots:
     void insertDiv();
     void expandWidth();
+    void setInlineBlockDisplay();
+    void setRightAlignment();
 
 
 private:

@@ -5,7 +5,7 @@
 #include "OpenedDocument.h"
 #include "ActionManager.h"
 #include "ActionSetInlineProperty.h"
-#include <QLabel>
+#include "ActionGroup.h"
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
@@ -23,14 +23,18 @@ ToolDiv::ToolDiv()
     layout = new QVBoxLayout();
     layout->setSizeConstraint(QLayout::SetMinimumSize);
 
-    tool_bar = new QToolBar();
-    tool_bar->addAction(QIcon(), "Insert div", this, SLOT(insertDiv()));
     layout->addWidget(new QLabel("Insert:"));
+    tool_bar = new QToolBar();
+    tool_bar->addAction(QIcon(), "New div", this, SLOT(insertDiv()));
+    
     layout->addWidget(tool_bar);
 
+    layout->addWidget(new QLabel("Modify:"));
     tool_bar = new QToolBar();
     tool_bar->addAction(QIcon(), "Expand width", this, SLOT(expandWidth()));
-    layout->addWidget(new QLabel("Modify:"));
+    tool_bar->addAction(QIcon(), "inline-block", this, SLOT(setInlineBlockDisplay()));
+    tool_bar->addAction(QIcon(), "Right alignment", this, SLOT(setRightAlignment()));
+
     layout->addWidget(tool_bar);
 
 
@@ -41,10 +45,8 @@ void ToolDiv::onElementClicked(Element *_element)
 {
     Element *element = _element;
 
-    while(element)
-    {
-        if(element->GetTagName() == "div")
-        {
+    while (element) {
+        if (element->GetTagName() == "div") {
             Rockete::getInstance().selectElement(element);
             break;
         }
@@ -59,13 +61,11 @@ void ToolDiv::onRender()
 
     document = Rockete::getInstance().getCurrentDocument();
 
-    if(document)
-    {
+    if (document) {
         glLineWidth(2.0f);
         processElement(document->rocketDocument);
 
-        if(document->selectedElement)
-        {
+        if(document->selectedElement) {
             RocketHelper::drawBoxAroundElement(document->selectedElement, Color4b(10, 10, 240, 255));
         }
 
@@ -75,8 +75,7 @@ void ToolDiv::onRender()
 
 void ToolDiv::onMousePress(const Qt::MouseButton button, const Vector2f &/*position*/)
 {
-    if(button == Qt::RightButton)
-    {
+    if (button == Qt::RightButton) {
         insertDiv(Rockete::getInstance().getCurrentDocument()->selectedElement);
     }
 }
@@ -94,9 +93,33 @@ void ToolDiv::expandWidth()
 
     document = Rockete::getInstance().getCurrentDocument();
 
-    if(document && document->selectedElement)
-    {
+    if (document && document->selectedElement) {
         ActionManager::getInstance().applyNew(new ActionSetInlineProperty(document, document->selectedElement, "width", "100%"));
+    }
+}
+
+void ToolDiv::setInlineBlockDisplay()
+{
+    OpenedDocument *document;
+
+    document = Rockete::getInstance().getCurrentDocument();
+
+    if (document && document->selectedElement) {
+        ActionManager::getInstance().applyNew(new ActionSetInlineProperty(document, document->selectedElement, "display", "inline-block"));
+    }
+}
+
+void ToolDiv::setRightAlignment()
+{
+    OpenedDocument *document;
+
+    document = Rockete::getInstance().getCurrentDocument();
+
+    if (document && document->selectedElement) {
+        ActionGroup *actionGroup = new ActionGroup();
+        actionGroup->add(new ActionSetInlineProperty(document, document->selectedElement, "display", "inline-block"));
+        actionGroup->add(new ActionSetInlineProperty(document, document->selectedElement, "align", "right"));
+        ActionManager::getInstance().applyNew(actionGroup);
     }
 }
 
@@ -104,13 +127,11 @@ void ToolDiv::expandWidth()
 
 void ToolDiv::processElement(Element *element)
 {
-    if(element->GetTagName() == "div")
-    {
+    if(element->GetTagName() == "div") {
         RocketHelper::drawBoxAroundElement(element, Color4b(10, 240, 10, 255));
     }
 
-    for(int child_index=0; child_index < element->GetNumChildren(); ++child_index)
-    {
+    for (int child_index=0; child_index < element->GetNumChildren(); ++child_index) {
         processElement(element->GetChild(child_index));
     }
 }
