@@ -27,28 +27,14 @@
                 height: 50;
               background-color: red;
             }
-            .monstyle
-            {
-                width: auto;
-                padding: 10px 15px;
-
-                background-decorator: tiled-box;
-                background-top-left-image: invader.png 0px 0px 133px 140px;
-                background-top-right-image: invader.png 136px 0px 146px 140px;
-                background-top-image: invader.png stretch 134px 0px 135px 140px;
-                background-bottom-left-image: invader.png 0px 140px 11px 151px;
-                background-bottom-right-image: invader.png 136px 140px 146px 151px;
-                background-bottom-image: invader.png stretch 11px 140px 12px 151px;
-                background-left-image: invader.png stretch 0px 139px 10px 140px;
-                background-center-image: invader.png stretch 11px 139px 12px 140px;
-            }
         </style>
     </head>
     <body template="window">
         This is a sample.<br /><p />
 Clicker sur le bouton ( <img height="25" src="present.tga" width="25" /> ) pour ...
-        <p /><img class="fliptest" height="256" src="present.tga" width="256" /><p /><div class="monstyle" id="test">
+        <p /><img height="256" src="present.tga" width="256" color="red" /><p /><div class="monstyle" id="test">
         block testfdgdfgdfgdfdfgdfgdfgdfgfg
 <br />test blabla
-<div style="width:50px; height:50px;display:inline-block;float:right;" >Hehe</div><div style="width:50px; height:50px;display:inline-block;float:right;" /><div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /></div><div id="emptyblock" style="width:166px;" /><p /></body>
+<div style="width:50px; height:50px;display:inline-block;float:right;" >Hehe</div><div style="width:50px; height:50px;display:inline-block;float:right;" />
+<div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /><div style="width:50px; height:50px;" /></div><div id="emptyblock" style="width:166px;" /><p /></body>
 </rml>

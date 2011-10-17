@@ -323,8 +323,11 @@ void Rockete::attributeViewClicked(const QModelIndex &index)
 {
     if (index.column() == 2 && index.internalPointer()) {
         QString result;
-        reinterpret_cast<EditionHelper*>(index.internalPointer())->help(result);
-        ui.attributeTreeView->model()->setData(index.parent().child(index.row(),1), QVariant(result));
+        QModelIndex dataIndex;
+        if (reinterpret_cast<EditionHelper*>(index.internalPointer())->help(result)) {
+            dataIndex = ui.attributeTreeView->model()->index(index.row(), 1, QModelIndex());
+            ui.attributeTreeView->model()->setData(dataIndex, QVariant(result));
+        }
     }
 }
 
@@ -373,7 +376,6 @@ void Rockete::openDocument(const char *file_path)
 
     new_document->initialize();
     new_document->tabIndex = ui.codeTabWidget->addTab(new_document->textEdit, file_info.fileName());
-
 }
 
 void Rockete::openStyleSheet(const char *file_path)

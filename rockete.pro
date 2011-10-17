@@ -90,7 +90,7 @@ win32 {
         -lRocketControls_d
 }
 unix {
-    LIBS += -lRocketCore_d -lRocketControls_d
+    LIBS += -lRocketCore -lRocketControls
 }
 
 include(./src/modeltest/modeltest.pri)
