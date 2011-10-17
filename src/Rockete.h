@@ -46,6 +46,7 @@ public slots:
     void menuUndoClicked();
     void menuRedoClicked();
     void propertyViewClicked(const QModelIndex &index);
+    void attributeViewClicked(const QModelIndex &index);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

@@ -10,6 +10,7 @@
 #include "RocketSystem.h"
 #include "ActionManager.h"
 #include "ToolManager.h"
+#include "EditionHelper.h"
 
 struct LocalScreenSizeItem
 {
@@ -62,8 +63,6 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
 
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
-
-    ui.attributeTreeView->setModel(attributeTreeModel);
 }
 
 Rockete::~Rockete()
@@ -83,6 +82,8 @@ void Rockete::fillAttributeView()
     attributeTreeModel->setupData(currentDocument, currentDocument->selectedElement);
     ui.attributeTreeView->reset();
     ui.attributeTreeView->setModel(attributeTreeModel);
+    ui.attributeTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    ui.attributeTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void Rockete::fillPropertyView()
@@ -91,6 +92,8 @@ void Rockete::fillPropertyView()
     ui.propertyTreeView->reset();
     ui.propertyTreeView->setModel(propertyTreeModel);
     ui.propertyTreeView->expandAll();
+    ui.propertyTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    ui.propertyTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void Rockete::selectElement(Element *element)
@@ -314,6 +317,15 @@ void Rockete::menuRedoClicked()
 
 void Rockete::propertyViewClicked(const QModelIndex &/*index*/)
 {
+}
+
+void Rockete::attributeViewClicked(const QModelIndex &index)
+{
+    if (index.column() == 2 && index.internalPointer()) {
+        QString result;
+        reinterpret_cast<EditionHelper*>(index.internalPointer())->help(result);
+        ui.attributeTreeView->model()->setData(index.parent().child(index.row(),1), QVariant(result));
+    }
 }
 
 // Protected:

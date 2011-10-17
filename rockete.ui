@@ -88,7 +88,7 @@
             <enum>QTabWidget::Triangular</enum>
            </property>
            <property name="currentIndex">
-            <number>3</number>
+            <number>1</number>
            </property>
            <property name="tabsClosable">
             <bool>false</bool>
@@ -629,6 +629,22 @@
     <hint type="destinationlabel">
      <x>444</x>
      <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>attributeTreeView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>attributeViewClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>315</x>
+     <y>678</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
     </hint>
    </hints>
   </connection>

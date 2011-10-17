@@ -4,14 +4,12 @@
 #include "Rockete.h"
 
 Tool::Tool()
-: QObject(), widget(NULL)
+: QObject(), widget(NULL), itAcceptsDrop(false)
 {
-
 }
 
 Tool::~Tool()
 {
-
 }
 
 void Tool::onSelect()

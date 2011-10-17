@@ -8,10 +8,15 @@ RESOURCES = rockete.qrc
 SOURCES += \
  ./src/Action.cpp \
  ./src/ActionGroup.cpp \
- ./src/ActionSetInlineProperty.cpp \
  ./src/ActionManager.cpp \
+ ./src/ActionInsertElement.cpp \
+ ./src/ActionSetAttribute.cpp \
+ ./src/ActionSetInlineProperty.cpp \
+ ./src/ActionSetProperty.cpp \
  ./src/AttributeTreeModel.cpp \
  ./src/CSSHighlighter.cpp \
+ ./src/EditionHelper.cpp \
+ ./src/EditionHelperColor.cpp \
  ./src/GraphicSystem.cpp \
  ./src/main.cpp \
  ./src/OpenedDocument.cpp \
@@ -33,10 +38,15 @@ SOURCES += \
 HEADERS += \
  ./src/Action.h \
  ./src/ActionGroup.h \
+ ./src/ActionInsertElement.h \
  ./src/ActionManager.h \
+ ./src/ActionSetAttribute.h \
  ./src/ActionSetInlineProperty.h \
+ ./src/ActionSetProperty.h \
  ./src/AttributeTreeModel.h \
  ./src/CSSHighlighter.h \
+ ./src/EditionHelper.h \
+ ./src/EditionHelperColor.h \
  ./src/GraphicSystem.h \
  ./src/OpenedDocument.h \
  ./src/OpenedFile.h \

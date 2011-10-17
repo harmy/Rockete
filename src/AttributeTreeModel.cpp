@@ -4,6 +4,7 @@
 #include "Rockete.h"
 #include "ActionManager.h"
 #include "ActionSetAttribute.h"
+#include "EditionHelper.h"
 
 AttributeTreeModel::AttributeTreeModel(QObject *parent)
 : QAbstractItemModel(parent)
@@ -16,7 +17,20 @@ AttributeTreeModel::~AttributeTreeModel()
 
 QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole))
+    if (!index.isValid())
+        return QVariant();
+
+    if (index.column() == 2 ) {
+        if (index.internalPointer() && index.row() < propertyNameList.size()) {
+            if (role == Qt::DecorationRole)
+                return QVariant(QIcon(":/images/tools.png"));
+            if (role == Qt::DisplayRole)
+                return QVariant("...");
+        }
+        return QVariant();
+    }
+
+    if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
     if (index.row() == propertyNameList.size()) {
@@ -75,10 +89,10 @@ Qt::ItemFlags AttributeTreeModel::flags(const QModelIndex &index) const
 QVariant AttributeTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        if( section == 0 )
+        if (section == 0)
             return QVariant("Name");
 
-        if( section == 1 )
+        if (section == 1)
             return QVariant("Value");
     }
 
@@ -89,6 +103,10 @@ QModelIndex AttributeTreeModel::index(int row, int column, const QModelIndex &pa
 {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
+
+    if (column == 2 && row < propertyNameList.size()) {
+        return createIndex(row,column, EditionHelper::findHelper(propertyNameList[row]));
+    }
 
     return createIndex(row,column,parent.row());
 }
@@ -111,7 +129,7 @@ int AttributeTreeModel::rowCount(const QModelIndex &parent) const
 
 int AttributeTreeModel::columnCount(const QModelIndex &/*parent*/) const
 {
-    return 2;
+    return 3;
 }
 
 void AttributeTreeModel::setupData(OpenedDocument *_document, Element *_element)

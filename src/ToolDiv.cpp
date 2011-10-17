@@ -50,19 +50,15 @@ void ToolDiv::onElementClicked(Element *_element)
         || itIsResizing)
         return;
 
-    Element *element = _element;
+    Element *element = getDivParent(_element);
 
     markerList.clear();
 
-    while (element) {
-        if (element->GetTagName() == "div") {
-            selectedElement = element;
-            Rockete::getInstance().selectElement(element);
-            setupMarkers();
-            return;
-        }
-
-        element = element->GetParentNode();
+    if (element) {
+        selectedElement = element;
+        Rockete::getInstance().selectElement(element);
+        setupMarkers();
+        return;
     }
 
     selectedElement = NULL;
@@ -127,6 +123,19 @@ void ToolDiv::onMouseMove(const Vector2f &position)
 void ToolDiv::onUnselect()
 {
     markerList.clear();
+}
+
+Element *ToolDiv::getDivParent(Element *element)
+{
+    while (element) {
+        if (element->GetTagName() == "div") {
+            return  element;
+        }
+
+        element = element->GetParentNode();
+    }
+
+    return NULL;
 }
 
 // Private slots:
@@ -208,10 +217,9 @@ void ToolDiv::processElement(Element *element)
 
 void ToolDiv::insertDiv(Element *element)
 {
-    Element *div;
-
-    div = new Element("div");
-    div->SetAttribute("style", "width:50px; height:50px;");
+    Rocket::Core::XMLAttributes attributes;
+    attributes.Set("style", "width:50px; height:50px;");
+    Element* div = Rocket::Core::Factory::InstanceElement(NULL, "div", "div", attributes);
 
     ActionManager::getInstance().applyNew(new ActionInsertElement(Rockete::getInstance().getCurrentDocument(), element, div));
     Rockete::getInstance().selectElement(div);

@@ -26,7 +26,8 @@ public:
     const QString & getName() const { return name; }
     const QString & getImageName() const { return imageName; }
     QAction *getAction() { return action; }
-    const QList<Marker> & getMarkerList() const; 
+    const QList<Marker> & getMarkerList() const;
+    bool acceptsDrop() const { return itAcceptsDrop; }
     void onSelect();
     void setAction(QAction *_action) { action = _action; }
     virtual void onElementClicked(Element *){}
@@ -35,6 +36,7 @@ public:
     virtual void onMouseRelease(const Qt::MouseButton, const Vector2f &) {}
     virtual void onMouseMove(const Vector2f &) {}
     virtual void onUnselect() {}
+    virtual void onFileDrop(const QString &) {}
 
 public slots:
     void onActionTriggered();
@@ -48,6 +50,7 @@ protected:
     QWidget *widget;
     QAction *action;
     QList<Marker> markerList; 
+    bool itAcceptsDrop;
 };
 
 

@@ -14,7 +14,6 @@ class AttributeTreeModel : public QAbstractItemModel
 public:
     AttributeTreeModel(QObject *parent = 0);
     virtual ~AttributeTreeModel();
-
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -23,11 +22,9 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
-
     void setupData(OpenedDocument *_document, Element *_element);
 
 private:
-
     OpenedDocument *document;
     Element *element;
     QList<QString> propertyNameList;

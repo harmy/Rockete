@@ -2,6 +2,7 @@
 #include <QtGui/QApplication>
 #include "RocketSystem.h"
 #include "ToolManager.h"
+#include "EditionHelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
     }
 
     ToolManager::getInstance().initialize();
+    EditionHelper::initialize();
 
     Rockete w;
     w.show();

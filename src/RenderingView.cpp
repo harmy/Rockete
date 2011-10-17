@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QUrl>
 #include "Rocket/Core/Types.h"
 #include "RocketSystem.h"
 #include "GraphicSystem.h"
@@ -15,10 +16,35 @@
 RenderingView::RenderingView(QWidget *parent) : QGLWidget(parent) 
 {
     setMouseTracking(true);
+    setAcceptDrops(true);
     currentDocument = NULL;
     itMustUpdatePositionOffset = false;
     positionOffset.x=0;
     positionOffset.y=0;
+}
+
+void RenderingView::keyPressEvent(QKeyEvent* event)
+{
+    if (!currentDocument)
+        return;
+
+    switch (event->key()) {
+    case Qt::Key_Escape:
+        currentDocument->selectedElement = 0;
+        repaint();
+        break;
+
+    case Qt::Key_Delete:
+        if (currentDocument->selectedElement) {
+            currentDocument->selectedElement->GetParentNode()->RemoveChild(currentDocument->selectedElement);
+            Rockete::getInstance().unselectElement();
+        }
+        break;
+
+    default:
+        event->ignore();
+        break;
+    }
 }
 
 void RenderingView::changeCurrentDocument(OpenedDocument *document)
@@ -157,28 +183,16 @@ void RenderingView::mouseMoveEvent(QMouseEvent *event)
     repaint();
 }
 
-void RenderingView::keyPressEvent(QKeyEvent* event) 
+void RenderingView::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (!currentDocument)
-        return;
+    if (event->mimeData()->hasUrls() && ToolManager::getInstance().getCurrentTool()->acceptsDrop())
+        event->acceptProposedAction();
+}
 
-    switch (event->key()) {
-    case Qt::Key_Escape:
-        currentDocument->selectedElement = 0;
-        repaint();
-        break;
-
-    case Qt::Key_Delete:
-        if (currentDocument->selectedElement) {
-            currentDocument->selectedElement->GetParentNode()->RemoveChild(currentDocument->selectedElement);
-            Rockete::getInstance().unselectElement();
-        }
-        break;
-
-    default:
-        event->ignore();
-        break;
-    }
+void RenderingView::dropEvent(QDropEvent *event)
+{
+    QString result = event->mimeData()->urls()[0].toString();
+    ToolManager::getInstance().getCurrentTool()->onFileDrop(result);
 }
 
 // Private:

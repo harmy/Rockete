@@ -3,27 +3,32 @@
 #include "Rockete.h"
 #include "ActionManager.h"
 #include "ActionInsertElement.h"
+#include "ActionSetAttribute.h"
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QFileInfo>
+#include "ToolDiv.h"
 
 ToolImage::ToolImage()
-: Tool()
+: Tool(), currentImageElement(NULL), newImageAction(NULL), itMustPlaceNewImage(false)
 {
     QVBoxLayout *layout;
     QToolBar *tool_bar;
 
     name = "Image tool";
     imageName = ":/images/tool_image.png";
+    itAcceptsDrop = true;
 
     widget = new QWidget();
     layout = new QVBoxLayout();
 
     layout->addWidget(new QLabel("Insert:"));
     tool_bar = new QToolBar();
-    tool_bar->addAction(QIcon(), "New", this, SLOT(insertNew()));
+
+    newImageAction = tool_bar->addAction(QIcon(), "New", this, SLOT(insertNew()));
+    newImageAction->setCheckable(true);
 
     layout->addWidget(tool_bar);
 
@@ -42,12 +47,15 @@ void ToolImage::onElementClicked(Element *_element)
 
     while (element) {
         if (element->GetTagName() == "img") {
+            currentImageElement = element;
             Rockete::getInstance().selectElement(element);
-            break;
+            return;
         }
 
         element = element->GetParentNode();
     }
+
+    currentImageElement = NULL;
 }
 
 void ToolImage::onRender()
@@ -66,11 +74,31 @@ void ToolImage::onRender()
 
         glLineWidth(1.0f);
     }
+
+    if (itMustPlaceNewImage) {
+        Vector2f size;
+        size.x = 100;
+        size.y = 100;
+        GraphicSystem::drawBox(futureImagePosition - size * 0.5f, size, Color4b(128, 128, 128, 128));
+    }
 }
 
 void ToolImage::onMousePress(const Qt::MouseButton /*button*/, const Vector2f &/*position*/)
 {
-
+    if (itMustPlaceNewImage) {
+        Element *element = RocketHelper::getElementUnderMouse();
+        if ((element = ToolDiv::getDivParent(element))) {
+            QString imageName;
+            if (getImageNameFromFileSystem(imageName)) {
+                Rocket::Core::XMLAttributes attributes;
+                attributes.Set("src", imageName.toStdString().c_str());
+                Element *img = Rocket::Core::Factory::InstanceElement(NULL, "img", "img", attributes);
+                insertNew(img, element);
+            }
+        }
+        itMustPlaceNewImage = false;
+        newImageAction->setChecked(false);
+    }
 }
 
 void ToolImage::onMouseRelease(const Qt::MouseButton, const Vector2f &)
@@ -78,9 +106,36 @@ void ToolImage::onMouseRelease(const Qt::MouseButton, const Vector2f &)
 
 }
 
-void ToolImage::onMouseMove(const Vector2f &/*position*/)
+void ToolImage::onMouseMove(const Vector2f &position)
 {
+    if (itMustPlaceNewImage)
+        futureImagePosition = position;
+}
 
+void ToolImage::onFileDrop(const QString &url)
+{
+    QFileInfo fileInfo(url);
+    Element *element = RocketHelper::getElementUnderMouse();
+
+    if (element) {
+        if (element->GetTagName() == "img") {
+            changeSource(element,fileInfo.fileName());
+        }
+        else {
+            element = ToolDiv::getDivParent(element);
+            if (element) {
+                Rocket::Core::XMLAttributes attributes;
+                attributes.Set("src", fileInfo.fileName().toStdString().c_str());
+                Element* img = Rocket::Core::Factory::InstanceElement(NULL, "img", "img", attributes);
+                insertNew(img, element);
+            }
+        }
+    }
+}
+
+void ToolImage::onUnselect()
+{
+    currentImageElement = NULL;
 }
 
 bool ToolImage::getImageNameFromFileSystem(QString &imageName)
@@ -100,29 +155,8 @@ bool ToolImage::getImageNameFromFileSystem(QString &imageName)
 
 void ToolImage::insertNew()
 {
-    OpenedDocument *document;
-    Element *element = NULL;
-
-    document = Rockete::getInstance().getCurrentDocument();
-
-    if (document && document->selectedElement)  
-        element = document->selectedElement;
-    else if(document->rocketDocument)
-        element = document->rocketDocument;
-
-
-    if (element) {
-        Element *img;
-        QString imageName;
-
-        if (getImageNameFromFileSystem(imageName)) {
-            img = new Element("img");
-            img->SetAttribute("src", imageName.toStdString().c_str());
-
-            ActionManager::getInstance().applyNew(new ActionInsertElement(Rockete::getInstance().getCurrentDocument(), element, img));
-            Rockete::getInstance().selectElement(img);
-        }
-    }
+    itMustPlaceNewImage = !itMustPlaceNewImage;
+    newImageAction->setChecked(itMustPlaceNewImage);
 }
 
 void ToolImage::changeSource()
@@ -132,8 +166,7 @@ void ToolImage::changeSource()
     if (document && document->selectedElement) {
         QString imageName;
         if (getImageNameFromFileSystem(imageName)) {
-            document->selectedElement->SetAttribute("src", imageName.toStdString().c_str());
-            //ActionManager::getInstance().applyNew(new Action(Rockete::getInstance().getCurrentDocument(), element, img));
+            ActionManager::getInstance().applyNew(new ActionSetAttribute(Rockete::getInstance().getCurrentDocument(), document->selectedElement, "src", imageName));
         }
     }
 }
@@ -149,4 +182,15 @@ void ToolImage::processElement(Element *element)
     for (int child_index=0; child_index < element->GetNumChildren(); ++child_index) {
         processElement(element->GetChild(child_index));
     }
+}
+
+void ToolImage::changeSource(Element *element, const QString &imageName)
+{
+    ActionManager::getInstance().applyNew(new ActionSetAttribute(Rockete::getInstance().getCurrentDocument(), element, "src", imageName));
+}
+
+void ToolImage::insertNew(Element *img, Element *element)
+{
+    ActionManager::getInstance().applyNew(new ActionInsertElement(Rockete::getInstance().getCurrentDocument(), element, img));
+    Rockete::getInstance().selectElement(img);
 }

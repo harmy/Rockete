@@ -16,7 +16,7 @@ public:
     virtual void onMouseRelease(const Qt::MouseButton button, const Vector2f &position);
     virtual void onMouseMove(const Vector2f &position);
     virtual void onUnselect();
-
+    static Element *getDivParent(Element *element);
 
 private slots:
     void insertDiv();

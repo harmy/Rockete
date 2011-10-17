@@ -5,6 +5,8 @@
 #include <Rocket/Core.h>
 #include "OpenedDocument.h"
 #include "GraphicSystem.h"
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 class RenderingView : public QGLWidget 
 {
@@ -22,11 +24,14 @@ public slots:
 
 protected:
     void initializeGL();
-    void resizeGL(int w, int h);
-    void paintGL();
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    virtual void resizeGL(int w, int h);
+    virtual void paintGL();
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+
 
 private:
     void drawGrid();

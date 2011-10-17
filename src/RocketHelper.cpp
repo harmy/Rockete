@@ -195,3 +195,8 @@ Vector2f RocketHelper::getTopRightPosition(Element *element)
 
     return result;
 }
+
+Element *RocketHelper::getElementUnderMouse()
+{
+    return RocketSystem::getInstance().getContext()->GetHoverElement();
+}
