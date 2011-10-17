@@ -236,6 +236,8 @@ void Rockete::unselectElement()
     renderingView->repaint();
     fillAttributeView();
     fillPropertyView();
+    ToolManager::getInstance().getCurrentTool()->onUnselect();
+    repaintRenderingView();
 }
 
 void Rockete::menuReloadClicked()
@@ -254,6 +256,7 @@ void Rockete::menuSetScreenSizeClicked()
     item_list.push_back(new LocalScreenSizeItem(960, 640, "iPhone4"));
     item_list.push_back(new LocalScreenSizeItem(800, 600));
     item_list.push_back(new LocalScreenSizeItem(1024, 768));
+    item_list.push_back(new LocalScreenSizeItem(1280, 720));
     item_list.push_back(new LocalScreenSizeItem(1600, 1024));
     item_list.push_back(new LocalScreenSizeItem(1920, 1080, "HD"));
 

@@ -1,8 +1,9 @@
 #ifndef ACTIONMANAGER_H
 #define ACTIONMANAGER_H
 
-#include <QString>
 #include "Action.h"
+#include <QList>
+#include <QString>
 
 class ActionManager
 {

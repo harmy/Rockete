@@ -1,12 +1,39 @@
 #include "ToolImage.h"
 
 #include "Rockete.h"
+#include "ActionManager.h"
+#include "ActionInsertElement.h"
+#include <QLabel>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QFileDialog>
+#include <QFileInfo>
 
 ToolImage::ToolImage()
 : Tool()
 {
+    QVBoxLayout *layout;
+    QToolBar *tool_bar;
+
     name = "Image tool";
     imageName = ":/images/tool_image.png";
+
+    widget = new QWidget();
+    layout = new QVBoxLayout();
+
+    layout->addWidget(new QLabel("Insert:"));
+    tool_bar = new QToolBar();
+    tool_bar->addAction(QIcon(), "New", this, SLOT(insertNew()));
+
+    layout->addWidget(tool_bar);
+
+    layout->addWidget(new QLabel("Modify:"));
+    tool_bar = new QToolBar();
+    tool_bar->addAction(QIcon(), "Change source", this, SLOT(changeSource()));
+
+    layout->addWidget(tool_bar);
+
+    widget->setLayout(layout);
 }
 
 void ToolImage::onElementClicked(Element *_element)
@@ -56,8 +83,60 @@ void ToolImage::onMouseMove(const Vector2f &/*position*/)
 
 }
 
+bool ToolImage::getImageNameFromFileSystem(QString &imageName)
+{
+    QString fileName = QFileDialog::getOpenFileName(NULL, tr("Select source image..."), "", tr("Image files (*.bmp *.png *.jpg *.jpeg *.tga"));
+
+    if (!fileName.isEmpty()) {
+        QFileInfo info(fileName);
+        imageName = info.fileName();
+        return true;
+    }
+    else
+        return false;
+}
+
 // Private slots:
 
+void ToolImage::insertNew()
+{
+    OpenedDocument *document;
+    Element *element = NULL;
+
+    document = Rockete::getInstance().getCurrentDocument();
+
+    if (document && document->selectedElement)  
+        element = document->selectedElement;
+    else if(document->rocketDocument)
+        element = document->rocketDocument;
+
+
+    if (element) {
+        Element *img;
+        QString imageName;
+
+        if (getImageNameFromFileSystem(imageName)) {
+            img = new Element("img");
+            img->SetAttribute("src", imageName.toStdString().c_str());
+
+            ActionManager::getInstance().applyNew(new ActionInsertElement(Rockete::getInstance().getCurrentDocument(), element, img));
+            Rockete::getInstance().selectElement(img);
+        }
+    }
+}
+
+void ToolImage::changeSource()
+{
+    OpenedDocument *document;
+    document = Rockete::getInstance().getCurrentDocument();
+    if (document && document->selectedElement) {
+        QString imageName;
+        if (getImageNameFromFileSystem(imageName)) {
+            document->selectedElement->SetAttribute("src", imageName.toStdString().c_str());
+            //ActionManager::getInstance().applyNew(new Action(Rockete::getInstance().getCurrentDocument(), element, img));
+        }
+    }
+}
 
 // Private:
 

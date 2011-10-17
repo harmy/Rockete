@@ -172,10 +172,25 @@ Vector2f RocketHelper::getBottomRightPosition(Element *element)
     result.x = 0.0f;
     result.y = 0.0f;
 
-    for (int i = 0; i < element->GetNumBoxes(); i++)
-    {
+    for (int i = 0; i < element->GetNumBoxes(); i++) {
         const Rocket::Core::Box & element_box = element->GetBox(i);
         result = element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT) + element_box.GetSize();
+    }
+
+    return result;
+}
+
+Vector2f RocketHelper::getTopRightPosition(Element *element)
+{
+    Vector2f result;
+
+    result.x = 0.0f;
+    result.y = 0.0f;
+
+    for (int i = 0; i < element->GetNumBoxes(); i++) {
+        const Rocket::Core::Box & element_box = element->GetBox(i);
+        result = element->GetAbsoluteOffset(Rocket::Core::Box::BORDER) + element_box.GetPosition(Rocket::Core::Box::CONTENT);
+        result.x += element_box.GetSize().x;
     }
 
     return result;

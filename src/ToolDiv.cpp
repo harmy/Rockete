@@ -5,15 +5,17 @@
 #include "OpenedDocument.h"
 #include "ActionManager.h"
 #include "ActionSetInlineProperty.h"
+#include "ActionInsertElement.h"
 #include "ActionGroup.h"
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
 
-#define MARKER_INDEX_BOTTOM_LEFT
+#define MARKER_INDEX_BOTTOM_RIGHT 0
+#define MARKER_INDEX_TOP_RIGHT 1
 
 ToolDiv::ToolDiv()
-: Tool(), selectedElement(NULL), itIsResizing(false)
+: Tool(), selectedElement(NULL), itIsResizing(false), currentMarkerIndex(-1)
 {
     QVBoxLayout *layout;
     QToolBar *tool_bar;
@@ -23,11 +25,10 @@ ToolDiv::ToolDiv()
 
     widget = new QWidget();
     layout = new QVBoxLayout();
-    layout->setSizeConstraint(QLayout::SetMinimumSize);
 
     layout->addWidget(new QLabel("Insert:"));
     tool_bar = new QToolBar();
-    tool_bar->addAction(QIcon(), "New div...", this, SLOT(insertDiv()));
+    tool_bar->addAction(QIcon(), "New", this, SLOT(insertDiv()));
     
     layout->addWidget(tool_bar);
 
@@ -89,9 +90,7 @@ void ToolDiv::onRender()
 
 void ToolDiv::onMousePress(const Qt::MouseButton /*button*/, const Vector2f &position)
 {
-    int markerIndex;
-
-    if (findMarkerFromPosition(markerIndex,position)) {
+    if (findMarkerFromPosition(currentMarkerIndex, position)) {
         initialPosition = position;
         itIsResizing = true;
     }
@@ -100,7 +99,18 @@ void ToolDiv::onMousePress(const Qt::MouseButton /*button*/, const Vector2f &pos
 void ToolDiv::onMouseRelease(const Qt::MouseButton, const Vector2f &position)
 {
     if (itIsResizing) {
-        RocketHelper::incrementInlinedDimensions(Rockete::getInstance().getCurrentDocument(), selectedElement, position - initialPosition);
+        switch (currentMarkerIndex) {
+        case MARKER_INDEX_BOTTOM_RIGHT:
+            RocketHelper::incrementInlinedDimensions(Rockete::getInstance().getCurrentDocument(), selectedElement, position - initialPosition);
+            break;
+        case MARKER_INDEX_TOP_RIGHT:
+            Vector2f difference;
+            difference.x = position.x - initialPosition.x;
+            difference.y = initialPosition.y - position.y;
+            RocketHelper::incrementInlinedDimensions(Rockete::getInstance().getCurrentDocument(), selectedElement, difference);
+            break;
+        }
+
         markerList.clear();
         setupMarkers();
         itIsResizing = false;
@@ -111,7 +121,12 @@ void ToolDiv::onMouseRelease(const Qt::MouseButton, const Vector2f &position)
 void ToolDiv::onMouseMove(const Vector2f &position)
 {
     if (itIsResizing)
-        markerList[0].position = position;
+        markerList[currentMarkerIndex].position = position;
+}
+
+void ToolDiv::onUnselect()
+{
+    markerList.clear();
 }
 
 // Private slots:
@@ -198,7 +213,7 @@ void ToolDiv::insertDiv(Element *element)
     div = new Element("div");
     div->SetAttribute("style", "width:50px; height:50px;");
 
-    ActionManager::getInstance().applyNew(new Action(Rockete::getInstance().getCurrentDocument(), element, div));
+    ActionManager::getInstance().applyNew(new ActionInsertElement(Rockete::getInstance().getCurrentDocument(), element, div));
     Rockete::getInstance().selectElement(div);
 }
 
@@ -210,6 +225,7 @@ void ToolDiv::setupMarkers()
 
     if (document && document->selectedElement) {
         markerList.append(Marker(RocketHelper::getBottomRightPosition(document->selectedElement), 10.0f));
+        markerList.append(Marker(RocketHelper::getTopRightPosition(document->selectedElement), 10.0f));
     }
 
 }

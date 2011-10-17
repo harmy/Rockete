@@ -3,6 +3,7 @@
 
 #include "Tool.h"
 #include <QObject>
+#include <QString>
 
 class ToolImage : public Tool
 {
@@ -15,8 +16,11 @@ public:
     virtual void onMousePress(const Qt::MouseButton button, const Vector2f &position);
     virtual void onMouseRelease(const Qt::MouseButton button, const Vector2f &position);
     virtual void onMouseMove(const Vector2f &position);
+    static bool getImageNameFromFileSystem(QString &imageName);
 
 private slots:
+    void insertNew();
+    void changeSource();
 
 private:
     void processElement(Element *element);

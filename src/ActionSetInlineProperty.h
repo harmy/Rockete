@@ -2,6 +2,8 @@
 #define ACTIONSETINLINEPROPERTY_H
 
 #include "Action.h"
+#include "OpenedDocument.h"
+#include <QString>
 
 class ActionSetInlineProperty : public Action
 {
@@ -11,8 +13,11 @@ public:
     virtual void unapply();
 
 private:
+    QString newValue;
+    QString oldValue;
     QString propertyName;
     OpenedDocument *targetDocument;
+    Element *targetElement;
     bool propertyExists;
 };
 

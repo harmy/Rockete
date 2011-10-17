@@ -15,6 +15,8 @@ public:
     virtual void onMousePress(const Qt::MouseButton button, const Vector2f &position);
     virtual void onMouseRelease(const Qt::MouseButton button, const Vector2f &position);
     virtual void onMouseMove(const Vector2f &position);
+    virtual void onUnselect();
+
 
 private slots:
     void insertDiv();
@@ -30,6 +32,7 @@ private:
     Element *selectedElement;
     Vector2f initialPosition;
     bool itIsResizing;
+    int currentMarkerIndex;
 
 };
 

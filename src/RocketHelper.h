@@ -24,6 +24,7 @@ public:
     static bool getInlinedProperty(QString & property_value, Element *element, const QString &property_name);
     static void incrementInlinedDimensions(OpenedDocument *document, Element *element, const Vector2f &value);
     static Vector2f getBottomRightPosition(Element *element);
+    static Vector2f getTopRightPosition(Element *element);
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "Rockete.h"
 #include "OpenedFile.h"
 #include "ActionManager.h"
+#include "ActionSetProperty.h"
 #ifndef QT_NO_DEBUG
 #include "modeltest/modeltest.h"
 #endif
@@ -59,7 +60,7 @@ bool PropertyTreeModel::setData(const QModelIndex &index, const QVariant &value,
         const PropertySet * property_set = propertySetList[index.internalId()];
         Property * property =  property_set->propertyList[index.row()];
 
-        ActionManager::getInstance().applyNew(new Action(document, currentElement, property, property->value, value.toString()));
+        ActionManager::getInstance().applyNew(new ActionSetProperty(document, currentElement, property, value.toString()));
 
         emit dataChanged(index,index);
 

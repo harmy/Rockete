@@ -3,6 +3,7 @@
 #include "AttributeTreeModel.h"
 #include "Rockete.h"
 #include "ActionManager.h"
+#include "ActionSetAttribute.h"
 
 AttributeTreeModel::AttributeTreeModel(QObject *parent)
 : QAbstractItemModel(parent)
@@ -42,7 +43,7 @@ bool AttributeTreeModel::setData(const QModelIndex &index, const QVariant &value
     if (index.column() == 1) {
         element->SetAttribute(propertyNameList[index.row()].toStdString().c_str(), value.toByteArray().data());
 
-        ActionManager::getInstance().applyNew(new Action(document, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
+        ActionManager::getInstance().applyNew(new ActionSetAttribute(document, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
 
         propertyValueList[index.row()] = value.toString();
         Rockete::getInstance().repaintRenderingView();

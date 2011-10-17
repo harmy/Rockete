@@ -172,7 +172,6 @@ void RenderingView::keyPressEvent(QKeyEvent* event)
         if (currentDocument->selectedElement) {
             currentDocument->selectedElement->GetParentNode()->RemoveChild(currentDocument->selectedElement);
             Rockete::getInstance().unselectElement();
-            repaint();
         }
         break;
 
