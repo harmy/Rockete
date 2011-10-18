@@ -47,6 +47,7 @@ public slots:
     void menuRedoClicked();
     void propertyViewClicked(const QModelIndex &index);
     void attributeViewClicked(const QModelIndex &index);
+    void menuRecentFileClicked(QAction *action);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
@@ -55,6 +56,7 @@ private:
     void openFile(const QString &file_path);
     void openDocument(const char *);
     void openStyleSheet(const char *);
+    void generateMenuRecent();
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
@@ -64,6 +66,7 @@ private:
     OpenedDocument *currentDocument;
     AttributeTreeModel *attributeTreeModel;
     PropertyTreeModel *propertyTreeModel;
+    QList<QAction*> recentFileActionList;
     static Rockete *instance;
 };
 

@@ -28,6 +28,7 @@ SOURCES += \
  ./src/RocketHelper.cpp \
  ./src/RocketRenderInterface.cpp \
  ./src/RocketSystem.cpp \
+ ./src/Settings.cpp \
  ./src/StyleSheet.cpp \
  ./src/Tool.cpp \
  ./src/ToolDiv.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
  ./src/RocketHelper.h \
  ./src/RocketRenderInterface.h \
  ./src/RocketSystem.h \
+ ./src/Settings.h \
  ./src/StyleSheet.h \
  ./src/Tool.h \
  ./src/ToolManager.h \

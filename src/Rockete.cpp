@@ -11,6 +11,7 @@
 #include "ActionManager.h"
 #include "ToolManager.h"
 #include "EditionHelper.h"
+#include "Settings.h"
 
 struct LocalScreenSizeItem
 {
@@ -41,7 +42,8 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
 
     ui.currentToolTab->setLayout(new QGridLayout());
 
-    // :TODO: Load recent files
+    connect(ui.menuRecent, SIGNAL(triggered(QAction*)), this, SLOT(menuRecentFileClicked(QAction*)));
+    generateMenuRecent();
 
     renderingView = ui.renderingView;
 
@@ -256,7 +258,7 @@ void Rockete::menuSetScreenSizeClicked()
 {
     QList<LocalScreenSizeItem*> item_list;
     QStringList item_string_list;
-    int index_to_select;
+    int index_to_select = 0;
 
     // :TODO: Fill the screen size list.
     item_list.push_back(new LocalScreenSizeItem(480, 320, "iPhone3"));
@@ -335,6 +337,11 @@ void Rockete::attributeViewClicked(const QModelIndex &index)
     }
 }
 
+void Rockete::menuRecentFileClicked(QAction *action)
+{
+    openFile(action->text());
+}
+
 // Protected:
 
 void Rockete::keyPressEvent(QKeyEvent *event)
@@ -344,19 +351,27 @@ void Rockete::keyPressEvent(QKeyEvent *event)
 
 // Private:
 
-void Rockete::openFile(const QString &file_path)
+void Rockete::openFile(const QString &filePath)
 {
-    QFileInfo file_info(file_path);
+    QFileInfo file_info(filePath);
+    bool success = false;
 
     if (file_info.suffix() == "rml") {
-        openDocument(file_path.toStdString().c_str());
+        openDocument(filePath.toStdString().c_str());
         renderingView->changeCurrentDocument(documentList.last());
         currentDocument = documentList.last();
         ui.codeTabWidget->setCurrentIndex(currentDocument->tabIndex);
+        success = true;
     }
     else if (file_info.suffix() == "rcss") {
-        openStyleSheet(file_path.toStdString().c_str());
+        openStyleSheet(filePath.toStdString().c_str());
         ui.codeTabWidget->setCurrentIndex(styleSheetList.last()->tabIndex);
+        success = true;
+    }
+
+    if (success) {
+        Settings::setMostRecentFile(filePath);
+        generateMenuRecent();
     }
 }
 
@@ -400,6 +415,16 @@ void Rockete::openStyleSheet(const char *file_path)
     new_style_sheet->initialize();
     new_style_sheet->tabIndex = ui.codeTabWidget->addTab(new_style_sheet->textEdit, file_info.fileName());
 
+}
+
+void Rockete::generateMenuRecent()
+{
+    ui.menuRecent->clear();
+    QStringList recentFileList = Settings::getRecentFileList();
+
+    foreach(const QString &item, recentFileList) {
+        recentFileActionList.append(ui.menuRecent->addAction(item));
+    }
 }
 
 Rockete *Rockete::instance = NULL;
