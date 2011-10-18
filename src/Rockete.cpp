@@ -83,7 +83,9 @@ void Rockete::fillAttributeView()
     ui.attributeTreeView->reset();
     ui.attributeTreeView->setModel(attributeTreeModel);
     ui.attributeTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-    ui.attributeTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    ui.attributeTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
+    ui.attributeTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    ui.attributeTreeView->header()->setStretchLastSection(false);
 }
 
 void Rockete::fillPropertyView()
@@ -93,7 +95,9 @@ void Rockete::fillPropertyView()
     ui.propertyTreeView->setModel(propertyTreeModel);
     ui.propertyTreeView->expandAll();
     ui.propertyTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-    ui.propertyTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    ui.propertyTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
+    //ui.propertyTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    //ui.propertyTreeView->header()->setStretchLastSection(false);
 }
 
 void Rockete::selectElement(Element *element)
@@ -323,8 +327,8 @@ void Rockete::attributeViewClicked(const QModelIndex &index)
 {
     if (index.column() == 2 && index.internalPointer()) {
         QString result;
-        QModelIndex dataIndex;
         if (reinterpret_cast<EditionHelper*>(index.internalPointer())->help(result)) {
+            QModelIndex dataIndex;
             dataIndex = ui.attributeTreeView->model()->index(index.row(), 1, QModelIndex());
             ui.attributeTreeView->model()->setData(dataIndex, QVariant(result));
         }

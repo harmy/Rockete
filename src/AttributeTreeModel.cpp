@@ -24,8 +24,6 @@ QVariant AttributeTreeModel::data(const QModelIndex &index, int role) const
         if (index.internalPointer() && index.row() < propertyNameList.size()) {
             if (role == Qt::DecorationRole)
                 return QVariant(QIcon(":/images/tools.png"));
-            if (role == Qt::DisplayRole)
-                return QVariant("...");
         }
         return QVariant();
     }
