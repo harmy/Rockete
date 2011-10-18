@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = rockete
 DESTDIR = ./debug
 QT += gui core opengl
-CONFIG += debug console qtestlib
+CONFIG += debug_and_release console qtestlib
 DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 RESOURCES = rockete.qrc
 SOURCES += \
@@ -85,9 +85,15 @@ win32 {
         -lwinmm \
         -lwinspool \
         -lopengl32 \
-        -lglu32 \
-        -lRocketCore_d \
-        -lRocketControls_d
+        -lglu32
+
+    CONFIG(debug, debug|release) {
+        LIBS += -lRocketCore_d -lRocketControls_d
+    }
+    
+    CONFIG(release, debug|release) {
+        LIBS += -lRocketCore -lRocketControls
+    }
 }
 unix {
     LIBS += -lRocketCore -lRocketControls
