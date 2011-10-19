@@ -2,7 +2,7 @@
 
 #include <QFile>
 #include <QTextDocument>
-#include <QTextEdit>
+#include "CodeEditor.h"
 #include "CSSHighlighter.h"
 
 // Public:
@@ -13,7 +13,7 @@ OpenedStyleSheet::OpenedStyleSheet()
 
 void OpenedStyleSheet::initialize()
 {
-    textEdit = new QTextEdit;
+    textEdit = new CodeEditor;
     textEdit->setAcceptRichText(false);
     textEdit->setLineWrapMode(QTextEdit::NoWrap);
     textEdit->setTabChangesFocus(false);

@@ -14,6 +14,7 @@ SOURCES += \
  ./src/ActionSetInlineProperty.cpp \
  ./src/ActionSetProperty.cpp \
  ./src/AttributeTreeModel.cpp \
+ ./src/CodeEditor.cpp \
  ./src/CSSHighlighter.cpp \
  ./src/EditionHelper.cpp \
  ./src/EditionHelperColor.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
  ./src/ActionSetInlineProperty.h \
  ./src/ActionSetProperty.h \
  ./src/AttributeTreeModel.h \
+ ./src/CodeEditor.h \
  ./src/CSSHighlighter.h \
  ./src/EditionHelper.h \
  ./src/EditionHelperColor.h \

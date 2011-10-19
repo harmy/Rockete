@@ -29,4 +29,10 @@ void Settings::setMostRecentFile(const QString &filePath)
     settings.setValue("File/Recents", currentList);
 }
 
+int Settings::getTabSize()
+{
+    // :TODO: Make a setting ;)
+    return 4;
+}
+
 QSettings Settings::settings("FishingCactus", "Rockete");

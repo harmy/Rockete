@@ -1,7 +1,7 @@
 #ifndef OPENEDFILE_H
 #define OPENEDFILE_H
 
-#include <QTextEdit>
+#include "CodeEditor.h"
 #include <QFileInfo>
 #include <QTextDocument>
 
@@ -20,7 +20,7 @@ public:
     void setTextEditContent(const QString &content);
 
     int tabIndex;
-    QTextEdit * textEdit;
+    CodeEditor *textEdit;
     QTextDocument * textDocument;
     QFileInfo fileInfo;
 };

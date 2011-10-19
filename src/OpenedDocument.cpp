@@ -2,6 +2,7 @@
 
 #include "XMLHighlighter.h"
 #include "RocketSystem.h"
+#include "CodeEditor.h"
 
 OpenedDocument::OpenedDocument() : selectedElement(NULL)
 {
@@ -9,7 +10,7 @@ OpenedDocument::OpenedDocument() : selectedElement(NULL)
 
 void OpenedDocument::initialize()
 {
-    textEdit = new QTextEdit;
+    textEdit = new CodeEditor();
     textEdit->setAcceptRichText(false);
     textEdit->setLineWrapMode(QTextEdit::NoWrap);
     textEdit->setTabChangesFocus(false);
