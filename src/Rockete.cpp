@@ -260,7 +260,6 @@ void Rockete::menuSetScreenSizeClicked()
     QStringList item_string_list;
     int index_to_select = 0;
 
-    // :TODO: Fill the screen size list.
     item_list.push_back(new LocalScreenSizeItem(480, 320, "iPhone3"));
     item_list.push_back(new LocalScreenSizeItem(960, 640, "iPhone4"));
     item_list.push_back(new LocalScreenSizeItem(800, 600));
@@ -299,7 +298,7 @@ void Rockete::menuLoadFonts()
         this,
         "Open font files...",
         NULL,
-        "OTF files (*.otf)"
+        "OTF/TTF files (*.otf *.ttf)"
         );
 
     foreach (const QString & file, files) {
