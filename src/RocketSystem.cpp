@@ -1,6 +1,7 @@
 #include "RocketSystem.h"
 
 #include <Rocket/Core.h>
+#include <Rocket/Core/FreeType/FontProvider.h>
 #include <QDir>
 #include "ToolManager.h"
 
@@ -15,6 +16,8 @@ bool RocketSystem::initialize()
     Rocket::Core::SetRenderInterface(&renderInterface);
     Rocket::Core::SetSystemInterface(this );
     Rocket::Core::Initialise();
+
+    Rocket::Core::FreeType::FontProvider::Initialise();
 
     // :TODO: Save last screen size.
     return createContext(1024, 768);
@@ -60,10 +63,13 @@ void RocketSystem::loadFonts(const char *directory_path)
 
 void RocketSystem::loadFont(const QString &file)
 {
-    Rocket::Core::FontDatabase::LoadFontFace(file.toStdString().c_str());
+    Rocket::Core::String
+        r_string = file.toAscii().data();
+
+    Rocket::Core::FreeType::FontProvider::LoadFontFace(r_string);
 }
 
-void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event &event) 
+void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event &event)
 {
     ToolManager::getInstance().getCurrentTool()->onElementClicked(event.GetTargetElement());
 }

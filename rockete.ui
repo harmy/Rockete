@@ -183,6 +183,7 @@
       <string>Background</string>
      </property>
      <addaction name="actionSet_from_file"/>
+     <addaction name="actionSet_from_color"/>
      <addaction name="separator"/>
      <addaction name="actionStreched"/>
     </widget>
@@ -389,6 +390,11 @@
   <action name="actionEmpty">
    <property name="text">
     <string>Empty</string>
+   </property>
+  </action>
+  <action name="actionSet_from_color">
+   <property name="text">
+    <string>Set from color</string>
    </property>
   </action>
  </widget>
@@ -653,6 +659,38 @@
     <hint type="sourcelabel">
      <x>315</x>
      <y>678</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSet_from_color</sender>
+   <signal>triggered()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuBackgroundChangeColor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSet_from_file</sender>
+   <signal>triggered()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuBackgroundChangeImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>656</x>

@@ -16,6 +16,7 @@ public:
     RenderingView(QWidget *parent = NULL);
     void keyPressEvent(QKeyEvent *event);
     void changeCurrentDocument(OpenedDocument *document);
+    void SetClearColor(float red, float green, float blue, float alpha);
 
 public slots:
     void zoomIn();
@@ -36,6 +37,7 @@ protected:
 private:
     void drawGrid();
     void drawBackground();
+
     inline Vector2f getMousePositionInDocument(const int x, const int y) const {
         Vector2f result;
 

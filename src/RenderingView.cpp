@@ -60,6 +60,12 @@ void RenderingView::changeCurrentDocument(OpenedDocument *document)
     repaint();
 }
 
+void RenderingView::SetClearColor( float red, float green, float blue, float alpha )
+{
+    glClearColor( red, green, blue, alpha );
+    repaint();
+}
+
 // Public slots:
 
 void RenderingView::zoomIn()
@@ -101,12 +107,17 @@ void RenderingView::paintGL()
 
     RocketSystem::getInstance().getContext()->Update();
 
-    glEnable( GL_BLEND );
+
 
     glScalef(GraphicSystem::scaleFactor,GraphicSystem::scaleFactor,1.0f);
     glTranslatef(positionOffset.x,positionOffset.y,0.0f);
     GraphicSystem::scissorOffset = positionOffset;
 
+    glEnable(GL_TEXTURE_2D);
+    glDisable( GL_BLEND );
+    GraphicSystem::drawBackground();
+    glEnable( GL_BLEND );
+    glDisable(GL_TEXTURE_2D);
     drawGrid();
 
     RocketSystem::getInstance().getContext()->Render();

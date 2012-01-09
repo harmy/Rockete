@@ -2,6 +2,7 @@
 
 #include <QSettings>
 #include <QStringList>
+#include "GraphicSystem.h"
 
 #define APPNAME Rockete
 
@@ -35,4 +36,26 @@ int Settings::getTabSize()
     return 4;
 }
 
+void Settings::SetBackroundFileName(const QString &fileName)
+{
+    Rocket::Core::Vector2i
+        dimensions;
+    
+    GraphicSystem::loadTexture( backgroundTextureHandle, dimensions, fileName.toAscii().data() );
+    settings.setValue("File/BackgroundFileName", fileName);
+
+}
+
+QString Settings::GetBackgroundFileName()
+{
+    return settings.value("File/BackgroundFileName").value< QString >();
+}
+
+
+Rocket::Core::TextureHandle Settings::GetBackroundTextureHandle()
+{
+    return backgroundTextureHandle;
+}
+
 QSettings Settings::settings("FishingCactus", "Rockete");
+Rocket::Core::TextureHandle Settings::backgroundTextureHandle = 0;

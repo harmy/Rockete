@@ -16,12 +16,13 @@ public:
     static void putYAxisVertices(const float x);
     static void drawBox(const Vector2f &origin, const Vector2f &dimensions, const Color4b &color, const bool filled=true);
     static void drawBox(const Vector2f &origin, const Vector2f &dimensions, const Vector2f &hole_origin, const Vector2f &hole_dimensions, const Color4b &color);
+    static void drawBackground();
+    static void drawTexturedBox(const Vector2f &origin, const Vector2f &dimensions, Rocket::Core::TextureHandle texture_handle);
 
     static Vector2f scissorOffset;
     static float scaleFactor;
     static int width;
     static int height;
-
 
 private:
     static unsigned char * loadTGA(const char *path, Rocket::Core::Vector2i &texture_dimensions);

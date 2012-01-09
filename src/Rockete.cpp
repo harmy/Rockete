@@ -133,7 +133,7 @@ void Rockete::reloadCurrentDocument()
         currentDocument->selectedElement = NULL;
         currentDocument->rocketDocument->GetStyleSheet()->RemoveReference();
         RocketHelper::unloadDocument(currentDocument->rocketDocument);
-        currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toStdString().c_str());
+        currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
         renderingView->changeCurrentDocument(currentDocument);
     }
 }
@@ -341,6 +341,51 @@ void Rockete::menuRecentFileClicked(QAction *action)
     openFile(action->text());
 }
 
+void Rockete::menuBackgroundChangeColor()
+{
+    QDialog
+        * dialog;
+        
+    dialog = new QDialog( this );
+
+    ui_color.setupUi( dialog );
+
+    connect(dialog, SIGNAL(accepted()), this, SLOT(colorDialogAccepted()));
+
+    dialog->show();
+
+}
+
+void Rockete::colorDialogAccepted()
+{
+    QString test = ui_color.lineEdit->text();
+    bool is_number;
+    test.toInt( &is_number, 16 );
+
+    if ( test.size() != 6 || !is_number )
+    {
+        //TODO: error message
+        return;
+    }
+    float red = ( float )(test.mid( 0, 2).toInt( NULL, 16 ) ) / 255.0f;
+    float green = ( float )(test.mid( 2, 2).toInt( NULL, 16 ) ) / 255.0f;
+    float blue = ( float )(test.mid( 4, 2).toInt( NULL, 16 ) ) / 255.0f;
+
+    renderingView->SetClearColor( red, green, blue, 1.0f );
+}
+
+
+void Rockete::menuBackgroundChangeImage()
+{
+    QString file_path = QFileDialog::getOpenFileName(this, tr("Open image file..."), "", tr("Image files (*.png *.tga)")); // support jpeg?
+
+    if (!file_path.isEmpty())
+    {
+        Settings::SetBackroundFileName( file_path );
+        renderingView->repaint();
+    }
+}
+
 // Protected:
 
 void Rockete::keyPressEvent(QKeyEvent *event)
@@ -356,14 +401,14 @@ void Rockete::openFile(const QString &filePath)
     bool success = false;
 
     if (file_info.suffix() == "rml") {
-        openDocument(filePath.toStdString().c_str());
+        openDocument(filePath.toAscii().data());
         renderingView->changeCurrentDocument(documentList.last());
         currentDocument = documentList.last();
         ui.codeTabWidget->setCurrentIndex(currentDocument->tabIndex);
         success = true;
     }
     else if (file_info.suffix() == "rcss") {
-        openStyleSheet(filePath.toStdString().c_str());
+        openStyleSheet(filePath.toAscii().data());
         ui.codeTabWidget->setCurrentIndex(styleSheetList.last()->tabIndex);
         success = true;
     }
@@ -379,9 +424,13 @@ void Rockete::openDocument(const char *file_path)
     OpenedDocument *new_document;
     QFileInfo file_info(file_path);
 
-    new_document = new OpenedDocument;
+    if (!file_info.exists())
+    {
+        // :TODO: display error message
+        return;
+    }
 
-    // :TODO: Check if document exists.
+    new_document = new OpenedDocument;
     new_document->rocketDocument = RocketHelper::loadDocument(file_path);
 
     if (documentList.isEmpty() && styleSheetList.isEmpty())

@@ -56,8 +56,39 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         verticalScrollBar()->setSliderPosition(scrollPosition);
         QTextCursor newTextCursor = textCursor();
         newTextCursor.setPosition(futureSelectionStart);
-        newTextCursor.setPosition(end + futureSelectionOffset, QTextCursor::KeepAnchor);
+        newTextCursor.setPosition(end + futureSelectionOffset, QTextCursor::MoveAnchor);
         setTextCursor(newTextCursor);
+    }
+    else if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
+        bool shiftIsPressed = e->key() == Qt::Key_Backtab;
+        int scrollPosition = verticalScrollBar()->sliderPosition();
+        QStringList lineList = toPlainText().split("\n");
+        int currentPosition = 0;
+        int lineStartIndex = 0;
+        int nextLineStartIndex;
+        int futureSelectionStart = -1;
+        int futureSelectionOffset = 0;
+        int spaceCount;
+
+        
+
+
+        currentPosition = textCursor().selectionStart();
+
+        for(int i=0; i<lineList.size(); ++i)
+        {
+            nextLineStartIndex = lineStartIndex + lineList[i].size() + 1;
+
+            if ((lineStartIndex >= currentPosition || (currentPosition >= lineStartIndex && currentPosition < nextLineStartIndex))) {
+                for( spaceCount = 0;lineList[i][spaceCount].isSpace(); spaceCount++ );
+                textCursor().insertText( "\n" );
+                for( ;spaceCount>0; spaceCount-- ){
+                    textCursor().insertText( " " );
+                }
+                break;
+            }
+            lineStartIndex = nextLineStartIndex;
+        }
     }
     else
         QTextEdit::keyPressEvent(e);

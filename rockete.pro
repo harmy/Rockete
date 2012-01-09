@@ -69,7 +69,8 @@ HEADERS += \
  ./src/ToolImage.h \
  ./src/ToolSelecter.h \
  ./src/XMLHighlighter.h
-FORMS += ./rockete.ui
+FORMS += ./rockete.ui \
+    choose_color.ui
 INCLUDEPATH = ./src
 win32 {
     INCLUDEPATH += $(LIBROCKET)/Include
@@ -92,7 +93,7 @@ win32 {
         -lglu32
 
     CONFIG(debug, debug|release) {
-        LIBS += -lRocketCore_d -lRocketControls_d
+        LIBS += -lRocketCore_d -lRocketControls_d -lRocketFreeType_d
     }
     
     CONFIG(release, debug|release) {

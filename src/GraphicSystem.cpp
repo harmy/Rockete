@@ -1,6 +1,8 @@
 #include "GraphicSystem.h"
 #include "OpenGL.h"
 #include <QImage>
+#include "Settings.h"
+#include "RocketSystem.h"
 
 #define GL_CLAMP_TO_EDGE 0x812F
 
@@ -123,10 +125,10 @@ void GraphicSystem::drawBox(const Vector2f &origin, const Vector2f &dimensions, 
 {
     glColor4ub(color.red, color.green, color.blue, color.alpha);
     glBegin(filled ? GL_POLYGON : GL_LINE_LOOP);
-    glVertex2f(origin.x, origin.y);
-    glVertex2f(origin.x+dimensions.x, origin.y);
-    glVertex2f(origin.x+dimensions.x, origin.y+dimensions.y);
-    glVertex2f(origin.x, origin.y+dimensions.y);
+        glVertex2f(origin.x, origin.y);
+        glVertex2f(origin.x+dimensions.x, origin.y);
+        glVertex2f(origin.x+dimensions.x, origin.y+dimensions.y);
+        glVertex2f(origin.x, origin.y+dimensions.y);
     glEnd();
 }
 
@@ -153,6 +155,39 @@ void GraphicSystem::drawBox(const Vector2f &origin, const Vector2f &dimensions, 
         drawBox(Vector2f(hole_origin.x + hole_dimensions.x, hole_origin.y), Vector2f(right_x_dimensions, hole_dimensions.y), color);
 }
 
+void GraphicSystem::drawBackground()
+{
+    if ( Settings::GetBackroundTextureHandle() != 0 )
+    {
+        drawTexturedBox(Vector2f(0, 0), Vector2f(RocketSystem::getInstance().getContext()->GetDimensions().x, RocketSystem::getInstance().getContext()->GetDimensions().y), Settings::GetBackroundTextureHandle());
+    }
+}
+
+void GraphicSystem::drawTexturedBox(const Vector2f &origin, const Vector2f &dimensions, Rocket::Core::TextureHandle texture_handle)
+{
+    glBindTexture(GL_TEXTURE_2D, texture_handle);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex2f(origin.x, origin.y);
+
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2f(origin.x+dimensions.x, origin.y);
+
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2f(origin.x+dimensions.x, origin.y+dimensions.y);
+
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2f(origin.x, origin.y+dimensions.y);
+    glEnd();
+
+    GLint gl_error = glGetError();
+
+    if ( gl_error != GL_NO_ERROR )
+    {
+        printf( "GL ERROR");
+    }
+}
 
 // Private:
 
