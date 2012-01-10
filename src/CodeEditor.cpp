@@ -60,18 +60,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor(newTextCursor);
     }
     else if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
-        bool shiftIsPressed = e->key() == Qt::Key_Backtab;
-        int scrollPosition = verticalScrollBar()->sliderPosition();
         QStringList lineList = toPlainText().split("\n");
         int currentPosition = 0;
         int lineStartIndex = 0;
         int nextLineStartIndex;
-        int futureSelectionStart = -1;
-        int futureSelectionOffset = 0;
         int spaceCount;
-
-        
-
 
         currentPosition = textCursor().selectionStart();
 
