@@ -74,7 +74,7 @@ void RocketHelper::replaceInlinedProperty(Element *element,const QString &proper
 
     properties.replace(start_index + 1,end_index - start_index - 1,property_value);
 
-    element->SetAttribute("style",properties.toStdString().c_str());
+    element->SetAttribute("style",properties.toAscii().data());
 }
 
 void RocketHelper::addInlinedProperty(Element *element,const QString &property_name, const QString &property_value)
@@ -91,7 +91,7 @@ void RocketHelper::addInlinedProperty(Element *element,const QString &property_n
 
     properties.append(string_to_append);
 
-    element->SetAttribute("style", properties.toStdString().c_str());
+    element->SetAttribute("style", properties.toAscii().data());
 }
 
 void RocketHelper::removeInlinedProperty(Element *element, const QString &property_name)
@@ -108,7 +108,7 @@ void RocketHelper::removeInlinedProperty(Element *element, const QString &proper
     Q_ASSERT(end_index != -1);
 
     properties.remove(property_index, property_index - end_index - 1);
-    element->SetAttribute("style",properties.toStdString().c_str());
+    element->SetAttribute("style",properties.toAscii().data());
 }
 
 bool RocketHelper::getInlinedProperty(QString & property_value, Element *element, const QString &property_name)

@@ -115,7 +115,7 @@ void OpenedFile::save()
     QFile file(fileInfo.filePath());
 
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
-        file.write(textEdit->toPlainText().toStdString().c_str());
+        file.write(textEdit->toPlainText().toAscii().data());
         file.close();
     }
 }

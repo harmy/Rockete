@@ -25,7 +25,7 @@ void ActionSetProperty::apply()
         Rockete::getInstance().repaintRenderingView();
     }
     else {
-        OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(targetProperty->sourceFile.toStdString().c_str(), true);
+        OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(targetProperty->sourceFile.toAscii().data(), true);
 
         if (opened_file) {
             int source_line_number;
@@ -56,7 +56,7 @@ void ActionSetProperty::unapply()
         Rockete::getInstance().repaintRenderingView();
     }
     else {
-        OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(targetProperty->sourceFile.toStdString().c_str(), true);
+        OpenedFile *opened_file = Rockete::getInstance().getOpenedFile(targetProperty->sourceFile.toAscii().data(), true);
 
         if (opened_file) {
             if (addedLineNumber!= -1)

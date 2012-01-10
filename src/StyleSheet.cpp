@@ -134,7 +134,7 @@ const Element *StyleSheet::findDirectInheriter(const PropertyOwner *owner, const
     while (element) {
         if ((owner->tagName.isEmpty() || owner->tagName == element->GetTagName().CString())
             && (owner->identifier.isEmpty() || owner->tagName == element->GetId().CString())
-            && (owner->className.isEmpty() || element->IsClassSet(owner->className.toStdString().c_str()))
+            && (owner->className.isEmpty() || element->IsClassSet(owner->className.toAscii().data()))
             )
             return element;
 

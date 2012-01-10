@@ -53,7 +53,7 @@ bool AttributeTreeModel::setData(const QModelIndex &index, const QVariant &value
         return false;
 
     if (index.column() == 1) {
-        element->SetAttribute(propertyNameList[index.row()].toStdString().c_str(), value.toByteArray().data());
+        element->SetAttribute(propertyNameList[index.row()].toAscii().data(), value.toByteArray().data());
 
         ActionManager::getInstance().applyNew(new ActionSetAttribute(document, element,propertyNameList[index.row()],propertyValueList[index.row()],value.toString()));
 
