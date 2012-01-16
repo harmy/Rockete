@@ -157,9 +157,9 @@ void GraphicSystem::drawBox(const Vector2f &origin, const Vector2f &dimensions, 
 
 void GraphicSystem::drawBackground()
 {
-    if ( Settings::GetBackroundTextureHandle() != 0 )
+    if ( Settings::getBackroundTextureHandle() != 0 )
     {
-        drawTexturedBox(Vector2f(0, 0), Vector2f(RocketSystem::getInstance().getContext()->GetDimensions().x, RocketSystem::getInstance().getContext()->GetDimensions().y), Settings::GetBackroundTextureHandle());
+        drawTexturedBox(Vector2f(0, 0), Vector2f(RocketSystem::getInstance().getContext()->GetDimensions().x, RocketSystem::getInstance().getContext()->GetDimensions().y), Settings::getBackroundTextureHandle());
     }
 }
 

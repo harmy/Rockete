@@ -14,7 +14,7 @@ float RocketSystem::GetElapsedTime()
 bool RocketSystem::initialize()
 {
     Rocket::Core::SetRenderInterface(&renderInterface);
-    Rocket::Core::SetSystemInterface(this );
+    Rocket::Core::SetSystemInterface(this);
     Rocket::Core::Initialise();
 
     Rocket::Core::FreeType::FontProvider::Initialise();

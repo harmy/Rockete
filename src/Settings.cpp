@@ -36,23 +36,22 @@ int Settings::getTabSize()
     return 4;
 }
 
-void Settings::SetBackroundFileName(const QString &fileName)
+void Settings::setBackroundFileName(const QString &fileName)
 {
     Rocket::Core::Vector2i
         dimensions;
     
     GraphicSystem::loadTexture( backgroundTextureHandle, dimensions, fileName.toAscii().data() );
     settings.setValue("File/BackgroundFileName", fileName);
-
 }
 
-QString Settings::GetBackgroundFileName()
+QString Settings::getBackgroundFileName()
 {
     return settings.value("File/BackgroundFileName").value< QString >();
 }
 
 
-Rocket::Core::TextureHandle Settings::GetBackroundTextureHandle()
+Rocket::Core::TextureHandle Settings::getBackroundTextureHandle()
 {
     return backgroundTextureHandle;
 }

@@ -8,6 +8,7 @@ bool EditionHelperColor::help(QString &result)
     QColor color = QColorDialog::getColor();
 
     if (color.isValid()) {
+        result.reserve(21);
         result = "rgba(";
         result.append(QString::number(color.red()));
         result.append(",");

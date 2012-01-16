@@ -12,9 +12,9 @@ public:
     static QStringList getRecentFileList();
     static void setMostRecentFile(const QString &filePath);
     static int getTabSize();
-    static void SetBackroundFileName(const QString &fileName);
-    static QString GetBackgroundFileName();
-    static Rocket::Core::TextureHandle GetBackroundTextureHandle();
+    static void setBackroundFileName(const QString &fileName);
+    static QString getBackgroundFileName();
+    static Rocket::Core::TextureHandle getBackroundTextureHandle();
 
 private:
     static QSettings settings;

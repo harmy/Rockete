@@ -355,7 +355,7 @@ void Rockete::menuBackgroundChangeImage()
 
     if (!file_path.isEmpty())
     {
-        Settings::SetBackroundFileName( file_path );
+        Settings::setBackroundFileName( file_path );
         renderingView->repaint();
     }
 }
