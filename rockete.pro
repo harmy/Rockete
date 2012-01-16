@@ -69,8 +69,8 @@ HEADERS += \
  ./src/ToolImage.h \
  ./src/ToolSelecter.h \
  ./src/XMLHighlighter.h
-FORMS += ./rockete.ui \
-    choose_color.ui
+FORMS += ./ui/rockete.ui \
+
 INCLUDEPATH = ./src
 win32 {
     INCLUDEPATH += $(LIBROCKET)/Include

@@ -3,7 +3,6 @@
 
 #include <QtGui/QMainWindow>
 #include "ui_rockete.h"
-#include "ui_choose_color.h"
 #include "RenderingView.h"
 #include "OpenedDocument.h"
 #include "OpenedStyleSheet.h"
@@ -50,7 +49,6 @@ public slots:
     void attributeViewClicked(const QModelIndex &index);
     void menuRecentFileClicked(QAction *action);
     void menuBackgroundChangeColor();
-    void colorDialogAccepted();
     void menuBackgroundChangeImage();
 
 protected:
@@ -63,7 +61,6 @@ private:
     void generateMenuRecent();
 
     Ui::rocketeClass ui;
-    Ui::chooseColorClass ui_color;
     RenderingView *renderingView;
     QList<OpenedDocument*> documentList;
     QList<OpenedStyleSheet*> styleSheetList;

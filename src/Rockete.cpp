@@ -6,6 +6,7 @@
 #include <QInputDialog>
 #include <QTextDocument>
 #include <QGridLayout>
+#include <QColorDialog>
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
@@ -343,37 +344,10 @@ void Rockete::menuRecentFileClicked(QAction *action)
 
 void Rockete::menuBackgroundChangeColor()
 {
-    QDialog
-        * dialog;
-        
-    dialog = new QDialog( this );
+    QColor color = QColorDialog::getColor();
 
-    ui_color.setupUi( dialog );
-
-    connect(dialog, SIGNAL(accepted()), this, SLOT(colorDialogAccepted()));
-
-    dialog->show();
-
+    renderingView->SetClearColor( color.redF(), color.greenF(), color.blueF(), 1.0f );
 }
-
-void Rockete::colorDialogAccepted()
-{
-    QString test = ui_color.lineEdit->text();
-    bool is_number;
-    test.toInt( &is_number, 16 );
-
-    if ( test.size() != 6 || !is_number )
-    {
-        //TODO: error message
-        return;
-    }
-    float red = ( float )(test.mid( 0, 2).toInt( NULL, 16 ) ) / 255.0f;
-    float green = ( float )(test.mid( 2, 2).toInt( NULL, 16 ) ) / 255.0f;
-    float blue = ( float )(test.mid( 4, 2).toInt( NULL, 16 ) ) / 255.0f;
-
-    renderingView->SetClearColor( red, green, blue, 1.0f );
-}
-
 
 void Rockete::menuBackgroundChangeImage()
 {
