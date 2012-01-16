@@ -406,6 +406,7 @@ void Rockete::openDocument(const char *file_path)
 
     new_document = new OpenedDocument;
     new_document->rocketDocument = RocketHelper::loadDocument(file_path);
+    new_document->rocketDocument->RemoveReference();
 
     if (documentList.isEmpty() && styleSheetList.isEmpty())
         ui.codeTabWidget->clear();

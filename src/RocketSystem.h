@@ -10,7 +10,10 @@ class RocketSystem : public Rocket::Core::SystemInterface
 {
 public:
     typedef Rocket::Core::Context Context;
+    RocketSystem();
+    ~RocketSystem();
     bool initialize();
+    void finalize();
     bool createContext(const int width, const int height);
     void loadFonts(const char *directory_path);
     void loadFont(const QString &file);
@@ -20,8 +23,17 @@ public:
     }
     static RocketSystem & getInstance()
     {
-        static RocketSystem instance;
-        return instance;
+        if( !instance )
+        {
+            instance = new RocketSystem;
+        }
+        return *instance;
+    }
+
+    static void removeInstance()
+    {
+        delete[] instance;
+        instance = 0;
     }
     virtual float GetElapsedTime();
 
@@ -41,6 +53,7 @@ private:
     RocketRenderInterface renderInterface;
     Context *context;
     EventListener *eventListener;
+    static RocketSystem * instance;
 
 };
 

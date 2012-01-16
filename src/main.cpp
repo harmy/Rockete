@@ -6,6 +6,8 @@
 
 int main(int argc, char *argv[])
 {
+    int result;
+
     QApplication a( argc, argv );
 
     if(RocketSystem::getInstance().initialize())
@@ -22,5 +24,9 @@ int main(int argc, char *argv[])
 
     Rockete w;
     w.show();
-    return a.exec();
+    result = a.exec();
+
+    RocketSystem::getInstance().finalize();
+
+    return result;
 }

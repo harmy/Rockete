@@ -5,6 +5,19 @@
 #include <QDir>
 #include "ToolManager.h"
 
+RocketSystem::RocketSystem() :
+    renderInterface(),
+    context( 0 ),
+    eventListener( 0 )
+{
+
+}
+
+RocketSystem::~RocketSystem()
+{
+    Rocket::Core::Shutdown();
+}
+
 float RocketSystem::GetElapsedTime()
 {
     // :TODO: Compute elapsed time.
@@ -23,6 +36,14 @@ bool RocketSystem::initialize()
     return createContext(1024, 768);
 }
 
+void RocketSystem::finalize()
+{
+    Rocket::Core::FreeType::FontProvider::Shutdown();
+    Rocket::Core::Shutdown();
+    Rocket::Core::SetRenderInterface( 0 );
+    Rocket::Core::SetSystemInterface( 0 );
+}
+
 bool RocketSystem::createContext(const int width, const int height)
 {
     if (context)
@@ -30,7 +51,8 @@ bool RocketSystem::createContext(const int width, const int height)
 
     context = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(width, height));
 
-    if (context == NULL) {
+    if (context == NULL) 
+    {
         Rocket::Core::Shutdown();
         return false;
     }
@@ -73,3 +95,6 @@ void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event &event)
 {
     ToolManager::getInstance().getCurrentTool()->onElementClicked(event.GetTargetElement());
 }
+
+
+RocketSystem* RocketSystem::instance = 0;
