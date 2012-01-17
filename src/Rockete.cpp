@@ -7,6 +7,7 @@
 #include <QTextDocument>
 #include <QGridLayout>
 #include <QColorDialog>
+#include <QComboBox>
 #include "AttributeTreeModel.h"
 #include "RocketSystem.h"
 #include "ActionManager.h"
@@ -62,10 +63,26 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
 
     ui.mainToolBar->addSeparator();
 
+
     ToolManager::getInstance().setup(ui.mainToolBar, ui.menuTools);
 
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
+
+    ui.mainToolBar->addSeparator();
+
+    searchBox = new QComboBox(this);
+    searchBox->setEditable(true);
+    searchBox->setInsertPolicy( QComboBox::InsertAtTop );
+    QAction *action = new QAction(QIcon(":/images/search.png"), "search", searchBox);
+
+    QString shortcut_string = "F" + QString::number(4);
+    action->setShortcut(QKeySequence(shortcut_string));
+
+    connect( searchBox, SIGNAL(activated(const QString&)), (QObject*)this, SLOT(searchBoxActivated()));
+    connect( action, SIGNAL(triggered()), (QObject*)this, SLOT(searchBoxActivated()));
+    ui.mainToolBar->addWidget(searchBox);
+    ui.mainToolBar->addAction(action);
 }
 
 Rockete::~Rockete()
@@ -132,7 +149,6 @@ void Rockete::reloadCurrentDocument()
         // :TODO: Clean this part.
         renderingView->changeCurrentDocument(NULL);
         currentDocument->selectedElement = NULL;
-        //currentDocument->rocketDocument->GetStyleSheet()->RemoveReference();
         RocketHelper::unloadDocument(currentDocument->rocketDocument);
         currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
         renderingView->changeCurrentDocument(currentDocument);
@@ -401,6 +417,12 @@ void Rockete::menuBackgroundChangeImage()
         Settings::setBackroundFileName( file_path );
         renderingView->repaint();
     }
+}
+
+void Rockete::searchBoxActivated()
+{
+    if (currentDocument)
+        currentDocument->find(searchBox->currentText());
 }
 
 // Protected:

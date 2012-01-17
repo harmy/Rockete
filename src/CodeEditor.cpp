@@ -86,6 +86,19 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
             lineStartIndex = nextLineStartIndex;
         }
     }
+    else if(e->key() == Qt::Key_Left)
+    {/*
+        QTextEdit::keyPressEvent(e);
+        QStringList lineList = toPlainText().split("\n");
+        int currentPosition = 0;
+        int lineStartIndex = 0;
+        int nextLineStartIndex;
+        int spaceCount;
+
+        currentPosition = textCursor().selectionStart();
+        */
+
+    }
     else
         QTextEdit::keyPressEvent(e);
 

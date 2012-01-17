@@ -53,6 +53,7 @@ public slots:
     void menuRecentFileClicked(QAction *action);
     void menuBackgroundChangeColor();
     void menuBackgroundChangeImage();
+    void searchBoxActivated();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
@@ -73,6 +74,7 @@ private:
     PropertyTreeModel *propertyTreeModel;
     QList<QAction*> recentFileActionList;
     static Rockete *instance;
+    QComboBox *searchBox;
 };
 
 #endif // ROCKETE_H

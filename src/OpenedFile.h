@@ -12,6 +12,7 @@ public:
     virtual ~OpenedFile();
     void fillTextEdit();
     QString getLine(const int line_number);
+    void find(const QString &str);
     int findLineNumber(const QString &str, const int start_line_number=0);
     void replaceLine(const int line_number, const QString &new_line);
     int insertLineBeforeBracket(const int start_line, const QString &new_line);

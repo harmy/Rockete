@@ -1,17 +1,18 @@
 <RCC>
-  <qresource prefix="/">
-    <file>images/tool_image.png</file>
-    <file>images/window_icon.png</file>
-    <file>images/zoom_in.png</file>
-    <file>images/zoom_out.png</file>
-    <file>images/redo.png</file>
-    <file>images/undo.png</file>
-    <file>images/open.png</file>
-    <file>images/picture.png</file>
-    <file>images/tools.png</file>
-    <file>images/refresh.png</file>
-    <file>images/save.png</file>
-    <file>images/tool_div.png</file>
-    <file>images/tool_select.png</file>
-  </qresource>
+    <qresource prefix="/">
+        <file>images/tool_image.png</file>
+        <file>images/window_icon.png</file>
+        <file>images/zoom_in.png</file>
+        <file>images/zoom_out.png</file>
+        <file>images/redo.png</file>
+        <file>images/undo.png</file>
+        <file>images/open.png</file>
+        <file>images/picture.png</file>
+        <file>images/tools.png</file>
+        <file>images/refresh.png</file>
+        <file>images/save.png</file>
+        <file>images/tool_div.png</file>
+        <file>images/tool_select.png</file>
+        <file>images/search.png</file>
+    </qresource>
 </RCC>
