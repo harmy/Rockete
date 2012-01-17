@@ -2,6 +2,7 @@
 
 #include <QScrollBar>
 #include "Settings.h"
+#include "Rockete.h"
 
 // Public:
 
@@ -13,6 +14,8 @@ CodeEditor::CodeEditor() : QTextEdit()
 
 void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
+    QString text_before = toPlainText();
+
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
         int start;
         int end;
@@ -85,6 +88,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
     }
     else
         QTextEdit::keyPressEvent(e);
+
+    QString text_after = toPlainText();
+
+    if (text_before != text_after)
+        Rockete::getInstance().codeTextChanged();
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * /*e*/)

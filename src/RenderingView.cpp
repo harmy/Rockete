@@ -107,8 +107,6 @@ void RenderingView::paintGL()
 
     RocketSystem::getInstance().getContext()->Update();
 
-
-
     glScalef(GraphicSystem::scaleFactor,GraphicSystem::scaleFactor,1.0f);
     glTranslatef(positionOffset.x,positionOffset.y,0.0f);
     GraphicSystem::scissorOffset = positionOffset;

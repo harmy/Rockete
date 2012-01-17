@@ -25,20 +25,23 @@ public:
     void selectElement(Element *element);
     void clear();
     void reloadCurrentDocument();
-    OpenedDocument *getDocumentFromTabIndex(const int tab_index);
-    OpenedStyleSheet *getStyleSheetFromTabIndex(const int tab_index);
+    //OpenedDocument *getDocumentFromTabIndex(const int tab_index);
+    //OpenedStyleSheet *getStyleSheetFromTabIndex(const int tab_index);
     OpenedDocument *getDocumentFromFileName(const char *name);
     OpenedStyleSheet *getStyleSheetFromFileName(const char *name);
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
-    OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
+    //OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
     OpenedDocument *getCurrentDocument() { return currentDocument; }
 
 public slots:
     void menuOpenClicked();
     void menuSaveClicked();
+    void menuSaveAsClicked();
     void menuCloseClicked();
+    void codeTextChanged();
     void codeTabChanged(int index);
+    void codeTabRequestClose(int index);
     void unselectElement();
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
@@ -56,8 +59,8 @@ protected:
 
 private:
     void openFile(const QString &file_path);
-    void openDocument(const char *);
-    void openStyleSheet(const char *);
+    int openDocument(const char *);
+    int openStyleSheet(const char *);
     void generateMenuRecent();
 
     Ui::rocketeClass ui;

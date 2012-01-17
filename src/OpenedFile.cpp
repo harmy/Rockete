@@ -120,6 +120,16 @@ void OpenedFile::save()
     }
 }
 
+void OpenedFile::saveAs(const QString &file_path)
+{
+    QFile file(file_path);
+
+    if (file.open(QFile::WriteOnly|QFile::Truncate)) {
+        file.write(textEdit->toPlainText().toAscii().data());
+        file.close();
+    }
+}
+
 void OpenedFile::setTextEditContent(const QString &content)
 {
     textDocument->setPlainText(content);

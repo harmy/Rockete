@@ -132,31 +132,11 @@ void Rockete::reloadCurrentDocument()
         // :TODO: Clean this part.
         renderingView->changeCurrentDocument(NULL);
         currentDocument->selectedElement = NULL;
-        currentDocument->rocketDocument->GetStyleSheet()->RemoveReference();
+        //currentDocument->rocketDocument->GetStyleSheet()->RemoveReference();
         RocketHelper::unloadDocument(currentDocument->rocketDocument);
         currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
         renderingView->changeCurrentDocument(currentDocument);
     }
-}
-
-OpenedDocument *Rockete::getDocumentFromTabIndex(const int tab_index)
-{
-    for (int i = 0; i < documentList.size(); ++i) {
-        if (documentList[i]->tabIndex == tab_index)
-            return documentList[i];
-    }
-
-    return NULL;
-}
-
-OpenedStyleSheet *Rockete::getStyleSheetFromTabIndex(const int tab_index)
-{
-    for (int i = 0; i < styleSheetList.size(); ++i) {
-        if (styleSheetList[i]->tabIndex == tab_index)
-            return styleSheetList[i];
-    }
-
-    return NULL;
 }
 
 OpenedDocument *Rockete::getDocumentFromFileName(const char * name)
@@ -196,16 +176,6 @@ OpenedFile *Rockete::getOpenedFile(const char * file_path, const bool try_to_ope
     return NULL;
 }
 
-OpenedFile *Rockete::getOpenedFileFromTabIndex(const int tab_index)
-{
-    for (int i = 0; i < openedFileList.size(); ++i) {
-        if (openedFileList[i]->tabIndex == tab_index)
-            return openedFileList[i];
-    }
-
-    return NULL;
-}
-
 // Public slots:
 
 void Rockete::menuOpenClicked()
@@ -219,22 +189,95 @@ void Rockete::menuOpenClicked()
 void Rockete::menuSaveClicked()
 {
     OpenedFile *current_file;
-    if ((current_file = getOpenedFileFromTabIndex(ui.codeTabWidget->currentIndex())))
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+
+    if (tab_text.startsWith('*'))
+        tab_text = tab_text.remove(0,1);
+    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
         current_file->save();
+        ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), tab_text);
+    }
+}
+
+void Rockete::menuSaveAsClicked()
+{
+    OpenedFile *current_file;
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    QString file_path = QFileDialog::getSaveFileName( this, tr( "Save as..." ), "", tr("libRocket Markup Language (*.rml);;libRocket CSS (*.rcss)") );
+
+    if (tab_text.startsWith("*"))
+        tab_text = tab_text.remove(0,1);
+    if ((current_file = getOpenedFile(tab_text.toAscii().data())) && !file_path.isEmpty() ) {
+        current_file->saveAs(file_path);
+        openFile(file_path);
+    }
 }
 
 void Rockete::menuCloseClicked()
 {
-    // :TODO:
+    OpenedFile *current_file;
+    OpenedDocument *document;
+    OpenedStyleSheet *style_sheet;
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+
+    if (tab_text.startsWith("*"))
+        tab_text = tab_text.remove(0,1);
+    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
+        current_file->save();
+        openedFileList.removeOne( current_file );
+    }
+    if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
+        documentList.removeOne(document);
+    }
+    if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
+        styleSheetList.removeOne( style_sheet );
+    }
+
+    ui.codeTabWidget->removeTab( ui.codeTabWidget->currentIndex() );
+}
+
+void Rockete::codeTextChanged()
+{
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    if (!tab_text.startsWith("*"))
+        ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), "*" + tab_text);
 }
 
 void Rockete::codeTabChanged( int index )
 {
     OpenedDocument *document;
-    if ((document = getDocumentFromTabIndex(index))) {
+    QString tab_text = ui.codeTabWidget->tabText(index);
+
+    if (tab_text.startsWith("*"))
+        tab_text = tab_text.remove(0,1);
+    if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
         renderingView->changeCurrentDocument(document);
         currentDocument = document;
     }
+}
+
+void Rockete::codeTabRequestClose( int index )
+{
+    OpenedFile *current_file;
+    OpenedDocument *document;
+    OpenedStyleSheet *style_sheet;
+    QString tab_text = ui.codeTabWidget->tabText(index);
+
+    if (tab_text.startsWith("*"))
+        tab_text = tab_text.remove(0,1);
+    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
+        current_file->save();
+        openedFileList.removeOne( current_file );
+    }
+    if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
+        documentList.removeOne(document);
+    }
+    if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
+        styleSheetList.removeOne( style_sheet );
+    }
+
+    ui.codeTabWidget->removeTab( index );
+
 }
 
 void Rockete::unselectElement()
@@ -373,17 +416,18 @@ void Rockete::openFile(const QString &filePath)
 {
     QFileInfo file_info(filePath);
     bool success = false;
+    int new_tab_index;
 
     if (file_info.suffix() == "rml") {
-        openDocument(filePath.toAscii().data());
+        new_tab_index = openDocument(filePath.toAscii().data());
         renderingView->changeCurrentDocument(documentList.last());
         currentDocument = documentList.last();
-        ui.codeTabWidget->setCurrentIndex(currentDocument->tabIndex);
+        ui.codeTabWidget->setCurrentIndex(new_tab_index);
         success = true;
     }
     else if (file_info.suffix() == "rcss") {
-        openStyleSheet(filePath.toAscii().data());
-        ui.codeTabWidget->setCurrentIndex(styleSheetList.last()->tabIndex);
+        new_tab_index = openStyleSheet(filePath.toAscii().data());
+        ui.codeTabWidget->setCurrentIndex(new_tab_index);
         success = true;
     }
 
@@ -393,7 +437,7 @@ void Rockete::openFile(const QString &filePath)
     }
 }
 
-void Rockete::openDocument(const char *file_path)
+int Rockete::openDocument(const char *file_path)
 {
     OpenedDocument *new_document;
     QFileInfo file_info(file_path);
@@ -401,7 +445,7 @@ void Rockete::openDocument(const char *file_path)
     if (!file_info.exists())
     {
         // :TODO: display error message
-        return;
+        return -1;
     }
 
     new_document = new OpenedDocument;
@@ -417,10 +461,10 @@ void Rockete::openDocument(const char *file_path)
     openedFileList.push_back(new_document);
 
     new_document->initialize();
-    new_document->tabIndex = ui.codeTabWidget->addTab(new_document->textEdit, file_info.fileName());
+    return ui.codeTabWidget->addTab(new_document->textEdit, file_info.fileName());
 }
 
-void Rockete::openStyleSheet(const char *file_path)
+int Rockete::openStyleSheet(const char *file_path)
 {
     OpenedStyleSheet *new_style_sheet;
     QFileInfo file_info(file_path);
@@ -436,8 +480,7 @@ void Rockete::openStyleSheet(const char *file_path)
     openedFileList.push_back(new_style_sheet);
 
     new_style_sheet->initialize();
-    new_style_sheet->tabIndex = ui.codeTabWidget->addTab(new_style_sheet->textEdit, file_info.fileName());
-
+    return ui.codeTabWidget->addTab(new_style_sheet->textEdit, file_info.fileName());
 }
 
 void Rockete::generateMenuRecent()
