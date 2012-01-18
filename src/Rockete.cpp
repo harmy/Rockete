@@ -421,8 +421,15 @@ void Rockete::menuBackgroundChangeImage()
 
 void Rockete::searchBoxActivated()
 {
-    if (currentDocument)
-        currentDocument->find(searchBox->currentText());
+    OpenedFile *current_file;
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+
+    if (tab_text.startsWith("*"))
+        tab_text = tab_text.remove(0,1);
+    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
+        current_file->find(searchBox->currentText());
+        current_file->highlightString(searchBox->currentText());
+    }
 }
 
 // Protected:

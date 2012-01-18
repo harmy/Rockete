@@ -5,6 +5,11 @@ CssHighlighter::CssHighlighter(QTextDocument *document)
 {
 }
 
+void CssHighlighter::highlightString(const QString &str)
+{
+
+}
+
 void CssHighlighter::highlightBlock(const QString& text)
 {
     enum Token { ALNUM, LBRACE, RBRACE, COLON, SEMICOLON, COMMA, QUOTE, SLASH, STAR };

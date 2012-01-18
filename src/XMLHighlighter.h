@@ -12,6 +12,7 @@ class XMLHighlighter : public QSyntaxHighlighter
 
 public:
     XMLHighlighter(QTextDocument *document);
+    void setHighlightedString(const QString &str);
 
 
 protected:

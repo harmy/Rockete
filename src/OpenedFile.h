@@ -20,6 +20,7 @@ public:
     void save();
     void saveAs(const QString &file_path);
     void setTextEditContent(const QString &content);
+    virtual void highlightString(const QString &/*str*/){}
 
     //int tabIndex;
     CodeEditor *textEdit;

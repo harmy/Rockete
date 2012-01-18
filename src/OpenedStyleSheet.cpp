@@ -3,7 +3,6 @@
 #include <QFile>
 #include <QTextDocument>
 #include "CodeEditor.h"
-#include "CSSHighlighter.h"
 
 // Public:
 
@@ -20,7 +19,7 @@ void OpenedStyleSheet::initialize()
 
     textDocument = new QTextDocument();
     textDocument->setDefaultFont(QFont("Courier",10));
-    new CssHighlighter(textDocument);
+    highlighter = new CssHighlighter(textDocument);
 
     fillTextEdit();
 

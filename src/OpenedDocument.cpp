@@ -1,6 +1,5 @@
 #include "OpenedDocument.h"
 
-#include "XMLHighlighter.h"
 #include "RocketSystem.h"
 #include "CodeEditor.h"
 
@@ -17,7 +16,7 @@ void OpenedDocument::initialize()
 
     textDocument = new QTextDocument();
     textDocument->setDefaultFont(QFont("Courier",10));
-    new XMLHighlighter(textDocument);
+    highlighter = new XMLHighlighter(textDocument);
 
     fillTextEdit();
 }
@@ -87,4 +86,10 @@ void OpenedDocument::regenerateBodyContent()
     content_element->GetInnerRML(rocket_string_content);
 
     replaceInnerRMLFromTagName("body", QString(rocket_string_content.CString()));
+}
+
+void OpenedDocument::highlightString(const QString &str)
+{
+    highlighter->setHighlightedString(str);
+    highlighter->rehighlight();
 }

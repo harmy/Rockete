@@ -15,6 +15,7 @@ XMLHighlighter::XMLHighlighter(QTextDocument *document)
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("/>"), keywordFormat));
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp(">"), keywordFormat));
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("<"), keywordFormat));
+    highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("</"), keywordFormat));
 
     xmlElementFormat.setFontWeight(QFont::Bold);
     xmlElementFormat.setForeground(Qt::darkGreen);
@@ -33,6 +34,22 @@ XMLHighlighter::XMLHighlighter(QTextDocument *document)
     singleLineCommentFormat.setForeground(Qt::gray);
 
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("<!--[^\n]*-->"), singleLineCommentFormat));
+}
+
+void XMLHighlighter::setHighlightedString(const QString &str)
+{
+    bool first_time = true;
+    QTextCharFormat keywordFormat;
+
+    keywordFormat.setBackground(Qt::green);
+    
+    if (!first_time)
+    {
+        highlightingRules.removeLast();
+    }
+    highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("\\b"+str+"\\b"), keywordFormat));
+
+    first_time = false;
 }
 
 void XMLHighlighter::highlightBlock(const QString &text)

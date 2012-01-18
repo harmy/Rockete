@@ -4,6 +4,7 @@
 #include "RocketHelper.h"
 #include "OpenedFile.h"
 #include "StyleSheet.h"
+#include "XMLHighlighter.h"
 #include <QList>
 
 class OpenedDocument : public OpenedFile
@@ -15,10 +16,12 @@ public:
     void replaceInnerRMLFromId(const QString &tag_name, const QString &id, const QString &new_content);
     void replaceInnerRMLFromTagName(const QString &tag_name, const QString &new_content);
     void regenerateBodyContent();
+    virtual void highlightString(const QString &str);
 
     RMLDocument *rocketDocument;
     Element *selectedElement;
     QList<StyleSheet*> styleSheetList;
+    XMLHighlighter *highlighter;
 };
 
 #endif
