@@ -421,6 +421,11 @@ void Rockete::menuBackgroundChangeImage()
 
 void Rockete::searchBoxActivated()
 {
+    if(searchBox->currentText().isEmpty())
+    {
+        return;
+    }
+
     OpenedFile *current_file;
     QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
 

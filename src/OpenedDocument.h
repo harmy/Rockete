@@ -22,6 +22,7 @@ public:
     Element *selectedElement;
     QList<StyleSheet*> styleSheetList;
     XMLHighlighter *highlighter;
+    QString highlightedString;
 };
 
 #endif

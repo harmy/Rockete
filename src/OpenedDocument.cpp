@@ -90,5 +90,8 @@ void OpenedDocument::regenerateBodyContent()
 
 void OpenedDocument::highlightString(const QString &str)
 {
-    highlighter->setHighlightedString(str);
+    if(highlightedString!=str)
+    {
+        highlighter->setHighlightedString(str);
+    }
 }
