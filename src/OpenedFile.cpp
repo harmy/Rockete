@@ -143,6 +143,7 @@ void OpenedFile::save()
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
         file.write(textEdit->toPlainText().toAscii().data());
         file.close();
+        textDocument->setModified( false );
     }
 }
 

@@ -14,53 +14,41 @@ CodeEditor::CodeEditor() : QTextEdit()
 
 void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
-    QString text_before = toPlainText();
-
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
-        int start;
-        int end;
+
         bool shiftIsPressed = e->key() == Qt::Key_Backtab;
-        int scrollPosition = verticalScrollBar()->sliderPosition();
-        QStringList lineList = toPlainText().split("\n");
-        int currentIndex = 0;
-        int nextIndex;
-        int futureSelectionStart = -1;
-        int futureSelectionOffset = 0;
 
-        start = textCursor().selectionStart();
-        end = textCursor().selectionEnd();
+        textCursor().beginEditBlock();
 
-        for(int i=0; i<lineList.size(); ++i) {
-            nextIndex = currentIndex + lineList[i].size() + 1;
+        QTextCursor editingTextCursor = textCursor();
+        QTextCursor endingTextCursor = textCursor();
 
-            if ((currentIndex >= start || (start >= currentIndex && start < nextIndex)) && currentIndex <= end) {
-                if (!shiftIsPressed) {
-                    for(int j=0; j<Settings::getTabSize(); ++j) {
-                        lineList[i].insert(0, " ");
-                        ++futureSelectionOffset;
-                    }
+        editingTextCursor.setPosition(textCursor().selectionStart());
+        endingTextCursor.setPosition(textCursor().selectionEnd());
+        endingTextCursor.movePosition( QTextCursor::Down );
+        endingTextCursor.movePosition( QTextCursor::StartOfLine );
+
+        do{
+            editingTextCursor.movePosition( QTextCursor::StartOfLine );
+
+            if (!shiftIsPressed) {
+                for(int j=0; j<Settings::getTabSize(); ++j) {
+                    editingTextCursor.insertText(" ");
                 }
-                else {
-                    for(int j=0; j<Settings::getTabSize(); ++j) {
-                        if (lineList[i][0] == ' ') {
-                            lineList[i].remove(0, 1);
-                            --futureSelectionOffset;
-                        }
-                    }
-                }
-
-                if (futureSelectionStart == -1)
-                    futureSelectionStart = currentIndex;
             }
-            currentIndex = nextIndex;
-        }
+            else {
+                for(int j=0; j<Settings::getTabSize(); ++j) {
+                    if (toPlainText()[editingTextCursor.position()] == ' ') {
+                        editingTextCursor.deleteChar();
+                    }
+                }
+            }
+            editingTextCursor.movePosition( QTextCursor::Down );
+            editingTextCursor.movePosition( QTextCursor::StartOfLine );
 
-        document()->setPlainText(lineList.join("\n"));
-        verticalScrollBar()->setSliderPosition(scrollPosition);
-        QTextCursor newTextCursor = textCursor();
-        newTextCursor.setPosition(futureSelectionStart);
-        newTextCursor.setPosition(end + futureSelectionOffset, QTextCursor::MoveAnchor);
-        setTextCursor(newTextCursor);
+        } while(editingTextCursor.position() != endingTextCursor.position());
+
+        textCursor().endEditBlock();
     }
     else if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
         QStringList lineList = toPlainText().split("\n");
@@ -69,29 +57,30 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         int nextLineStartIndex;
         int spaceCount;
 
+        textCursor().beginEditBlock();
+
+        // TODO: refactor using same kind of functions as the tabbing system
         currentPosition = textCursor().selectionStart();
 
-        for(int i=0; i<lineList.size(); ++i)
-        {
+        for(int i=0; i<lineList.size(); ++i){
             nextLineStartIndex = lineStartIndex + lineList[i].size() + 1;
 
             if ((lineStartIndex >= currentPosition || (currentPosition >= lineStartIndex && currentPosition < nextLineStartIndex))) {
                 for( spaceCount = 0;lineList[i][spaceCount].isSpace(); spaceCount++ );
-                textCursor().insertText( "\n" );
+                textCursor().insertText("\n");
                 for( ;spaceCount>0; spaceCount-- ){
-                    textCursor().insertText( " " );
+                    textCursor().insertText(" ");
                 }
                 break;
             }
             lineStartIndex = nextLineStartIndex;
         }
+        textCursor().endEditBlock();
     }
     else
         QTextEdit::keyPressEvent(e);
 
-    QString text_after = toPlainText();
-
-    if (text_before != text_after)
+    if (document()->isModified())
         Rockete::getInstance().codeTextChanged();
 }
 
