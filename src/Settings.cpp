@@ -27,6 +27,10 @@ void Settings::setMostRecentFile(const QString &filePath)
 
     currentList.push_front(filePath);
 
+    while( currentList.count() > 30 ) {
+        currentList.removeLast();
+    }
+
     settings.setValue("File/Recents", currentList);
 }
 
