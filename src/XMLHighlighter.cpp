@@ -34,22 +34,17 @@ XMLHighlighter::XMLHighlighter(QTextDocument *document)
     singleLineCommentFormat.setForeground(Qt::gray);
 
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("<!--[^\n]*-->"), singleLineCommentFormat));
+    highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("placeholder_rule_for_search_highlight"), keywordFormat));
 }
 
 void XMLHighlighter::setHighlightedString(const QString &str)
 {
-    bool first_time = true;
     QTextCharFormat keywordFormat;
 
     keywordFormat.setBackground(Qt::green);
     
-    if (!first_time)
-    {
-        highlightingRules.removeLast();
-    }
-    highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp("\\b"+str+"\\b"), keywordFormat));
-
-    first_time = false;
+    highlightingRules.removeLast();
+    highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp(str), keywordFormat));
 }
 
 void XMLHighlighter::highlightBlock(const QString &text)
@@ -64,15 +59,6 @@ void XMLHighlighter::highlightBlock(const QString &text)
     {
         const QRegExp & expression = highlightingRules[i].first;
         const QTextCharFormat & format = highlightingRules[i].second;
-
-        index = expression.indexIn(text);
-
-        while(index >= 0)
-        {
-            length = expression.matchedLength();
-            setFormat(index, length, format);
-            index = expression.indexIn(text, index + length);
-        }
 
         setCurrentBlockState(0);
         startIndex = 0;
@@ -99,6 +85,15 @@ void XMLHighlighter::highlightBlock(const QString &text)
             setFormat(startIndex, commentLength, valueFormat);
 
             startIndex = valueStartExpression.indexIn(text, startIndex + commentLength);
+        }
+
+        index = expression.indexIn(text);
+
+        while(index >= 0)
+        {
+            length = expression.matchedLength();
+            setFormat(index, length, format);
+            index = expression.indexIn(text, index + length);
         }
     }
 
