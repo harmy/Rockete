@@ -9,7 +9,7 @@ class CssHighlighter : public QSyntaxHighlighter
 
 public:
     explicit CssHighlighter(QTextDocument *document);
-    virtual void highlightString(const QString &str);
+    virtual void setHighlightedString(const QString &str);
 
 protected:
     void highlightBlock(const QString&);
@@ -29,6 +29,7 @@ private:
         Comment,
         MaybeCommentEnd
     };
+    QString highlightedString;
 };
 
 #endif

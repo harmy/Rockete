@@ -32,3 +32,8 @@ void OpenedStyleSheet::initialize()
     style_sheet.findMatchingProperties(test,getDocumentFromTabIndex(0)->selectedElement);
     */
 }
+
+void OpenedStyleSheet::highlightString(const QString &str)
+{
+    highlighter->setHighlightedString(str);
+}

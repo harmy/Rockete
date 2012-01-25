@@ -45,6 +45,7 @@ void XMLHighlighter::setHighlightedString(const QString &str)
     
     highlightingRules.removeLast();
     highlightingRules.push_back(QPair<QRegExp,QTextCharFormat>(QRegExp(str), keywordFormat));
+    rehighlight();
 }
 
 void XMLHighlighter::highlightBlock(const QString &text)

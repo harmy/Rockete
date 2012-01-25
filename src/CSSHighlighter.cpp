@@ -1,13 +1,18 @@
 #include "CSSHighlighter.h"
+#include "QTextDocument.h"
 
 CssHighlighter::CssHighlighter(QTextDocument *document)
 : QSyntaxHighlighter(document)
 {
 }
 
-void CssHighlighter::highlightString(const QString &str)
+void CssHighlighter::setHighlightedString(const QString &str)
 {
-
+    if (highlightedString != str)
+    {
+        highlightedString = str;
+        rehighlight();
+    }
 }
 
 void CssHighlighter::highlightBlock(const QString& text)
@@ -104,6 +109,23 @@ void CssHighlighter::highlightBlock(const QString& text)
     }
 
     highlight(text, lastIndex, text.length() - lastIndex, state);
+
+    if (!highlightedString.isEmpty()) {
+        int starting_index = 0;
+        QTextCharFormat keywordFormat;
+
+        keywordFormat.setBackground(Qt::green);
+        do
+        {
+            starting_index = text.indexOf(highlightedString, starting_index);
+            if (starting_index>=0)
+            {
+                setFormat(starting_index, highlightedString.size(), keywordFormat);
+                starting_index = starting_index+highlightedString.size();
+            }
+        } while (starting_index>=0);
+    }
+
     setCurrentBlockState(state + (save_state<<16));
 }
 

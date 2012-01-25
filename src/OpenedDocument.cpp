@@ -91,5 +91,4 @@ void OpenedDocument::regenerateBodyContent()
 void OpenedDocument::highlightString(const QString &str)
 {
     highlighter->setHighlightedString(str);
-    highlighter->rehighlight();
 }
