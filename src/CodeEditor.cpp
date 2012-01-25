@@ -77,6 +77,34 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         }
         textCursor().endEditBlock();
     }
+    else if (e->key() == Qt::Key_Left)
+    {
+        if(textCursor().hasSelection())
+        {
+            QTextCursor newCursor = textCursor();
+            newCursor.setPosition(textCursor().selectionStart());
+            setTextCursor(newCursor);
+            document()->setModified(false);
+        }
+        else
+        {
+            QTextEdit::keyPressEvent(e);
+        }
+    }
+    else if (e->key() == Qt::Key_Right)
+    {
+        if(textCursor().hasSelection())
+        {
+            QTextCursor newCursor = textCursor();
+            newCursor.setPosition(textCursor().selectionEnd());
+            setTextCursor(newCursor);
+            document()->setModified(false);
+        }
+        else
+        {
+            QTextEdit::keyPressEvent(e);
+        }
+    }
     else
         QTextEdit::keyPressEvent(e);
 
