@@ -79,7 +79,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
     }
     else if (e->key() == Qt::Key_Left)
     {
-        if(textCursor().hasSelection())
+        if(textCursor().hasSelection() && (e->modifiers() & Qt::ShiftModifier) == 0)
         {
             QTextCursor newCursor = textCursor();
             newCursor.setPosition(textCursor().selectionStart());
@@ -93,7 +93,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
     }
     else if (e->key() == Qt::Key_Right)
     {
-        if(textCursor().hasSelection())
+        if(textCursor().hasSelection() && (e->modifiers() & Qt::ShiftModifier) == 0)
         {
             QTextCursor newCursor = textCursor();
             newCursor.setPosition(textCursor().selectionEnd());

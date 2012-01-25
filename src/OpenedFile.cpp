@@ -166,4 +166,5 @@ void OpenedFile::setTextEditContent(const QString &content)
 {
     textDocument->setPlainText(content);
     textEdit->setDocument(textDocument);
+    textDocument->setModified( false );
 }

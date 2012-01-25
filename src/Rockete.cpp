@@ -240,13 +240,14 @@ void Rockete::menuCloseClicked()
         tab_text = tab_text.remove(0,1);
     if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
         current_file->save();
-        openedFileList.removeOne( current_file );
+        openedFileList.removeOne(current_file);
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
         documentList.removeOne(document);
+        RocketHelper::unloadDocument(document->rocketDocument);
     }
     if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
-        styleSheetList.removeOne( style_sheet );
+        styleSheetList.removeOne(style_sheet);
     }
 
     ui.codeTabWidget->removeTab( ui.codeTabWidget->currentIndex() );
@@ -287,6 +288,7 @@ void Rockete::codeTabRequestClose( int index )
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
         documentList.removeOne(document);
+        RocketHelper::unloadDocument(document->rocketDocument);
     }
     if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
         styleSheetList.removeOne( style_sheet );
