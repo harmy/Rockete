@@ -26,6 +26,8 @@ public:
     CodeEditor *textEdit;
     QTextDocument * textDocument;
     QFileInfo fileInfo;
+    QString previousSearch;
+    int previousStartingIndex;
 };
 
 #endif

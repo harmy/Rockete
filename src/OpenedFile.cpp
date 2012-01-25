@@ -6,6 +6,7 @@
 
 OpenedFile::OpenedFile()
 {
+    previousStartingIndex = -1;
 }
 
 OpenedFile::~OpenedFile()
@@ -39,20 +40,17 @@ QString OpenedFile::getLine(const int line_number)
 
 void OpenedFile::find(const QString &str)
 {
-    static QString previous_search = str;
-    static int previous_starting_index = -1;
     QString plain_text;
     int starting_index;
 
-    if (previous_search != str || previous_starting_index == -1)
+    if (previousStartingIndex == -1)
     {
-        previous_search = str;
-        previous_starting_index = -1;
+        previousStartingIndex = -1;
     }
 
     plain_text = textEdit->toPlainText();
 
-    starting_index = plain_text.indexOf(previous_search,previous_starting_index == -1 ? 0 : previous_starting_index);
+    starting_index = plain_text.indexOf(previousSearch, previousStartingIndex == -1 ? 0 : previousStartingIndex);
     if (starting_index>=0)
     {
         textEdit->setFocus();
