@@ -59,8 +59,13 @@ void OpenedFile::find(const QString &str)
         newTextCursor.setPosition(starting_index);
         newTextCursor.setPosition(starting_index+str.size(), QTextCursor::KeepAnchor);
         textEdit->setTextCursor(newTextCursor);
+        previousStartingIndex = starting_index+str.size();
     }
-    previousStartingIndex = starting_index+str.size();
+    else if (starting_index != previousStartingIndex)
+    {
+        previousStartingIndex = starting_index+str.size();
+        find(previousSearch);
+    }
 }
 
 int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
