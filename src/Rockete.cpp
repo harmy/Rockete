@@ -124,7 +124,7 @@ void Rockete::selectElement(Element *element)
 {
     if(element != currentDocument->selectedElement) {
         currentDocument->selectedElement = element;
-        renderingView->repaint();
+        repaintRenderingView();
         fillAttributeView();
         fillPropertyView();
     }
@@ -231,26 +231,7 @@ void Rockete::menuSaveAsClicked()
 
 void Rockete::menuCloseClicked()
 {
-    OpenedFile *current_file;
-    OpenedDocument *document;
-    OpenedStyleSheet *style_sheet;
-    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
-
-    if (tab_text.startsWith("*"))
-        tab_text = tab_text.remove(0,1);
-    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) {
-        current_file->save();
-        openedFileList.removeOne(current_file);
-    }
-    if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
-        documentList.removeOne(document);
-        RocketHelper::unloadDocument(document->rocketDocument);
-    }
-    if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
-        styleSheetList.removeOne(style_sheet);
-    }
-
-    ui.codeTabWidget->removeTab( ui.codeTabWidget->currentIndex() );
+    codeTabRequestClose(ui.codeTabWidget->currentIndex());
 }
 
 void Rockete::codeTextChanged()
@@ -287,15 +268,28 @@ void Rockete::codeTabRequestClose( int index )
         openedFileList.removeOne( current_file );
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
+        document->selectedElement = NULL;
+        fillAttributeView();
+        fillPropertyView();
         documentList.removeOne(document);
-        RocketHelper::unloadDocument(document->rocketDocument);
+        ToolManager::getInstance().getCurrentTool()->onUnselect();
     }
     if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
         styleSheetList.removeOne( style_sheet );
     }
 
     ui.codeTabWidget->removeTab( index );
+    if(ui.codeTabWidget->count() == 0 )
+    {
+        renderingView->changeCurrentDocument(NULL);
+        currentDocument = NULL;
+    }
 
+    if(document)
+    {
+        RocketHelper::unloadDocument(document->rocketDocument);
+        repaintRenderingView();
+    }
 }
 
 void Rockete::unselectElement()
@@ -304,7 +298,6 @@ void Rockete::unselectElement()
         return;
 
     currentDocument->selectedElement = NULL;
-    renderingView->repaint();
     fillAttributeView();
     fillPropertyView();
     ToolManager::getInstance().getCurrentTool()->onUnselect();
@@ -417,7 +410,7 @@ void Rockete::menuBackgroundChangeImage()
     if (!file_path.isEmpty())
     {
         Settings::setBackroundFileName( file_path );
-        renderingView->repaint();
+        repaintRenderingView();
     }
 }
 
