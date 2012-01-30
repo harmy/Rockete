@@ -271,25 +271,23 @@ void Rockete::codeTabRequestClose( int index )
         document->selectedElement = NULL;
         fillAttributeView();
         fillPropertyView();
-        documentList.removeOne(document);
         ToolManager::getInstance().getCurrentTool()->onUnselect();
+        documentList.removeOne(document);
     }
     if ((style_sheet = getStyleSheetFromFileName(tab_text.toAscii().data()))) {
         styleSheetList.removeOne( style_sheet );
     }
 
-    ui.codeTabWidget->removeTab( index );
-    if(ui.codeTabWidget->count() == 0 )
+    if(document)
     {
         renderingView->changeCurrentDocument(NULL);
         currentDocument = NULL;
-    }
-
-    if(document)
-    {
         RocketHelper::unloadDocument(document->rocketDocument);
         repaintRenderingView();
     }
+
+    ui.codeTabWidget->removeTab( index );
+
 }
 
 void Rockete::unselectElement()
