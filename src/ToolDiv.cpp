@@ -88,7 +88,7 @@ void ToolDiv::onMousePress(const Qt::MouseButton /*button*/, const Vector2f &pos
 {
     if (findMarkerFromPosition(currentMarkerIndex, position)) {
         initialPosition = position;
-        itIsResizing = true;
+        //itIsResizing = true;
     }
 }
 

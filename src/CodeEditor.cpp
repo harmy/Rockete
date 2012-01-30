@@ -16,9 +16,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
 
-        bool shiftIsPressed = e->key() == Qt::Key_Backtab;
-
         textCursor().beginEditBlock();
+        bool shiftIsPressed = e->key() == Qt::Key_Backtab;
 
         QTextCursor editingTextCursor = textCursor();
         QTextCursor endingTextCursor = textCursor();
@@ -47,8 +46,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
             editingTextCursor.movePosition( QTextCursor::StartOfLine );
 
         } while(editingTextCursor.position() != endingTextCursor.position());
-
         textCursor().endEditBlock();
+
     }
     else if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
         QStringList lineList = toPlainText().split("\n");
@@ -57,8 +56,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         int nextLineStartIndex;
         int spaceCount;
 
-        textCursor().beginEditBlock();
 
+        textCursor().beginEditBlock();
         // TODO: refactor using same kind of functions as the tabbing system
         currentPosition = textCursor().selectionStart();
 
@@ -81,10 +80,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
     {
         if(textCursor().hasSelection() && (e->modifiers() & Qt::ShiftModifier) == 0)
         {
+            textCursor().beginEditBlock();
             QTextCursor newCursor = textCursor();
             newCursor.setPosition(textCursor().selectionStart());
             setTextCursor(newCursor);
             document()->setModified(false);
+            textCursor().endEditBlock();
         }
         else
         {
@@ -95,21 +96,67 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
     {
         if(textCursor().hasSelection() && (e->modifiers() & Qt::ShiftModifier) == 0)
         {
+            textCursor().beginEditBlock();
             QTextCursor newCursor = textCursor();
             newCursor.setPosition(textCursor().selectionEnd());
             setTextCursor(newCursor);
             document()->setModified(false);
+            textCursor().endEditBlock();
         }
         else
         {
             QTextEdit::keyPressEvent(e);
         }
     }
+    else if (e->key() == Qt::Key_Delete)
+    {
+        if(textCursor().hasSelection())
+        {
+            QTextEdit::keyPressEvent(e);
+        }
+        else
+        {
+            if(toPlainText()[textCursor().position()] == '\n')
+            {
+                textCursor().beginEditBlock();
+                textCursor().deleteChar();
+                QTextCursor editingTextCursor = textCursor();
+                do
+                {
+                    editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
+                } while (toPlainText()[editingTextCursor.position()] == ' ');
+
+                editingTextCursor.removeSelectedText();
+                textCursor().endEditBlock();
+            }
+            else
+            {
+                QTextEdit::keyPressEvent(e);
+            }
+        }
+    }
+    else if (e->key() == Qt::Key_Home) {
+
+        textCursor().beginEditBlock();
+        QTextCursor editingTextCursor = textCursor();
+        editingTextCursor.movePosition( QTextCursor::StartOfLine, (e->modifiers() & Qt::ShiftModifier) == 0 ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );
+
+        while (toPlainText()[editingTextCursor.position()] == ' ') 
+        {
+            editingTextCursor.movePosition( QTextCursor::Right, (e->modifiers() & Qt::ShiftModifier) == 0 ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );
+        }
+
+        setTextCursor(editingTextCursor);
+        document()->setModified(false);
+        textCursor().endEditBlock();
+    }
     else
         QTextEdit::keyPressEvent(e);
 
+
     if (document()->isModified())
         Rockete::getInstance().codeTextChanged();
+
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * /*e*/)
