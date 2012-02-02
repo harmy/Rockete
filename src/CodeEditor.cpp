@@ -129,10 +129,59 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
                 editingTextCursor.removeSelectedText();
                 textCursor().endEditBlock();
             }
+            else if(toPlainText()[textCursor().position()] == ' ')
+            {
+                QTextCursor editingTextCursor = textCursor();
+
+                textCursor().beginEditBlock();
+
+                for(int i = 0; i < Settings::getTabSize(); i++)
+                {
+                    if( toPlainText()[editingTextCursor.position()] == ' ' )
+                    {
+                        editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                editingTextCursor.removeSelectedText();
+                textCursor().endEditBlock();
+            }
             else
             {
                 QTextEdit::keyPressEvent(e);
             }
+        }
+    }
+    else if (e->key() == Qt::Key_Backspace)
+    {
+        if(textCursor().position()>0 && toPlainText()[textCursor().position()-1] == ' ')
+        {
+            QTextCursor editingTextCursor = textCursor();
+
+            textCursor().beginEditBlock();
+
+            for(int i = 0; i < Settings::getTabSize(); i++)
+            {
+                if( textCursor().position()>0 && toPlainText()[editingTextCursor.position()-1] == ' ' )
+                {
+                    editingTextCursor.movePosition( QTextCursor::Left, QTextCursor::KeepAnchor );
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            editingTextCursor.removeSelectedText();
+            textCursor().endEditBlock();
+        }
+        else
+        {
+            QTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Home) {
