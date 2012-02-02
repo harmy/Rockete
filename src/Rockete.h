@@ -48,6 +48,7 @@ public slots:
     void menuLoadFonts();
     void menuUndoClicked();
     void menuRedoClicked();
+    void menuReloadAssetsClicked();
     void propertyViewClicked(const QModelIndex &index);
     void attributeViewClicked(const QModelIndex &index);
     void menuRecentFileClicked(QAction *action);

@@ -18,6 +18,7 @@ void RocketHelper::unloadDocument(RMLDocument * rml_document)
 {
     RocketSystem::getInstance().getContext()->UnloadDocument(rml_document);
     Rocket::Core::Factory::ClearStyleSheetCache();
+    RocketSystem::getInstance().getContext()->Update(); // force the actual unload instead of setting a flag
 }
 
 void RocketHelper::highlightElement(Element * element)

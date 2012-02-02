@@ -151,6 +151,7 @@ void Rockete::reloadCurrentDocument()
         currentDocument->selectedElement = NULL;
         RocketHelper::unloadDocument(currentDocument->rocketDocument);
         currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
+        currentDocument->rocketDocument->RemoveReference();
         renderingView->changeCurrentDocument(currentDocument);
     }
 }
@@ -371,6 +372,47 @@ void Rockete::menuRedoClicked()
     ActionManager::getInstance().applyNext();
     //reloadCurrentDocument();
     fillAttributeView();
+}
+
+void Rockete::menuReloadAssetsClicked()
+{
+    if (currentDocument) {
+        // :TODO: Clean this part.
+        renderingView->changeCurrentDocument(NULL);
+    }
+
+    for(int i = 0; i < ui.codeTabWidget->count(); i++)
+    {
+        OpenedDocument *document;
+        QString tab_text = ui.codeTabWidget->tabText(i);
+        if (tab_text.startsWith("*"))
+            tab_text = tab_text.remove(0,1);
+        if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
+            document->selectedElement = NULL;
+            RocketHelper::unloadDocument(document->rocketDocument);
+        }
+    }
+
+    for(int i = 0; i < ui.codeTabWidget->count(); i++)
+    {
+        OpenedDocument *document;
+        QString tab_text = ui.codeTabWidget->tabText(i);
+        if (tab_text.startsWith("*"))
+            tab_text = tab_text.remove(0,1);
+        if ((document = getDocumentFromFileName(tab_text.toAscii().data()))) {
+            if(document == currentDocument)
+            {
+                currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
+                currentDocument->rocketDocument->RemoveReference();
+                renderingView->changeCurrentDocument(currentDocument);
+            }
+            else
+            {
+                document->rocketDocument = RocketHelper::loadDocument(document->fileInfo.filePath().toAscii().data());
+                document->rocketDocument->RemoveReference();
+            }
+        }
+    }
 }
 
 void Rockete::propertyViewClicked(const QModelIndex &/*index*/)

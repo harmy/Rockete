@@ -192,6 +192,7 @@
      <addaction name="actionStreched"/>
     </widget>
     <addaction name="actionReload"/>
+    <addaction name="actionReload_assets"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
@@ -404,6 +405,14 @@
   <action name="actionSave_As">
    <property name="text">
     <string>Save as...</string>
+   </property>
+  </action>
+  <action name="actionReload_assets">
+   <property name="text">
+    <string>Reload assets</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
    </property>
   </action>
  </widget>
@@ -728,6 +737,22 @@
    <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
    <slot>menuSaveAsClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionReload_assets</sender>
+   <signal>triggered()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuReloadAssetsClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
