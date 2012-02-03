@@ -10,12 +10,109 @@ CodeEditor::CodeEditor() : QTextEdit()
 {
 }
 
+bool CodeEditor::CheckCssCorrectness(QString & error_message)
+{
+    QTextCursor parsingTextCursor = textCursor();
+    int opened_brace_counter = 0;
+
+    parsingTextCursor.setPosition(0);
+
+    while(!parsingTextCursor.atEnd())
+    {
+        if(toPlainText()[parsingTextCursor.position()] == '{')
+        {
+            opened_brace_counter++;
+        }
+        else if(toPlainText()[parsingTextCursor.position()] == '}')
+        {
+            opened_brace_counter--;
+        }
+
+        parsingTextCursor.movePosition(QTextCursor::Right);
+    }
+
+    if(opened_brace_counter!=0)
+    {
+        error_message = ( opened_brace_counter < 0 ? "too many '}'" : "too many '{'" );
+        error_message += " search for '{|}' to highlight all '{' and '}'";
+    }
+
+    return opened_brace_counter == 0;
+}
+
+bool CodeEditor::CheckXmlCorrectness(QString & error_message)
+{
+    QTextCursor parsingTextCursor = textCursor();
+    int tag_delimiter_balance = 0;
+    QStringList opened_tag_list;
+
+    parsingTextCursor.setPosition(0);
+
+    while(!parsingTextCursor.atEnd())
+    {
+        if(toPlainText()[parsingTextCursor.position()] == '<')
+        {
+            tag_delimiter_balance++;
+        }
+        else if(toPlainText()[parsingTextCursor.position()] == '>')
+        {
+            tag_delimiter_balance--;
+        }
+
+        if ( tag_delimiter_balance == 0 && parsingTextCursor.hasSelection() )
+        {
+            QString 
+                tag_text = parsingTextCursor.selectedText().trimmed();
+            
+            tag_text.remove('<');
+            
+            if( !tag_text.contains('/') )
+            {
+                if ( tag_text.contains(' ') )
+                {
+                    int first_space = tag_text.indexOf(' ');
+                    tag_text.chop(tag_text.count() - first_space);
+                }
+
+                opened_tag_list.append(tag_text);
+            }
+            else
+            {
+                if(tag_text.startsWith('/'))
+                {
+                    tag_text.remove('/');
+                    if(!opened_tag_list.removeOne(tag_text))
+                    {
+                        error_message = tag_text + " is closed without being opened";
+                        setTextCursor(parsingTextCursor);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+    }
+
+    if(tag_delimiter_balance!=0)
+    {
+        error_message = ( tag_delimiter_balance < 0 ? "too many '>'" : "too many '<'" );
+        error_message += " search for '<|>' to highlight all '<' and '>'";
+    }
+    else if(!opened_tag_list.isEmpty())
+    {
+        error_message = opened_tag_list.first() + " is not closed";
+    }
+    
+
+    return tag_delimiter_balance == 0 && opened_tag_list.isEmpty();
+}
+
 // Protected:
 
 void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
-
         textCursor().beginEditBlock();
         bool shiftIsPressed = e->key() == Qt::Key_Backtab;
 

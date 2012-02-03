@@ -12,6 +12,10 @@ class CodeEditor : public QTextEdit
 public:
     CodeEditor();
 
+    // these two functions are intended as basic "check before saving/commiting" that are meant to be extented upon, even rewritten completely if need be
+    bool CheckCssCorrectness(QString & error_message);
+    bool CheckXmlCorrectness(QString & error_message);
+
 protected:
     virtual void keyPressEvent(QKeyEvent * e);
     virtual void keyReleaseEvent(QKeyEvent * e);

@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QString>
 #include <QStringList>
+#include <QMessageBox>
 
 OpenedFile::OpenedFile()
 {
@@ -144,6 +145,21 @@ void OpenedFile::removeLine(const int line_number)
 void OpenedFile::save()
 {
     QFile file(fileInfo.filePath());
+    QString error_message;
+
+    if (!textEdit->CheckXmlCorrectness(error_message))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("the document is not valid: " + error_message );
+        msgBox.exec();
+    }
+
+    if (!textEdit->CheckCssCorrectness(error_message))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("the document is not valid: " + error_message );
+        msgBox.exec();
+    }
 
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
         file.write(textEdit->toPlainText().toAscii().data());
@@ -155,6 +171,21 @@ void OpenedFile::save()
 void OpenedFile::saveAs(const QString &file_path)
 {
     QFile file(file_path);
+    QString error_message;
+
+    if (!textEdit->CheckXmlCorrectness(error_message))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("the document is not valid: " + error_message );
+        msgBox.exec();
+    }
+
+    if (!textEdit->CheckCssCorrectness(error_message))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("the document is not valid: " + error_message );
+        msgBox.exec();
+    }
 
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
         file.write(textEdit->toPlainText().toAscii().data());
