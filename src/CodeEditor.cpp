@@ -1,6 +1,7 @@
 #include "CodeEditor.h"
 
 #include <QScrollBar>
+#include <QStringListModel>
 #include "Settings.h"
 #include "Rockete.h"
 
@@ -8,6 +9,52 @@
 
 CodeEditor::CodeEditor() : QTextEdit()
 {
+    QFile 
+        tags("tag_list.txt"),
+        customs("custom_list.txt"),
+        keywords("keyword_list.txt");
+
+    tags.open(QFile::ReadOnly);
+    while (!tags.atEnd())
+    {
+        QByteArray line = tags.readLine();
+        if (!line.isEmpty())
+        {
+            tag_list << line.trimmed();
+        }
+    }
+
+    customs.open(QFile::ReadOnly);
+    while (!customs.atEnd())
+    {
+        QByteArray line = customs.readLine();
+        if (!line.isEmpty())
+        {
+            custom_list << line.trimmed();
+        }
+    }
+
+    keywords.open(QFile::ReadOnly);
+    while (!keywords.atEnd())
+    {
+        QByteArray line = keywords.readLine();
+        if (!line.isEmpty())
+        {
+            keyword_list << line.trimmed();
+        }
+    }
+
+    QStringList full_list;
+
+    full_list = keyword_list + custom_list + tag_list;
+    full_list.sort();
+
+    AutoCompleter = new QCompleter(full_list, this);
+    AutoCompleter->setWidget(this);
+    AutoCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    AutoCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+
+    QObject::connect(AutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeText(const QString &)));
 }
 
 bool CodeEditor::CheckCssCorrectness(QString & error_message)
@@ -63,7 +110,7 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
         {
             QString 
                 tag_text = parsingTextCursor.selectedText().trimmed();
-            
+
             tag_text.remove('<');
             
             if( !tag_text.contains('/') )
@@ -94,6 +141,8 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
 
+    opened_tag_list.removeOne( "!--" );
+
     if(tag_delimiter_balance!=0)
     {
         error_message = ( tag_delimiter_balance < 0 ? "too many '>'" : "too many '<'" );
@@ -108,11 +157,45 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
     return tag_delimiter_balance == 0 && opened_tag_list.isEmpty();
 }
 
+// public slots:
+
+void CodeEditor::completeText(const QString &text)
+{
+    textCursor().beginEditBlock();
+    QString adding_text;
+    QTextCursor editingTextCursor = textCursor();
+
+    editingTextCursor.setPosition(textCursor().selectionStart());
+    editingTextCursor.movePosition( QTextCursor::EndOfWord, QTextCursor::MoveAnchor );
+    editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+    editingTextCursor.removeSelectedText();
+    adding_text = text;
+    if(tag_list.contains(text)) // its a tag, check for < & >
+    {
+        if(toPlainText()[editingTextCursor.position() > 0 ? editingTextCursor.position()-1 : 0] != '<')
+        {
+            adding_text = "<" + adding_text;
+            adding_text += ">";
+        }
+    }
+
+    editingTextCursor.insertText(adding_text);
+    setTextCursor(editingTextCursor);
+
+    textCursor().endEditBlock();
+}
+
 // Protected:
 
 void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
+        if (AutoCompleter->popup()->isVisible())
+        {
+            e->ignore();
+            return;
+        }
+
         textCursor().beginEditBlock();
         bool shiftIsPressed = e->key() == Qt::Key_Backtab;
 
@@ -153,6 +236,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         int nextLineStartIndex;
         int spaceCount;
 
+        if (AutoCompleter->popup()->isVisible())
+        {
+            e->ignore();
+            return;
+        }
 
         textCursor().beginEditBlock();
         // TODO: refactor using same kind of functions as the tabbing system
@@ -210,52 +298,51 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         if(textCursor().hasSelection())
         {
             QTextEdit::keyPressEvent(e);
+            return;
+        }
+
+        if(toPlainText()[textCursor().position()] == '\n')
+        {
+            textCursor().beginEditBlock();
+            textCursor().deleteChar();
+            QTextCursor editingTextCursor = textCursor();
+            do
+            {
+                editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
+            } while (toPlainText()[editingTextCursor.position()] == ' ');
+
+            editingTextCursor.removeSelectedText();
+            textCursor().endEditBlock();
+        }
+        else if(toPlainText()[textCursor().position()] == ' ')
+        {
+            QTextCursor editingTextCursor = textCursor();
+
+            textCursor().beginEditBlock();
+
+            for(int i = 0; i < Settings::getTabSize(); i++)
+            {
+                if( toPlainText()[editingTextCursor.position()] == ' ' )
+                {
+                    editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            editingTextCursor.removeSelectedText();
+            textCursor().endEditBlock();
         }
         else
         {
-            if(toPlainText()[textCursor().position()] == '\n')
-            {
-                textCursor().beginEditBlock();
-                textCursor().deleteChar();
-                QTextCursor editingTextCursor = textCursor();
-                do
-                {
-                    editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
-                } while (toPlainText()[editingTextCursor.position()] == ' ');
-
-                editingTextCursor.removeSelectedText();
-                textCursor().endEditBlock();
-            }
-            else if(toPlainText()[textCursor().position()] == ' ')
-            {
-                QTextCursor editingTextCursor = textCursor();
-
-                textCursor().beginEditBlock();
-
-                for(int i = 0; i < Settings::getTabSize(); i++)
-                {
-                    if( toPlainText()[editingTextCursor.position()] == ' ' )
-                    {
-                        editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor );
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                editingTextCursor.removeSelectedText();
-                textCursor().endEditBlock();
-            }
-            else
-            {
-                QTextEdit::keyPressEvent(e);
-            }
+            QTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Backspace)
     {
-        if(textCursor().position()>0 && toPlainText()[textCursor().position()-1] == ' ')
+        if(textCursor().position()>0 && toPlainText()[textCursor().position()-1] == ' ' && !textCursor().hasSelection() )
         {
             QTextCursor editingTextCursor = textCursor();
 
@@ -296,9 +383,27 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         document()->setModified(false);
         textCursor().endEditBlock();
     }
+    else if (e->key() == Qt::Key_Space && (e->modifiers() & Qt::ControlModifier) != 0) {
+
+        QTextCursor editingTextCursor = textCursor();
+
+        editingTextCursor.setPosition(textCursor().selectionStart());
+        editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+
+        AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+        AutoCompleter->complete();
+    }
     else
         QTextEdit::keyPressEvent(e);
 
+    if(AutoCompleter->popup()->isVisible())
+    {
+        QTextCursor editingTextCursor = textCursor();
+
+        editingTextCursor.setPosition(textCursor().selectionStart());
+        editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+        AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+    }
 
     if (document()->isModified())
         Rockete::getInstance().codeTextChanged();

@@ -4,6 +4,7 @@
 #include <QTextEdit>
 #include <QObject>
 #include <QKeyEvent>
+#include <QCompleter>
 
 class CodeEditor : public QTextEdit
 {
@@ -16,10 +17,20 @@ public:
     bool CheckCssCorrectness(QString & error_message);
     bool CheckXmlCorrectness(QString & error_message);
 
+public slots:
+    void completeText(const QString &text);
+
+
 protected:
     virtual void keyPressEvent(QKeyEvent * e);
     virtual void keyReleaseEvent(QKeyEvent * e);
 
+    QCompleter *AutoCompleter;
+
+private:
+    QStringList tag_list;
+    QStringList custom_list;
+    QStringList keyword_list;
 
 };
 
