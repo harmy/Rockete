@@ -46,7 +46,7 @@ CodeEditor::CodeEditor() : QTextEdit()
 
     QStringList full_list;
 
-    full_list = keyword_list + custom_list + tag_list;
+    full_list = keyword_list + custom_list;
     full_list.sort();
 
     AutoCompleter = new QCompleter(full_list, this);
@@ -54,57 +54,71 @@ CodeEditor::CodeEditor() : QTextEdit()
     AutoCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     AutoCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
 
+    tag_list.sort();
+
+    TagAutoCompleter = new QCompleter(tag_list, this);
+    TagAutoCompleter->setWidget(this);
+    TagAutoCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    TagAutoCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+
     QObject::connect(AutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeText(const QString &)));
-}
-
-bool CodeEditor::CheckCssCorrectness(QString & error_message)
-{
-    QTextCursor parsingTextCursor = textCursor();
-    int opened_brace_counter = 0;
-
-    parsingTextCursor.setPosition(0);
-
-    while(!parsingTextCursor.atEnd())
-    {
-        if(toPlainText()[parsingTextCursor.position()] == '{')
-        {
-            opened_brace_counter++;
-        }
-        else if(toPlainText()[parsingTextCursor.position()] == '}')
-        {
-            opened_brace_counter--;
-        }
-
-        parsingTextCursor.movePosition(QTextCursor::Right);
-    }
-
-    if(opened_brace_counter!=0)
-    {
-        error_message = ( opened_brace_counter < 0 ? "too many '}'" : "too many '{'" );
-        error_message += " search for '{|}' to highlight all '{' and '}'";
-    }
-
-    return opened_brace_counter == 0;
+    QObject::connect(TagAutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeTagText(const QString &)));
 }
 
 bool CodeEditor::CheckXmlCorrectness(QString & error_message)
 {
     QTextCursor parsingTextCursor = textCursor();
     int tag_delimiter_balance = 0;
+    int opened_brace_counter = 0;
+    int opened_quote = 0;
     QStringList opened_tag_list;
+    QString plain_text = toPlainText();
 
     parsingTextCursor.setPosition(0);
 
     while(!parsingTextCursor.atEnd())
     {
-        if(toPlainText()[parsingTextCursor.position()] == '<')
+        if( opened_quote == 0 && plain_text[parsingTextCursor.position()] == '"' && plain_text[parsingTextCursor.position()-1] != '\\')
         {
-            tag_delimiter_balance++;
+            opened_quote++;
         }
-        else if(toPlainText()[parsingTextCursor.position()] == '>')
+        else if(opened_quote > 0 && plain_text[parsingTextCursor.position()] == '"' && plain_text[parsingTextCursor.position()-1] != '\\')
         {
-            tag_delimiter_balance--;
+            opened_quote--;
         }
+
+        if (opened_quote == 0)
+        {
+            if(plain_text[parsingTextCursor.position()] == '}')
+            {
+                opened_brace_counter--;
+            }
+            else if(plain_text[parsingTextCursor.position()] == '>')
+            {
+                tag_delimiter_balance--;
+            }
+            else if(plain_text[parsingTextCursor.position()] == '{')
+            {
+                opened_brace_counter++;
+            }
+            else if(plain_text[parsingTextCursor.position()] == '<')
+            {
+                if ( opened_brace_counter > 0 )
+                {
+                    error_message = "xml tag detected inside css class";
+                    setTextCursor(parsingTextCursor);
+                    return false;
+                }
+                tag_delimiter_balance++;
+            }
+        }
+
+        if(opened_brace_counter!=0)
+        {
+            error_message = ( opened_brace_counter < 0 ? "too many '}'" : "too many '{'" );
+            error_message += " search for '{|}' to highlight all '{' and '}'";
+        }
+
 
         if ( tag_delimiter_balance == 0 && parsingTextCursor.hasSelection() )
         {
@@ -112,27 +126,30 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
                 tag_text = parsingTextCursor.selectedText().trimmed();
 
             tag_text.remove('<');
-            
-            if( !tag_text.contains('/') )
-            {
-                if ( tag_text.contains(' ') )
-                {
-                    int first_space = tag_text.indexOf(' ');
-                    tag_text.chop(tag_text.count() - first_space);
-                }
 
-                opened_tag_list.append(tag_text);
-            }
-            else
+            if(!tag_text.contains("--"))
             {
-                if(tag_text.startsWith('/'))
+                if( !tag_text.contains('/')  )
                 {
-                    tag_text.remove('/');
-                    if(!opened_tag_list.removeOne(tag_text))
+                    if ( tag_text.contains(' ') )
                     {
-                        error_message = tag_text + " is closed without being opened";
-                        setTextCursor(parsingTextCursor);
-                        return false;
+                        int first_space = tag_text.indexOf(' ');
+                        tag_text.chop(tag_text.count() - first_space);
+                    }
+
+                    opened_tag_list.append(tag_text);
+                }
+                else
+                {
+                    if(tag_text.startsWith('/'))
+                    {
+                        tag_text.remove('/');
+                        if(!opened_tag_list.removeOne(tag_text))
+                        {
+                            error_message = tag_text + " is closed without being opened";
+                            setTextCursor(parsingTextCursor);
+                            return false;
+                        }
                     }
                 }
             }
@@ -141,7 +158,7 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
 
-    opened_tag_list.removeOne( "!--" );
+    opened_tag_list.removeAll( "!--" );
 
     if(tag_delimiter_balance!=0)
     {
@@ -154,12 +171,30 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
     }
     
 
-    return tag_delimiter_balance == 0 && opened_tag_list.isEmpty();
+    return tag_delimiter_balance == 0 && opened_tag_list.isEmpty() && opened_brace_counter == 0;;
 }
 
 // public slots:
 
 void CodeEditor::completeText(const QString &text)
+{
+    textCursor().beginEditBlock();
+    QTextCursor editingTextCursor = textCursor();
+
+    editingTextCursor.setPosition(textCursor().selectionStart());
+    editingTextCursor.movePosition( QTextCursor::EndOfWord, QTextCursor::MoveAnchor );
+    editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+    editingTextCursor.removeSelectedText();
+
+    editingTextCursor.insertText(text);
+    setTextCursor(editingTextCursor);
+
+    textCursor().endEditBlock();
+}
+
+// public slots:
+
+void CodeEditor::completeTagText(const QString &text)
 {
     textCursor().beginEditBlock();
     QString adding_text;
@@ -170,16 +205,17 @@ void CodeEditor::completeText(const QString &text)
     editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
     editingTextCursor.removeSelectedText();
     adding_text = text;
-    if(tag_list.contains(text)) // its a tag, check for < & >
-    {
-        if(toPlainText()[editingTextCursor.position() > 0 ? editingTextCursor.position()-1 : 0] != '<')
-        {
-            adding_text = "<" + adding_text;
-            adding_text += ">";
-        }
-    }
+
+    adding_text += ">";
+    adding_text += "</";
+    adding_text += text;
+    adding_text += ">";
 
     editingTextCursor.insertText(adding_text);
+    editingTextCursor.movePosition( QTextCursor::PreviousWord, QTextCursor::MoveAnchor );
+    editingTextCursor.movePosition( QTextCursor::PreviousWord, QTextCursor::MoveAnchor );
+    editingTextCursor.movePosition( QTextCursor::PreviousWord, QTextCursor::MoveAnchor );
+    editingTextCursor.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor );
     setTextCursor(editingTextCursor);
 
     textCursor().endEditBlock();
@@ -190,7 +226,7 @@ void CodeEditor::completeText(const QString &text)
 void CodeEditor::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
-        if (AutoCompleter->popup()->isVisible())
+        if (AutoCompleter->popup()->isVisible()||TagAutoCompleter->popup()->isVisible())
         {
             e->ignore();
             return;
@@ -236,7 +272,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         int nextLineStartIndex;
         int spaceCount;
 
-        if (AutoCompleter->popup()->isVisible())
+        if (AutoCompleter->popup()->isVisible()||TagAutoCompleter->popup()->isVisible())
         {
             e->ignore();
             return;
@@ -286,6 +322,18 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
             newCursor.setPosition(textCursor().selectionEnd());
             setTextCursor(newCursor);
             document()->setModified(false);
+            textCursor().endEditBlock();
+        }
+        else if(toPlainText()[textCursor().position()] == '\n')
+        {
+            textCursor().beginEditBlock();
+            QTextCursor editingTextCursor = textCursor();
+            do
+            {
+                editingTextCursor.movePosition( QTextCursor::Right, (e->modifiers() & Qt::ShiftModifier) == 0 ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );
+            } while (toPlainText()[editingTextCursor.position()] == ' ');
+
+            setTextCursor(editingTextCursor);
             textCursor().endEditBlock();
         }
         else
@@ -384,14 +432,36 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         textCursor().endEditBlock();
     }
     else if (e->key() == Qt::Key_Space && (e->modifiers() & Qt::ControlModifier) != 0) {
-
+        int character_position = 0;
         QTextCursor editingTextCursor = textCursor();
+
+        if (AutoCompleter->popup()->isVisible())
+        {
+            AutoCompleter->popup()->hide();
+        }
+        if (TagAutoCompleter->popup()->isVisible())
+        {
+            TagAutoCompleter->popup()->hide();
+        }
 
         editingTextCursor.setPosition(textCursor().selectionStart());
         editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+        if(editingTextCursor.position()-1 >=0 )
+        {
+            character_position = editingTextCursor.position() - 1;
+        }
 
-        AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
-        AutoCompleter->complete();
+        if (toPlainText()[character_position] == '<')
+        {
+            TagAutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+            TagAutoCompleter->complete();
+        }
+        else
+        {
+            AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+            AutoCompleter->complete();
+        }
+
     }
     else
         QTextEdit::keyPressEvent(e);
@@ -403,6 +473,16 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         editingTextCursor.setPosition(textCursor().selectionStart());
         editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
         AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+        AutoCompleter->complete();
+    }
+    if(TagAutoCompleter->popup()->isVisible())
+    {
+        QTextCursor editingTextCursor = textCursor();
+
+        editingTextCursor.setPosition(textCursor().selectionStart());
+        editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+        TagAutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+        TagAutoCompleter->complete();
     }
 
     if (document()->isModified())

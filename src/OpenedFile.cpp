@@ -154,13 +154,6 @@ void OpenedFile::save()
         msgBox.exec();
     }
 
-    if (!textEdit->CheckCssCorrectness(error_message))
-    {
-        QMessageBox msgBox;
-        msgBox.setText("the document is not valid: " + error_message );
-        msgBox.exec();
-    }
-
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
         file.write(textEdit->toPlainText().toAscii().data());
         file.close();
@@ -174,13 +167,6 @@ void OpenedFile::saveAs(const QString &file_path)
     QString error_message;
 
     if (!textEdit->CheckXmlCorrectness(error_message))
-    {
-        QMessageBox msgBox;
-        msgBox.setText("the document is not valid: " + error_message );
-        msgBox.exec();
-    }
-
-    if (!textEdit->CheckCssCorrectness(error_message))
     {
         QMessageBox msgBox;
         msgBox.setText("the document is not valid: " + error_message );

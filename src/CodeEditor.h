@@ -13,12 +13,12 @@ class CodeEditor : public QTextEdit
 public:
     CodeEditor();
 
-    // these two functions are intended as basic "check before saving/commiting" that are meant to be extented upon, even rewritten completely if need be
-    bool CheckCssCorrectness(QString & error_message);
+    // this function is intended as basic "check before saving/commiting" that are meant to be extented upon, even rewritten completely if need be
     bool CheckXmlCorrectness(QString & error_message);
 
 public slots:
     void completeText(const QString &text);
+    void completeTagText(const QString &text);
 
 
 protected:
@@ -26,6 +26,7 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent * e);
 
     QCompleter *AutoCompleter;
+    QCompleter *TagAutoCompleter;
 
 private:
     QStringList tag_list;
