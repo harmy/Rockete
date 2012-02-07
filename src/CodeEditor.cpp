@@ -10,9 +10,9 @@
 CodeEditor::CodeEditor() : QTextEdit()
 {
     QFile 
-        tags("tag_list.txt"),
-        customs("custom_list.txt"),
-        keywords("keyword_list.txt");
+        tags(Settings::getWordListsPath() + "tag_list.txt"),
+        customs(Settings::getWordListsPath() + "custom_list.txt"),
+        keywords(Settings::getWordListsPath() + "keyword_list.txt");
 
     tags.open(QFile::ReadOnly);
     while (!tags.atEnd())

@@ -10,17 +10,10 @@ int main(int argc, char *argv[])
 
     QApplication a( argc, argv );
 
-    if(RocketSystem::getInstance().initialize())
-    {
-        RocketSystem::getInstance().loadFonts( "assets" );
-    }
-    else
+    if(!RocketSystem::getInstance().initialize())
     {
         return -1;
     }
-
-    ToolManager::getInstance().initialize();
-    EditionHelper::initialize();
 
     Rockete w;
     w.show();

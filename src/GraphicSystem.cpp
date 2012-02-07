@@ -1,6 +1,8 @@
 #include "GraphicSystem.h"
 #include "OpenGL.h"
 #include <QImage>
+#include <QDir>
+#include <QDirIterator>
 #include "Settings.h"
 #include "RocketSystem.h"
 
@@ -79,14 +81,43 @@ bool GraphicSystem::generateTexture(Rocket::Core::TextureHandle &texture_handle,
     return true;
 }
 
-bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Rocket::Core::Vector2i &texture_dimensions, const Rocket::Core::String &source)
+bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Rocket::Core::Vector2i &texture_dimensions, const QString &source)
 {
     unsigned char *bytes = NULL;
+    QFileInfo base_file_info(source);
+    QFileInfo final_file_info;
 
-    if (source.Substring(source.Length() - 3 , 3 ) == "tga")
-        bytes = loadTGA(source.CString(), texture_dimensions);
+    if(base_file_info.exists())
+    {
+        final_file_info = base_file_info;
+    }
     else
-        bytes = loadOther(source.CString(), texture_dimensions);
+    {
+        final_file_info = Settings::getTexturePath() + base_file_info.fileName();
+
+        QDirIterator directory_walker(Settings::getTexturePath(), QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
+
+        while(directory_walker.hasNext())
+        {
+            directory_walker.next();
+
+            if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden() && directory_walker.fileInfo().fileName() == base_file_info.fileName())
+            {
+                final_file_info = directory_walker.fileInfo();
+                break;
+            }
+        }
+
+        if(!final_file_info.exists())
+        {
+            printf("texture not found: %s.", final_file_info.fileName().toAscii().data());
+        }
+    }
+
+    if (final_file_info.suffix() == "tga")
+        bytes = loadTGA(final_file_info.absoluteFilePath(), texture_dimensions);
+    else
+        bytes = loadOther(final_file_info.absoluteFilePath(), texture_dimensions);
 
     if (!bytes)
         return false;
@@ -191,10 +222,10 @@ void GraphicSystem::drawTexturedBox(const Vector2f &origin, const Vector2f &dime
 
 // Private:
 
-unsigned char * GraphicSystem::loadTGA(const char *path, Rocket::Core::Vector2i &texture_dimensions)
+unsigned char * GraphicSystem::loadTGA(const QString &path, Rocket::Core::Vector2i &texture_dimensions)
 {
     Rocket::Core::FileInterface *file_interface = Rocket::Core::GetFileInterface();
-    Rocket::Core::FileHandle file_handle = file_interface->Open(path);
+    Rocket::Core::FileHandle file_handle = file_interface->Open(path.toAscii().data()); // TODO: switch to QT file handling
 
     if (!file_handle)
         return false;
@@ -253,7 +284,7 @@ unsigned char * GraphicSystem::loadTGA(const char *path, Rocket::Core::Vector2i 
     return image_dest;
 }
 
-unsigned char * GraphicSystem::loadOther(const char *path, Rocket::Core::Vector2i &texture_dimensions)
+unsigned char * GraphicSystem::loadOther(const QString &path, Rocket::Core::Vector2i &texture_dimensions)
 {
     QImage image;
     unsigned char * bytes;

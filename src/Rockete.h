@@ -36,6 +36,7 @@ public:
 
 public slots:
     void menuOpenClicked();
+    void menuOpenProjectClicked();
     void menuSaveClicked();
     void menuSaveAsClicked();
     void menuCloseClicked();
@@ -55,15 +56,19 @@ public slots:
     void menuBackgroundChangeColor();
     void menuBackgroundChangeImage();
     void searchBoxActivated();
+    void fileTreeDoubleClicked(QTreeWidgetItem *item, int column);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     void openFile(const QString &file_path);
+    void openProject(const QString &filePath);
     int openDocument(const char *);
     int openStyleSheet(const char *);
+    int openASCIIFile(const char *);
     void generateMenuRecent();
+    void populateTreeView(const QString &top_item_name, const QString &directory_path);
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;

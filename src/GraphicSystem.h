@@ -9,7 +9,7 @@ class GraphicSystem
 public:
     static void initialize();
     static void resize(const int _width, const int _height);
-    static bool loadTexture(Rocket::Core::TextureHandle &texture_handle, Rocket::Core::Vector2i &texture_dimensions, const Rocket::Core::String &source);
+    static bool loadTexture(Rocket::Core::TextureHandle &texture_handle, Rocket::Core::Vector2i &texture_dimensions, const QString &source);
     static bool generateTexture(Rocket::Core::TextureHandle &texture_handle, const Rocket::Core::byte *source, const Rocket::Core::Vector2i &source_dimensions);
     static void scissor(int x, int y, int width, int height);
     static void putXAxisVertices(const float y);
@@ -25,8 +25,8 @@ public:
     static int height;
 
 private:
-    static unsigned char * loadTGA(const char *path, Rocket::Core::Vector2i &texture_dimensions);
-    static unsigned char * loadOther(const char *path, Rocket::Core::Vector2i &texture_dimensions);
+    static unsigned char * loadTGA(const QString &path, Rocket::Core::Vector2i &texture_dimensions);
+    static unsigned char * loadOther(const QString &path, Rocket::Core::Vector2i &texture_dimensions);
 };
 
 #endif

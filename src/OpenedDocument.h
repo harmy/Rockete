@@ -12,7 +12,7 @@ class OpenedDocument : public OpenedFile
 public:
     OpenedDocument();
 
-    void initialize();
+    virtual void initialize();
     void replaceInnerRMLFromId(const QString &tag_name, const QString &id, const QString &new_content);
     void replaceInnerRMLFromTagName(const QString &tag_name, const QString &new_content);
     void regenerateBodyContent();

@@ -145,6 +145,19 @@
         </size>
        </property>
       </widget>
+      <widget class="QTreeWidget" name="treeWidget">
+       <property name="indentation">
+        <number>10</number>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">Files</string>
+        </property>
+       </column>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -168,6 +181,8 @@
      </property>
      <addaction name="actionEmpty"/>
     </widget>
+    <addaction name="actionOpen_project"/>
+    <addaction name="separator"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
@@ -239,7 +254,7 @@
      <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>Open file...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -413,6 +428,11 @@
    </property>
    <property name="shortcut">
     <string>F6</string>
+   </property>
+  </action>
+  <action name="actionOpen_project">
+   <property name="text">
+    <string>Open project...</string>
    </property>
   </action>
  </widget>
@@ -621,22 +641,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>propertyTreeView</sender>
-   <signal>clicked(QModelIndex)</signal>
-   <receiver>rocketeClass</receiver>
-   <slot>propertyViewClicked(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>213</x>
-     <y>744</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>444</x>
-     <y>435</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionUndo</sender>
    <signal>triggered()</signal>
    <receiver>rocketeClass</receiver>
@@ -675,8 +679,8 @@
    <slot>attributeViewClicked(QModelIndex)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>315</x>
-     <y>678</y>
+     <x>93</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>656</x>
@@ -761,6 +765,54 @@
     <hint type="destinationlabel">
      <x>656</x>
      <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpen_project</sender>
+   <signal>triggered()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuOpenProjectClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeWidget</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>fileTreeDoubleClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1184</x>
+     <y>409</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>propertyTreeView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>propertyViewClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>590</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>444</x>
+     <y>435</y>
     </hint>
    </hints>
   </connection>

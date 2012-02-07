@@ -64,22 +64,19 @@ bool RocketSystem::createContext(const int width, const int height)
     return true;
 }
 
-void RocketSystem::loadFonts(const char *directory_path)
+void RocketSystem::loadFonts(const QString &directory_path)
 {
     QDir directory(directory_path);
     QStringList name_filter_list;
     QStringList file_list;
     QString prefix;
 
-    name_filter_list << "*.otf" << "*.ttf",
+    name_filter_list << "*.otf" << "*.ttf";
 
     file_list = directory.entryList(name_filter_list);
 
-    prefix = directory_path;
-    prefix += "/";
-
     foreach(const QString &file_name, file_list) {
-        loadFont(prefix + file_name);
+        loadFont(directory_path + file_name);
     }
 }
 

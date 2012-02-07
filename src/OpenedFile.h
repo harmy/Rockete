@@ -10,6 +10,7 @@ class OpenedFile
 public:
     OpenedFile();
     virtual ~OpenedFile();
+    virtual void initialize();
     void fillTextEdit();
     QString getLine(const int line_number);
     void find(const QString &str);

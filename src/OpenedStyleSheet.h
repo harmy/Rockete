@@ -9,7 +9,7 @@ class OpenedStyleSheet : public OpenedFile
 {
 public:
     OpenedStyleSheet();
-    void initialize();
+    virtual void initialize();
     virtual void highlightString(const QString &str);
     
     CssHighlighter *highlighter;

@@ -14,6 +14,20 @@ OpenedFile::~OpenedFile()
 {
 }
 
+void OpenedFile::initialize()
+{
+    textEdit = new CodeEditor;
+    textEdit->setAcceptRichText(false);
+    textEdit->setLineWrapMode(QTextEdit::NoWrap);
+    textEdit->setTabChangesFocus(false);
+
+    textDocument = new QTextDocument();
+    textDocument->setDefaultFont(QFont("Courier",10));
+
+    fillTextEdit();
+}
+
+
 void OpenedFile::fillTextEdit()
 {
     QFile file(fileInfo.filePath());

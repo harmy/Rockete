@@ -60,7 +60,7 @@ void RocketRenderInterface::SetScissorRegion(int x, int y, int width, int height
 
 bool RocketRenderInterface::LoadTexture(Rocket::Core::TextureHandle& texture_handle, Rocket::Core::Vector2i& texture_dimensions, const Rocket::Core::String& source)
 {
-    return GraphicSystem::loadTexture(texture_handle,texture_dimensions,source);
+    return GraphicSystem::loadTexture(texture_handle,texture_dimensions,source.CString());
 }
 
 bool RocketRenderInterface::GenerateTexture(Rocket::Core::TextureHandle& texture_handle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& source_dimensions)
