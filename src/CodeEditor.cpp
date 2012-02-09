@@ -63,6 +63,13 @@ CodeEditor::CodeEditor() : QTextEdit()
 
     QObject::connect(AutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeText(const QString &)));
     QObject::connect(TagAutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeTagText(const QString &)));
+
+    QObject::connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(HighlightClosingTag()));
+
+    PreviousHighlightedOpeningTag.setX(0);
+    PreviousHighlightedOpeningTag.setY(0);
+    PreviousHighlightedClosingTag.setX(0);
+    PreviousHighlightedClosingTag.setY(0);
 }
 
 bool CodeEditor::CheckXmlCorrectness(QString & error_message)
@@ -113,12 +120,21 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
             }
         }
 
-        if(opened_brace_counter!=0)
+        if(opened_brace_counter > 1 || tag_delimiter_balance > 1)
         {
-            error_message = ( opened_brace_counter < 0 ? "too many '}'" : "too many '{'" );
-            error_message += " search for '{|}' to highlight all '{' and '}'";
+            error_message = "found two opening character('<' or '{') in a row";
+            parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+            setTextCursor(parsingTextCursor);
+            return false;
         }
 
+        if(opened_brace_counter < 0|| tag_delimiter_balance < 0)
+        {
+            error_message = "closing character ('>' or '}') before any opening one";
+            parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+            setTextCursor(parsingTextCursor);
+            return false;
+        }
 
         if ( tag_delimiter_balance == 0 && parsingTextCursor.hasSelection() )
         {
@@ -170,23 +186,19 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
             }
         }
 
+        // TODO: check l'ordre de fermeture
+
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
 
     opened_tag_list.removeAll( "!--" );
 
-    if(tag_delimiter_balance!=0)
-    {
-        error_message = ( tag_delimiter_balance < 0 ? "too many '>'" : "too many '<'" );
-        error_message += " search for '<|>' to highlight all '<' and '>'";
-    }
-    else if(!opened_tag_list.isEmpty())
+    if(!opened_tag_list.isEmpty())
     {
         error_message = opened_tag_list.first() + " is not closed";
     }
-    
 
-    return tag_delimiter_balance == 0 && opened_tag_list.isEmpty() && opened_brace_counter == 0;;
+    return opened_tag_list.isEmpty();
 }
 
 // public slots:
@@ -206,8 +218,6 @@ void CodeEditor::completeText(const QString &text)
 
     textCursor().endEditBlock();
 }
-
-// public slots:
 
 void CodeEditor::completeTagText(const QString &text)
 {
@@ -234,6 +244,151 @@ void CodeEditor::completeTagText(const QString &text)
     setTextCursor(editingTextCursor);
 
     textCursor().endEditBlock();
+}
+
+void CodeEditor::HighlightClosingTag()
+{
+    if(textCursor().hasSelection())
+        return;
+
+    QTextCursor parsingTextCursor = textCursor();
+    QTextCursor unHighlightingTextCursor = textCursor();
+    QString plain_text = toPlainText();
+    QString opening_tag;
+    QStringList opened_tag_list;
+    int opened_quote = 0,
+        tag_delimiter_balance = 0,
+        start_parse_position = 0;
+    QTextCharFormat
+        format;
+
+    if(!PreviousHighlightedOpeningTag.isNull())
+    {
+        unHighlightingTextCursor.setPosition(PreviousHighlightedOpeningTag.x());
+        unHighlightingTextCursor.setPosition(PreviousHighlightedOpeningTag.y(), QTextCursor::KeepAnchor);
+        format.setFontUnderline(false);
+        format.setFontOverline(false);
+        unHighlightingTextCursor.mergeCharFormat(format);
+    }
+
+    if(!PreviousHighlightedClosingTag.isNull())
+    {
+        unHighlightingTextCursor.setPosition(PreviousHighlightedClosingTag.x());
+        unHighlightingTextCursor.setPosition(PreviousHighlightedClosingTag.y(), QTextCursor::KeepAnchor);
+        format.setFontUnderline(false);
+        format.setFontOverline(false);
+        unHighlightingTextCursor.mergeCharFormat(format);
+    }
+
+    parsingTextCursor.movePosition(QTextCursor::StartOfWord);
+    parsingTextCursor.movePosition(QTextCursor::Left);
+
+    if(plain_text[parsingTextCursor.position()] != '<')
+        return; // not a(n opening) tag
+
+    parsingTextCursor.movePosition(QTextCursor::Right);
+    do
+    {
+        parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+    } while (plain_text[parsingTextCursor.position()] != '>');
+
+    start_parse_position = parsingTextCursor.position();
+    opening_tag = parsingTextCursor.selectedText();
+    opening_tag = opening_tag.trimmed();
+
+    if(opening_tag.endsWith("/"))
+        return; // closing tag is the opening one
+
+    if(opening_tag.contains(' '))
+    {
+        int index_space;
+        index_space = opening_tag.indexOf(' ');
+        opening_tag.chop(opening_tag.count() - index_space);
+    }
+
+    parsingTextCursor.setPosition(parsingTextCursor.selectionStart());
+
+    do
+    {
+        parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+    } while (plain_text[parsingTextCursor.position()] != '>' && plain_text[parsingTextCursor.position()] != ' ');
+
+    format.setFontUnderline(true);
+    format.setFontOverline(true);
+
+    //found our tag, select it
+    parsingTextCursor.mergeCharFormat(format);
+    PreviousHighlightedOpeningTag.setX(parsingTextCursor.selectionStart());
+    PreviousHighlightedOpeningTag.setY(parsingTextCursor.selectionEnd());
+
+    parsingTextCursor.setPosition(start_parse_position+1);
+
+    while(!parsingTextCursor.atEnd())
+    {
+        if( opened_quote == 0 && plain_text[parsingTextCursor.position()] == '"' && plain_text[parsingTextCursor.position()-1] != '\\')
+        {
+            opened_quote++;
+        }
+        else if(opened_quote > 0 && plain_text[parsingTextCursor.position()] == '"' && plain_text[parsingTextCursor.position()-1] != '\\')
+        {
+            opened_quote--;
+        }
+
+        if (opened_quote == 0)
+        {
+            if(plain_text[parsingTextCursor.position()] == '>')
+            {
+                tag_delimiter_balance--;
+            }
+            else if(plain_text[parsingTextCursor.position()] == '<')
+            {
+                tag_delimiter_balance++;
+            }
+        }
+
+
+        if ( tag_delimiter_balance == 0 && parsingTextCursor.hasSelection() )
+        {
+            QString 
+                tag_text = parsingTextCursor.selectedText().trimmed();
+
+            tag_text.remove('<');
+
+            if(!tag_text.contains("--"))
+            {
+                if(tag_text.startsWith('/'))
+                {
+                    tag_text.remove('/');
+                    if(opened_tag_list.empty())
+                    {
+                        //found our tag, select it
+                        parsingTextCursor.movePosition(QTextCursor::PreviousWord);
+                        parsingTextCursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
+                        parsingTextCursor.mergeCharFormat(format);
+                        PreviousHighlightedClosingTag.setX(parsingTextCursor.selectionStart());
+                        PreviousHighlightedClosingTag.setY(parsingTextCursor.selectionEnd());
+                        break;
+                    }
+                    else
+                    {
+                        opened_tag_list.removeOne(tag_text);
+                    }
+                }
+                else if(!tag_text.contains('/'))
+                {
+                    if (tag_text.contains(' '))
+                    {
+                        int first_space = tag_text.indexOf(' ');
+                        tag_text.chop(tag_text.count() - first_space);
+                    }
+                    opened_tag_list.append(tag_text);
+                }
+                // we don't need to test for <... /> since it won't influence the position of the closing tag
+            }
+        }
+
+        parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+    }
 }
 
 // Protected:

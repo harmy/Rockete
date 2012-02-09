@@ -93,15 +93,13 @@ bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Roc
     }
     else
     {
-        final_file_info = Settings::getTexturePath() + base_file_info.fileName();
-
         QDirIterator directory_walker(Settings::getTexturePath(), QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
         while(directory_walker.hasNext())
         {
             directory_walker.next();
 
-            if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden() && directory_walker.fileInfo().fileName() == base_file_info.fileName())
+            if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden() && directory_walker.fileInfo().baseName() == base_file_info.baseName())
             {
                 final_file_info = directory_walker.fileInfo();
                 break;

@@ -593,11 +593,8 @@ void Rockete::fileHasChanged(const QString &path)
     int tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
     int new_tab_index;
     QWidget *widget;
-    static QMessageBox *message_box = NULL;
+    QMessageBox *message_box = NULL;
    
-    if(message_box)
-        return;
-    
     message_box = new QMessageBox("Rockete: file change detected", path + " has been modified,\ndo you want to reload it?",QMessageBox::Question, QMessageBox::Yes, QMessageBox::No, NULL, this);
     
     if(message_box->exec()==QMessageBox::No)

@@ -19,6 +19,7 @@ public:
 public slots:
     void completeText(const QString &text);
     void completeTagText(const QString &text);
+    void HighlightClosingTag();
 
 
 protected:
@@ -32,7 +33,8 @@ private:
     QStringList tag_list;
     QStringList custom_list;
     QStringList keyword_list;
-
+    QPoint PreviousHighlightedOpeningTag;
+    QPoint PreviousHighlightedClosingTag;
 };
 
 #endif
