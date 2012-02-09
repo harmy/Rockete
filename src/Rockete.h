@@ -2,6 +2,7 @@
 #define ROCKETE_H
 
 #include <QtGui/QMainWindow>
+#include <QFileSystemWatcher>
 #include "ui_rockete.h"
 #include "RenderingView.h"
 #include "OpenedDocument.h"
@@ -43,7 +44,7 @@ public slots:
     void menuCloseClicked();
     void codeTextChanged();
     void codeTabChanged(int index);
-    void codeTabRequestClose(int index);
+    void codeTabRequestClose(int index, bool must_save = true);
     void unselectElement();
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
@@ -58,6 +59,7 @@ public slots:
     void menuBackgroundChangeImage();
     void searchBoxActivated();
     void fileTreeDoubleClicked(QTreeWidgetItem *item, int column);
+    void fileHasChanged(const QString &path);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
@@ -82,6 +84,8 @@ private:
     QList<QAction*> recentFileActionList;
     static Rockete *instance;
     QComboBox *searchBox;
+    QFileSystemWatcher *fileWatcher;
+    bool isReloadingFile;
 };
 
 #endif // ROCKETE_H

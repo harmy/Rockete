@@ -40,7 +40,7 @@ struct LocalScreenSizeItem
 };
 
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
-: QMainWindow(parent, flags), currentDocument(NULL)
+: QMainWindow(parent, flags), currentDocument(NULL), isReloadingFile(false)
 {
     instance = this;
 
@@ -98,6 +98,10 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     connect( action, SIGNAL(triggered()), (QObject*)this, SLOT(searchBoxActivated()));
     ui.mainToolBar->addWidget(searchBox);
     ui.mainToolBar->addAction(action);
+
+    fileWatcher = new QFileSystemWatcher();
+
+    connect(fileWatcher, SIGNAL(fileChanged(const QString &)), (QObject*)this, SLOT(fileHasChanged(const QString &)));
 }
 
 Rockete::~Rockete()
@@ -269,8 +273,11 @@ void Rockete::menuSaveClicked()
     }
     if ((current_file = getOpenedFile(tab_text.toAscii().data())))
     {
+        fileWatcher->removePath(current_file->fileInfo.filePath());
         current_file->save();
         ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), tab_text);
+        fileWatcher->addPath(current_file->fileInfo.filePath());
+        reloadCurrentDocument();
     }
 }
 
@@ -309,6 +316,10 @@ void Rockete::codeTabChanged( int index )
 {
     OpenedDocument *document;
     QString tab_text = ui.codeTabWidget->tabText(index);
+    if(isReloadingFile)
+    {
+        return;
+    }
 
     if (tab_text.startsWith("*"))
     {
@@ -321,12 +332,13 @@ void Rockete::codeTabChanged( int index )
     }
 }
 
-void Rockete::codeTabRequestClose( int index )
+void Rockete::codeTabRequestClose( int index, bool must_save )
 {
     OpenedFile *current_file;
     OpenedDocument *document;
     OpenedStyleSheet *style_sheet;
     QString tab_text = ui.codeTabWidget->tabText(index);
+    QWidget *removed_widget;
 
     if (tab_text.startsWith("*"))
     {
@@ -334,7 +346,9 @@ void Rockete::codeTabRequestClose( int index )
     }
     if ((current_file = getOpenedFile(tab_text.toAscii().data()))) 
     {
-        current_file->save();
+        fileWatcher->removePath(current_file->fileInfo.filePath());
+        if(must_save)
+            current_file->save();
         openedFileList.removeOne( current_file );
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data())))
@@ -350,7 +364,7 @@ void Rockete::codeTabRequestClose( int index )
         styleSheetList.removeOne( style_sheet );
     }
 
-    if(document)
+    if(document && must_save)
     {
         renderingView->changeCurrentDocument(NULL);
         currentDocument = NULL;
@@ -358,8 +372,9 @@ void Rockete::codeTabRequestClose( int index )
         repaintRenderingView();
     }
 
+    removed_widget = ui.codeTabWidget->widget(index);
     ui.codeTabWidget->removeTab( index );
-
+    delete(removed_widget);
 }
 
 void Rockete::unselectElement()
@@ -572,6 +587,39 @@ void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
     }
 }
 
+void Rockete::fileHasChanged(const QString &path)
+{
+    QFileInfo file_info = path;
+    int tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
+    int new_tab_index;
+    QWidget *widget;
+    static QMessageBox *message_box = NULL;
+   
+    if(message_box)
+        return;
+    
+    message_box = new QMessageBox("Rockete: file change detected", path + " has been modified,\ndo you want to reload it?",QMessageBox::Question, QMessageBox::Yes, QMessageBox::No, NULL, this);
+    
+    if(message_box->exec()==QMessageBox::No)
+    {
+        delete(message_box);
+        message_box = NULL;
+        return;
+    }
+    delete(message_box);
+    message_box = NULL;
+    isReloadingFile = true;
+    codeTabRequestClose(tab_index, false);
+    openFile(path);
+    new_tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
+
+    widget = ui.codeTabWidget->widget(new_tab_index);
+    ui.codeTabWidget->removeTab(new_tab_index);
+    ui.codeTabWidget->insertTab(tab_index,widget,file_info.fileName());
+    ui.codeTabWidget->setCurrentIndex(tab_index);
+    isReloadingFile = false;
+}
+
 // Protected:
 
 void Rockete::keyPressEvent(QKeyEvent *event)
@@ -636,6 +684,7 @@ void Rockete::openFile(const QString &filePath)
 
     if (success)
     {
+        fileWatcher->addPath(file_info.filePath());
         Settings::setMostRecentFile(file_info.filePath());
         generateMenuRecent();
     }
