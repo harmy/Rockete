@@ -151,6 +151,21 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
                             return false;
                         }
                     }
+                    else
+                    {
+                         tag_text.remove('>');
+                         tag_text = tag_text.trimmed();
+                         if(!tag_text.endsWith('/')) // opening tag with source file behind a directory
+                         {
+                             if ( tag_text.contains(' ') )
+                             {
+                                 int first_space = tag_text.indexOf(' ');
+                                 tag_text.chop(tag_text.count() - first_space);
+                             }
+
+                             opened_tag_list.append(tag_text);
+                         }
+                    }
                 }
             }
         }

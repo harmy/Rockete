@@ -26,5 +26,12 @@ void OpenedStyleSheet::initialize()
 
 void OpenedStyleSheet::highlightString(const QString &str)
 {
-    highlighter->setHighlightedString(str);
+    if(str.isEmpty())
+    {
+        highlighter->setHighlightedString("placeholder_for_highlighted_string");
+    }
+    else
+    {
+        highlighter->setHighlightedString(str);
+    }
 }

@@ -167,11 +167,26 @@ void Rockete::reloadCurrentDocument()
         // :TODO: Clean this part.
         renderingView->changeCurrentDocument(NULL);
         currentDocument->selectedElement = NULL;
-        RocketHelper::unloadDocument(currentDocument->rocketDocument);
+        if(currentDocument->rocketDocument)
+            RocketHelper::unloadDocument(currentDocument->rocketDocument);
+
         currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
         currentDocument->rocketDocument->RemoveReference();
         renderingView->changeCurrentDocument(currentDocument);
     }
+}
+
+int Rockete::getTabIndexFromFileName(const char * name)
+{
+    for (int i = 0; i < ui.codeTabWidget->count(); ++i)
+    {
+        if (ui.codeTabWidget->tabText(i) == name)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 OpenedDocument *Rockete::getDocumentFromFileName(const char * name)
@@ -398,6 +413,8 @@ void Rockete::menuSetScreenSizeClicked()
             if (item_selected == item->displayedString)
             {
                 RocketSystem::getInstance().createContext(item->width, item->height);
+                currentDocument->selectedElement = NULL;
+                currentDocument->rocketDocument = NULL;
                 reloadCurrentDocument();
                 break;
             }
@@ -529,11 +546,6 @@ void Rockete::menuBackgroundChangeImage()
 
 void Rockete::searchBoxActivated()
 {
-    if(searchBox->currentText().isEmpty())
-    {
-        return;
-    }
-
     OpenedFile *current_file;
     QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
 
@@ -543,14 +555,18 @@ void Rockete::searchBoxActivated()
     }
     if ((current_file = getOpenedFile(tab_text.toAscii().data())))
     {
-        current_file->find(searchBox->currentText());
+        if(!searchBox->currentText().isEmpty())
+        {
+            current_file->find(searchBox->currentText());
+        }
+
         current_file->highlightString(searchBox->currentText());
     }
 }
 
 void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss"))
+    if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss") || item->text(column).endsWith("txt") || item->text(column).endsWith("rproj"))
     {
         openFile(item->text(column));
     }
@@ -577,10 +593,25 @@ void Rockete::openFile(const QString &filePath)
 
         if(!file_info.exists())
         {
-            printf("TODO: Rockete::openFile recursion");
+            file_info = Settings::getWordListsPath() + filePath;
+            
+            if(!file_info.exists())
+            {
+                printf("TODO: Rockete::openFile recursion");
+                return;
+            }
+        }
+    }
+
+    for (int i = 0; i < openedFileList.size(); ++i)
+    {
+        if (openedFileList[i]->fileInfo.filePath() == file_info.filePath())
+        {
+            ui.codeTabWidget->setCurrentIndex(getTabIndexFromFileName(file_info.fileName().toAscii().data()));
             return;
         }
     }
+
 
     if (file_info.suffix() == "rml")
     {
@@ -596,7 +627,7 @@ void Rockete::openFile(const QString &filePath)
         ui.codeTabWidget->setCurrentIndex(new_tab_index);
         success = true;
     }
-    else if (file_info.suffix() == "rproj")
+    else if (file_info.suffix() == "rproj" || file_info.suffix() == "txt")
     {
         new_tab_index = openASCIIFile(file_info.filePath().toAscii().data());
         ui.codeTabWidget->setCurrentIndex(new_tab_index);
@@ -620,6 +651,8 @@ void Rockete::openProject(const QString &filePath)
             project_file(filePath);
         QStringList
             path_list;
+
+        ui.treeWidget->clear();
 
         project_file.open(QFile::ReadOnly);
         while (!project_file.atEnd())

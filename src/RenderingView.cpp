@@ -49,7 +49,7 @@ void RenderingView::keyPressEvent(QKeyEvent* event)
 
 void RenderingView::changeCurrentDocument(OpenedDocument *document)
 {
-    if (currentDocument)
+    if (currentDocument && currentDocument->rocketDocument)
         currentDocument->rocketDocument->Hide();
 
     currentDocument = document;

@@ -90,7 +90,11 @@ void OpenedDocument::regenerateBodyContent()
 
 void OpenedDocument::highlightString(const QString &str)
 {
-    if(highlightedString!=str)
+    if(str.isEmpty())
+    {
+        highlighter->setHighlightedString("placeholder_for_highlighted_string");
+    }
+    else if(highlightedString!=str)
     {
         highlighter->setHighlightedString(str);
     }

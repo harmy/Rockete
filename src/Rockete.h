@@ -25,6 +25,7 @@ public:
     void selectElement(Element *element);
     void clear();
     void reloadCurrentDocument();
+    int getTabIndexFromFileName(const char * name);
     //OpenedDocument *getDocumentFromTabIndex(const int tab_index);
     //OpenedStyleSheet *getStyleSheetFromTabIndex(const int tab_index);
     OpenedDocument *getDocumentFromFileName(const char *name);

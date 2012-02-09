@@ -58,6 +58,11 @@ void OpenedFile::find(const QString &str)
     QString plain_text;
     int starting_index;
 
+    if(str.isEmpty())
+    {
+        return;
+    }
+
     if (previousSearch != str || previousStartingIndex == -1)
     {
         previousSearch = str;
