@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QKeyEvent>
 #include <QCompleter>
+#include <QTextBlockUserData>
 
 class CodeEditor : public QTextEdit
 {
@@ -15,6 +16,11 @@ public:
 
     // this function is intended as basic "check before saving/commiting" that are meant to be extented upon, even rewritten completely if need be
     bool CheckXmlCorrectness(QString & error_message);
+
+    struct BlockData : public QTextBlockUserData
+    {
+        QTextCharFormat format;
+    };
 
 public slots:
     void completeText(const QString &text);

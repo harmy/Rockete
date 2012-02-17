@@ -35,6 +35,7 @@ public:
     //OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
     OpenedDocument *getCurrentDocument() { return currentDocument; }
+    QString getPathForFileName(const QString &filename);
 
 public slots:
     void menuOpenClicked();
@@ -63,6 +64,8 @@ public slots:
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
+    virtual void changeEvent(QEvent *event); 
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     void openFile(const QString &file_path);
@@ -86,6 +89,7 @@ private:
     QComboBox *searchBox;
     QFileSystemWatcher *fileWatcher;
     bool isReloadingFile;
+    QMap<int, QString> fileChangedOutsideArray;
 };
 
 #endif // ROCKETE_H

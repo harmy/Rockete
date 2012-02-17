@@ -100,6 +100,7 @@ void RenderingView::resizeGL(int w, int h)
 
 void RenderingView::paintGL() 
 {
+    glDisable(GL_SCISSOR_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);

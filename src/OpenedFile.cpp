@@ -169,7 +169,7 @@ void OpenedFile::save()
     if (!textEdit->CheckXmlCorrectness(error_message))
     {
         QMessageBox msgBox;
-        msgBox.setText("the document is not valid: " + error_message );
+        msgBox.setText(fileInfo.fileName() + " is not valid: " + error_message );
         msgBox.exec();
     }
 
@@ -202,5 +202,5 @@ void OpenedFile::setTextEditContent(const QString &content)
 {
     textDocument->setPlainText(content);
     textEdit->setDocument(textDocument);
-    textDocument->setModified( false );
+    textDocument->setModified( true );
 }

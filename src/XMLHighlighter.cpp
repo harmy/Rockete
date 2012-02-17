@@ -1,4 +1,5 @@
 #include "XMLHighlighter.h"
+#include "CodeEditor.h"
 
 XMLHighlighter::XMLHighlighter(QTextDocument *document)
 : QSyntaxHighlighter(document)
@@ -55,7 +56,14 @@ void XMLHighlighter::highlightBlock(const QString &text)
     int startIndex;
     int endIndex;
     int commentLength;
+    QTextCharFormat user_format;
+    QTextCharFormat new_format;
 
+    if(currentBlockUserData())
+    {
+        user_format = ((CodeEditor::BlockData *)currentBlockUserData())->format;
+    }
+    
     for(int i=0; i<highlightingRules.length();++i)
     {
         const QRegExp & expression = highlightingRules[i].first;
@@ -82,8 +90,10 @@ void XMLHighlighter::highlightBlock(const QString &text)
             {
                 commentLength = endIndex - startIndex + valueEndExpression.matchedLength();
             }
-
-            setFormat(startIndex, commentLength, valueFormat);
+            new_format = valueFormat;
+            if(currentBlockUserData())
+                new_format.merge(user_format);
+            setFormat(startIndex, commentLength, new_format);
 
             startIndex = valueStartExpression.indexIn(text, startIndex + commentLength);
         }
@@ -93,9 +103,11 @@ void XMLHighlighter::highlightBlock(const QString &text)
         while(index >= 0)
         {
             length = expression.matchedLength();
-            setFormat(index, length, format);
+            new_format = format;
+            if(currentBlockUserData())
+                new_format.merge(user_format);
+            setFormat(index, length, new_format);
             index = expression.indexIn(text, index + length);
         }
     }
-
 }

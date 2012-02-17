@@ -70,45 +70,5 @@ Rocket::Core::TextureHandle Settings::getBackroundTextureHandle()
     return backgroundTextureHandle;
 }
 
-void Settings::setFontPath(const QString &dirPath)
-{
-    settings.setValue("Path/Font", dirPath);
-}
-
-QString Settings::getFontPath()
-{
-    return settings.value("Path/Font").value< QString >();
-}
-
-void Settings::setTexturePath(const QString &dirPath)
-{
-    settings.setValue("Path/Texture", dirPath);
-}
-
-QString Settings::getTexturePath()
-{
-    return settings.value("Path/Texture").value< QString >();
-}
-
-void Settings::setInterfacePath(const QString &dirPath)
-{
-    settings.setValue("Path/Interface", dirPath);
-}
-
-QString Settings::getInterfacePath()
-{
-    return settings.value("Path/Interface").value< QString >();
-}
-
-void Settings::setWordListsPath(const QString &dirPath)
-{
-    settings.setValue("Path/WordList", dirPath);
-}
-
-QString Settings::getWordListsPath()
-{
-    return settings.value("Path/WordList").value< QString >();
-}
-
 QSettings Settings::settings("FishingCactus", "Rockete");
 Rocket::Core::TextureHandle Settings::backgroundTextureHandle = 0;

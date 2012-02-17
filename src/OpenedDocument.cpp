@@ -98,4 +98,6 @@ void OpenedDocument::highlightString(const QString &str)
     {
         highlighter->setHighlightedString(str);
     }
+
+    highlightedString = str;
 }

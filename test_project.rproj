@@ -1,4 +1,19 @@
-C:/Projets/Rockete/font
-C:/Projets/Rockete/textures
-C:/Projets/Rockete/interface
-C:/Projets/Rockete/word_lists
+<RocketeProject>
+	<FilePaths>
+		<!-- all these nodes can be duplicated to allow for several sources. bear in mind the source search is recursive -->
+		<!-- relative paths are also supported-->
+		<Font>font</Font>
+		<Font>P:/creatures/RESOURCE/FONTS</Font>
+		<Texture>textures</Texture>
+		<Texture>P:/creatures/RESOURCE/TEXTURES</Texture>
+		<Localization></Localization> <!-- not used yet -->
+		<Interface>interface</Interface>
+		<Interface>P:/creatures/RESOURCE/INTERFACE/ROCKET</Interface>
+	</FilePaths>
+	<Preferences>
+		<!-- project specific preferences: default window size, background color/pic, ... -->
+		<FilePaths>
+			<WordList>C:/Projets/Rockete/word_lists</WordList> <!-- do not duplicate -->
+		</FilePaths>
+	</Preferences>
+</RocketeProject>

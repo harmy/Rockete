@@ -17,6 +17,7 @@
 #include "EditionHelper.h"
 #include "Settings.h"
 #include <QDirIterator>
+#include "ProjectManager.h"
 
 struct LocalScreenSizeItem
 {
@@ -100,6 +101,8 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     ui.mainToolBar->addAction(action);
 
     fileWatcher = new QFileSystemWatcher();
+
+    setFocusPolicy(Qt::StrongFocus);
 
     connect(fileWatcher, SIGNAL(fileChanged(const QString &)), (QObject*)this, SLOT(fileHasChanged(const QString &)));
 }
@@ -240,6 +243,29 @@ OpenedFile *Rockete::getOpenedFile(const char * file_path, const bool try_to_ope
     return NULL;
 }
 
+QString Rockete::getPathForFileName(const QString &filename)
+{
+    QTreeWidgetItem *item;
+    QString searched_string;
+    QList<QTreeWidgetItem*> items_found;
+
+    searched_string = filename;
+    if(!filename.contains("."))
+        searched_string += ".";
+    
+    items_found = ui.treeWidget->findItems(searched_string, Qt::MatchStartsWith | Qt::MatchRecursive);
+
+    if(!items_found.isEmpty())
+    {
+        item = items_found.first();
+
+        if(item->columnCount()>1)
+            return item->text(1);
+    }
+    
+    return filename;
+}
+
 // Public slots:
 
 void Rockete::menuOpenClicked()
@@ -277,7 +303,7 @@ void Rockete::menuSaveClicked()
         current_file->save();
         ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), tab_text);
         fileWatcher->addPath(current_file->fileInfo.filePath());
-        reloadCurrentDocument();
+        //reloadCurrentDocument();
     }
 }
 
@@ -332,7 +358,7 @@ void Rockete::codeTabChanged( int index )
     }
 }
 
-void Rockete::codeTabRequestClose( int index, bool must_save )
+void Rockete::codeTabRequestClose(int index, bool must_save)
 {
     OpenedFile *current_file;
     OpenedDocument *document;
@@ -583,7 +609,7 @@ void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss") || item->text(column).endsWith("txt") || item->text(column).endsWith("rproj"))
     {
-        openFile(item->text(column));
+        openFile(item->text(1));
     }
 }
 
@@ -591,30 +617,7 @@ void Rockete::fileHasChanged(const QString &path)
 {
     QFileInfo file_info = path;
     int tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
-    int new_tab_index;
-    QWidget *widget;
-    QMessageBox *message_box = NULL;
-   
-    message_box = new QMessageBox("Rockete: file change detected", path + " has been modified,\ndo you want to reload it?",QMessageBox::Question, QMessageBox::Yes, QMessageBox::No, NULL, this);
-    
-    if(message_box->exec()==QMessageBox::No)
-    {
-        delete(message_box);
-        message_box = NULL;
-        return;
-    }
-    delete(message_box);
-    message_box = NULL;
-    isReloadingFile = true;
-    codeTabRequestClose(tab_index, false);
-    openFile(path);
-    new_tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
-
-    widget = ui.codeTabWidget->widget(new_tab_index);
-    ui.codeTabWidget->removeTab(new_tab_index);
-    ui.codeTabWidget->insertTab(tab_index,widget,file_info.fileName());
-    ui.codeTabWidget->setCurrentIndex(tab_index);
-    isReloadingFile = false;
+    fileChangedOutsideArray[tab_index] = path;
 }
 
 // Protected:
@@ -622,6 +625,70 @@ void Rockete::fileHasChanged(const QString &path)
 void Rockete::keyPressEvent(QKeyEvent *event)
 {
     renderingView->keyPressEvent(event);
+}
+
+void Rockete::changeEvent(QEvent *event)
+{
+    if(event->type() == QEvent::ActivationChange && isActiveWindow() && !fileChangedOutsideArray.isEmpty())
+    {
+        int new_tab_index;
+        int current_index = ui.codeTabWidget->currentIndex();
+        QMapIterator<int, QString> i(fileChangedOutsideArray);
+        while (i.hasNext())
+        {
+            i.next();
+            fileChangedOutsideArray.remove(i.key());
+            if( QMessageBox::question(this, "Rockete: file change detected", i.value() + " has been modified,\ndo you want to reload it?", QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+            {
+                QFileInfo file_info = i.value();
+                QWidget *widget;
+                isReloadingFile = true;
+                codeTabRequestClose(i.key(), false);
+                openFile(i.value());
+                new_tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
+
+                widget = ui.codeTabWidget->widget(new_tab_index);
+                ui.codeTabWidget->removeTab(new_tab_index);
+                ui.codeTabWidget->insertTab(i.key(),widget,file_info.fileName());
+                ui.codeTabWidget->setCurrentIndex(current_index);
+                isReloadingFile = false;
+            }
+        }
+    }
+}
+
+void Rockete::closeEvent(QCloseEvent *event)
+{
+    int
+        response = QMessageBox::Yes;
+
+    for (int i = 0; i < ui.codeTabWidget->count(); ++i)
+    {
+        if(ui.codeTabWidget->tabText(i).contains("*"))
+        {
+            response = QMessageBox::NoButton;
+        }
+    }
+    
+    if(response==QMessageBox::NoButton)
+        response = QMessageBox::question(this, "Some files are modified", "Save modified files before closing?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+
+    if(response==QMessageBox::Yes)
+    {
+        while(ui.codeTabWidget->count()>0)
+        {
+            codeTabRequestClose(0,true);
+        }
+    }
+    else if(response==QMessageBox::Cancel)
+    {
+        event->ignore();
+        return;
+    }
+    
+    event->accept();
+
+    QMainWindow::closeEvent(event);
 }
 
 // Private:
@@ -634,15 +701,23 @@ void Rockete::openFile(const QString &filePath)
 
     if(!file_info.exists())
     {
-        file_info = Settings::getInterfacePath() + filePath;
+        foreach(QString path, ProjectManager::getInstance().getInterfacePaths())
+        {
+            file_info = path + filePath;
+
+            if(file_info.exists())
+            {
+                break;
+            }
+        }
 
         if(!file_info.exists())
         {
-            file_info = Settings::getWordListsPath() + filePath;
+            file_info = ProjectManager::getInstance().getWordListPath() + filePath;
             
             if(!file_info.exists())
             {
-                printf("TODO: Rockete::openFile recursion");
+                printf("file not found: %s\n", filePath.toAscii().data());
                 return;
             }
         }
@@ -693,57 +768,31 @@ void Rockete::openProject(const QString &filePath)
 
     if (file_info.suffix() == "rproj")
     {
-        QFile 
-            project_file(filePath);
-        QStringList
-            path_list;
+
+        ProjectManager::getInstance().Initialize(filePath);
 
         ui.treeWidget->clear();
-
-        project_file.open(QFile::ReadOnly);
-        while (!project_file.atEnd())
-        {
-            QByteArray line = project_file.readLine();
-            if (!line.isEmpty())
-            {
-                line = line.trimmed();
-                if(!line.endsWith( '/' ))
-                {
-                    line.append('/');
-                }
-
-                if(line.contains('\\'))
-                {
-                    QMessageBox msgBox;
-                    msgBox.setText("project invalid. Only use / in your paths");
-                    msgBox.exec();
-                    return;
-                }
-
-                path_list << line;
-            }
-        }
-
-        if(path_list.count() < 4)
-        {
-            QMessageBox msgBox;
-            msgBox.setText("project invalid. please provide 4 lines of text with:\nfont path\ntexture path\nrml/rcss path\nkeyword lists path");
-            msgBox.exec();
-            return;
-        }
-
-        Settings::setFontPath(path_list[0]);
-        Settings::setTexturePath(path_list[1]);
-        Settings::setInterfacePath(path_list[2]);
-        Settings::setWordListsPath(path_list[3]);
+        ui.treeWidget->clear();
         Settings::setProject(filePath);
 
-        populateTreeView("Fonts", path_list[0]);
-        populateTreeView("Textures", path_list[1]);
-        populateTreeView("Interfaces", path_list[2]);
-        populateTreeView("Word Lists", path_list[3]);
+        foreach( QString path, ProjectManager::getInstance().getFontPaths())
+        {
+            populateTreeView("Fonts", path);
+            RocketSystem::getInstance().loadFonts(path);
+        }
 
-        RocketSystem::getInstance().loadFonts(Settings::getFontPath());
+        foreach( QString path, ProjectManager::getInstance().getTexturePaths())
+        {
+            populateTreeView("Textures", path);
+        }
+
+        foreach( QString path, ProjectManager::getInstance().getInterfacePaths())
+        {
+            populateTreeView("Interfaces", path);
+        }
+
+        populateTreeView("Word Lists", ProjectManager::getInstance().getWordListPath());
+
     }
 }
 
@@ -833,15 +882,19 @@ void Rockete::populateTreeView(const QString &top_item_name, const QString &dire
     while(directory_walker.hasNext())
     {
         directory_walker.next();
-
         if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden())
         {
-            items.append(new QTreeWidgetItem(item, QStringList(directory_walker.fileInfo().fileName())));
+            QStringList
+                list;
+            list << directory_walker.fileInfo().fileName();
+            list << directory_walker.fileInfo().filePath();
+            items.append(new QTreeWidgetItem(item, list));
         }
     }
 
     item->addChildren(items);
     ui.treeWidget->addTopLevelItem(item);
+    item->sortChildren(0,Qt::AscendingOrder);
 }
 
 Rockete *Rockete::instance = NULL;

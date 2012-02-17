@@ -5,6 +5,7 @@
 #include <QDirIterator>
 #include "Settings.h"
 #include "RocketSystem.h"
+#include "ProjectManager.h"
 
 #define GL_CLAMP_TO_EDGE 0x812F
 
@@ -93,22 +94,35 @@ bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Roc
     }
     else
     {
-        QDirIterator directory_walker(Settings::getTexturePath(), QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
+        final_file_info = Rockete::getInstance().getPathForFileName(base_file_info.fileName());
 
-        while(directory_walker.hasNext())
+        if(!final_file_info.exists()) // if the asset is not in the project files, recurse through the texture directory
         {
-            directory_walker.next();
-
-            if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden() && directory_walker.fileInfo().baseName() == base_file_info.baseName())
+            foreach(QString path, ProjectManager::getInstance().getTexturePaths())
             {
-                final_file_info = directory_walker.fileInfo();
-                break;
-            }
-        }
+                QDirIterator directory_walker(path, QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
-        if(!final_file_info.exists())
-        {
-            printf("texture not found: %s.", final_file_info.fileName().toAscii().data());
+                while(directory_walker.hasNext())
+                {
+                    directory_walker.next();
+
+                    if(!directory_walker.fileInfo().isDir() && !directory_walker.fileInfo().isHidden() && directory_walker.fileInfo().baseName() == base_file_info.baseName())
+                    {
+                        final_file_info = directory_walker.fileInfo();
+                        break;
+                    }
+                }
+
+                if(final_file_info.exists())
+                {
+                    break;
+                }
+            }
+
+            if(!final_file_info.exists())
+            {
+                printf("texture not found: %s.", final_file_info.fileName().toAscii().data());
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = rockete
 DESTDIR = ./debug
-QT += gui core opengl
+QT += gui core opengl xml
 CONFIG += debug_and_release console qtestlib
 DEFINES += QT_LARGEFILE_SUPPORT QT_OPENGL_LIB
 RESOURCES = rockete.qrc
@@ -19,10 +19,12 @@ SOURCES += \
  ./src/EditionHelper.cpp \
  ./src/EditionHelperColor.cpp \
  ./src/GraphicSystem.cpp \
+ ./src/LocalizationManager.cpp \
  ./src/main.cpp \
  ./src/OpenedDocument.cpp \
  ./src/OpenedFile.cpp \
  ./src/OpenedStyleSheet.cpp \
+ ./src/ProjectManager.cpp \
  ./src/PropertyTreeModel.cpp \
  ./src/RenderingView.cpp \
  ./src/Rockete.cpp \
@@ -51,10 +53,12 @@ HEADERS += \
  ./src/EditionHelper.h \
  ./src/EditionHelperColor.h \
  ./src/GraphicSystem.h \
+ ./src/LocalizationManager.h \
  ./src/OpenedDocument.h \
  ./src/OpenedFile.h \
  ./src/OpenedStyleSheet.h \
  ./src/OpenGL.h \
+ ./src/ProjectManager.h \
  ./src/PropertyTreeModel.h \
  ./src/RenderingView.h \
  ./src/Rockete.h \

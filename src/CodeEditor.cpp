@@ -4,15 +4,16 @@
 #include <QStringListModel>
 #include "Settings.h"
 #include "Rockete.h"
+#include "ProjectManager.h"
 
 // Public:
 
 CodeEditor::CodeEditor() : QTextEdit()
 {
     QFile 
-        tags(Settings::getWordListsPath() + "tag_list.txt"),
-        customs(Settings::getWordListsPath() + "custom_list.txt"),
-        keywords(Settings::getWordListsPath() + "keyword_list.txt");
+        tags(ProjectManager::getInstance().getWordListPath() + "tag_list.txt"),
+        customs(ProjectManager::getInstance().getWordListPath() + "custom_list.txt"),
+        keywords(ProjectManager::getInstance().getWordListPath() + "keyword_list.txt");
 
     tags.open(QFile::ReadOnly);
     while (!tags.atEnd())
@@ -110,7 +111,7 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
             }
             else if(plain_text[parsingTextCursor.position()] == '<')
             {
-                if ( opened_brace_counter > 0 )
+                if (opened_brace_counter > 0 && plain_text[parsingTextCursor.position() + 1] != '!')
                 {
                     error_message = "xml tag detected inside css class";
                     setTextCursor(parsingTextCursor);
@@ -259,25 +260,27 @@ void CodeEditor::HighlightClosingTag()
     int opened_quote = 0,
         tag_delimiter_balance = 0,
         start_parse_position = 0;
-    QTextCharFormat
-        format;
+    BlockData
+        * data;
 
     if(!PreviousHighlightedOpeningTag.isNull())
     {
         unHighlightingTextCursor.setPosition(PreviousHighlightedOpeningTag.x());
         unHighlightingTextCursor.setPosition(PreviousHighlightedOpeningTag.y(), QTextCursor::KeepAnchor);
-        format.setFontUnderline(false);
-        format.setFontOverline(false);
-        unHighlightingTextCursor.mergeCharFormat(format);
+        unHighlightingTextCursor.block().setUserData(NULL);
+        //unHighlightingTextCursor.mergeCharFormat(format);
+        PreviousHighlightedOpeningTag.setX(0);
+        PreviousHighlightedOpeningTag.setY(0);
     }
 
     if(!PreviousHighlightedClosingTag.isNull())
     {
         unHighlightingTextCursor.setPosition(PreviousHighlightedClosingTag.x());
         unHighlightingTextCursor.setPosition(PreviousHighlightedClosingTag.y(), QTextCursor::KeepAnchor);
-        format.setFontUnderline(false);
-        format.setFontOverline(false);
-        unHighlightingTextCursor.mergeCharFormat(format);
+        unHighlightingTextCursor.block().setUserData(NULL);
+        //unHighlightingTextCursor.mergeCharFormat(format);
+        PreviousHighlightedClosingTag.setX(0);
+        PreviousHighlightedClosingTag.setY(0);
     }
 
     parsingTextCursor.movePosition(QTextCursor::StartOfWord);
@@ -313,11 +316,11 @@ void CodeEditor::HighlightClosingTag()
         parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
     } while (plain_text[parsingTextCursor.position()] != '>' && plain_text[parsingTextCursor.position()] != ' ');
 
-    format.setFontUnderline(true);
-    format.setFontOverline(true);
+    data = new BlockData();
+    data->format.setFontUnderline(true);
+    data->format.setFontOverline(true);
+    parsingTextCursor.block().setUserData(data);
 
-    //found our tag, select it
-    parsingTextCursor.mergeCharFormat(format);
     PreviousHighlightedOpeningTag.setX(parsingTextCursor.selectionStart());
     PreviousHighlightedOpeningTag.setY(parsingTextCursor.selectionEnd());
 
@@ -364,7 +367,11 @@ void CodeEditor::HighlightClosingTag()
                         //found our tag, select it
                         parsingTextCursor.movePosition(QTextCursor::PreviousWord);
                         parsingTextCursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
-                        parsingTextCursor.mergeCharFormat(format);
+
+                        data = new BlockData();
+                        data->format.setFontUnderline(true);
+                        data->format.setFontOverline(true);
+                        parsingTextCursor.block().setUserData(data);
                         PreviousHighlightedClosingTag.setX(parsingTextCursor.selectionStart());
                         PreviousHighlightedClosingTag.setY(parsingTextCursor.selectionEnd());
                         break;
