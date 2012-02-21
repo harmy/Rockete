@@ -18,6 +18,8 @@
 #include "Settings.h"
 #include <QDirIterator>
 #include "ProjectManager.h"
+#include <QPluginLoader>
+#include "LocalizationManagerInterface.h"
 
 struct LocalScreenSizeItem
 {
@@ -43,6 +45,8 @@ struct LocalScreenSizeItem
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
 : QMainWindow(parent, flags), currentDocument(NULL), isReloadingFile(false)
 {
+    loadPlugins();
+
     instance = this;
 
     ui.setupUi(this);
@@ -99,6 +103,23 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     connect( action, SIGNAL(triggered()), (QObject*)this, SLOT(searchBoxActivated()));
     ui.mainToolBar->addWidget(searchBox);
     ui.mainToolBar->addAction(action);
+
+    languageBox = new QComboBox(this);
+    languageBox->setEditable(false);
+    languageBox->setInsertPolicy( QComboBox::InsertAlphabetically );
+
+
+    if(LocalizationManagerInterface::hasInstance())
+    {
+        foreach(LocalizationManagerInterface::LocalizationLanguage language, LocalizationManagerInterface::getInstance().getSupportedLanguages())
+        {
+            languageBox->addItem(LocalizationManagerInterface::getInstance().getLanguageNameForLanguage(language), (int)language);
+        }
+    }
+
+    connect(languageBox, SIGNAL(activated(const QString&)), (QObject*)this, SLOT(languageBoxActivated()));
+    ui.mainToolBar->addSeparator();
+    ui.mainToolBar->addWidget(languageBox);
 
     fileWatcher = new QFileSystemWatcher();
 
@@ -605,6 +626,13 @@ void Rockete::searchBoxActivated()
     }
 }
 
+void Rockete::languageBoxActivated()
+{
+
+    if(LocalizationManagerInterface::hasInstance())
+        LocalizationManagerInterface::getInstance().setLanguage((LocalizationManagerInterface::LocalizationLanguage)languageBox->itemData(languageBox->currentIndex()).toInt());
+}
+
 void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss") || item->text(column).endsWith("txt") || item->text(column).endsWith("rproj"))
@@ -895,6 +923,38 @@ void Rockete::populateTreeView(const QString &top_item_name, const QString &dire
     item->addChildren(items);
     ui.treeWidget->addTopLevelItem(item);
     item->sortChildren(0,Qt::AscendingOrder);
+}
+
+void Rockete::loadPlugins()
+{
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    #if defined(Q_OS_WIN)
+        if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+            pluginsDir.cdUp();
+    #elif defined(Q_OS_MAC)
+        if (pluginsDir.dirName() == "MacOS") {
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+        }
+    #endif
+    pluginsDir.cd("plugins");
+
+    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+        #if defined(Q_OS_WIN)
+            if(fileName.endsWith(".dll"))
+        #else
+            if(fileName.endsWith(".a"))
+        #endif
+        {
+            QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+            QObject *plugin = loader.instance();
+            LocalizationManagerInterface *iLocate = qobject_cast<LocalizationManagerInterface *>(plugin);
+            if (iLocate) {
+                LocalizationManagerInterface::setInstance(iLocate);
+            }
+        }
+    }
 }
 
 Rockete *Rockete::instance = NULL;

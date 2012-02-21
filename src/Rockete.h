@@ -59,6 +59,7 @@ public slots:
     void menuBackgroundChangeColor();
     void menuBackgroundChangeImage();
     void searchBoxActivated();
+    void languageBoxActivated();
     void fileTreeDoubleClicked(QTreeWidgetItem *item, int column);
     void fileHasChanged(const QString &path);
 
@@ -75,6 +76,7 @@ private:
     int openASCIIFile(const char *);
     void generateMenuRecent();
     void populateTreeView(const QString &top_item_name, const QString &directory_path);
+    void loadPlugins();
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
@@ -87,6 +89,7 @@ private:
     QList<QAction*> recentFileActionList;
     static Rockete *instance;
     QComboBox *searchBox;
+    QComboBox *languageBox;
     QFileSystemWatcher *fileWatcher;
     bool isReloadingFile;
     QMap<int, QString> fileChangedOutsideArray;
