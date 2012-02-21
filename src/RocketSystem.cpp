@@ -4,6 +4,8 @@
 #include <Rocket/Core/FreeType/FontProvider.h>
 #include <QDir>
 #include "ToolManager.h"
+#include "LocalizationManagerInterface.h"
+#include "ProjectManager.h"
 
 RocketSystem::RocketSystem() :
     renderInterface(),
@@ -24,6 +26,56 @@ float RocketSystem::GetElapsedTime()
     return 1.0f;
 }
 
+int RocketSystem::TranslateString(Rocket::Core::String& translated, const Rocket::Core::String& input)
+{
+    QString
+        translated_string,
+        input_string;
+    
+    if(!LocalizationManagerInterface::hasInstance())
+    {
+        translated = input;
+        return 0;
+    }
+
+
+    input_string = input.CString();
+
+    if(input_string.contains(ProjectManager::getInstance().getlocalizationOpeningTag()))
+    {
+        QString localization_identifier;
+        int starting_index = input_string.indexOf(ProjectManager::getInstance().getlocalizationOpeningTag()) + ProjectManager::getInstance().getlocalizationOpeningTag().size();
+        
+        
+        int identifier_size = input_string.indexOf(ProjectManager::getInstance().getlocalizationClosingTag(),starting_index) - starting_index;
+
+        localization_identifier = input_string.mid(starting_index, identifier_size);
+        
+        translated_string = LocalizationManagerInterface::getInstance().getLocalizationForIdentifier(localization_identifier.trimmed());
+        
+        translated_string = input_string.replace(ProjectManager::getInstance().getlocalizationOpeningTag()+localization_identifier+ProjectManager::getInstance().getlocalizationClosingTag(), translated_string);
+
+        if(translated_string.isEmpty())
+        {
+            printf("warning: could not find localization identifier \"%s\"\n", localization_identifier.toAscii().data() );
+            translated = input;
+            return 0;
+        }
+        else
+        {
+            translated = translated_string.toUtf8();
+            return 1;
+        }
+    }
+    else
+    {
+        translated = input;
+        return 0;
+    }
+
+    
+}
+
 bool RocketSystem::initialize()
 {
     Rocket::Core::SetRenderInterface(&renderInterface);
@@ -38,7 +90,7 @@ bool RocketSystem::initialize()
 
 void RocketSystem::finalize()
 {
-    Rocket::Core::FreeType::FontProvider::Shutdown();
+    //Rocket::Core::FreeType::FontProvider::Shutdown();
     Rocket::Core::Shutdown();
     Rocket::Core::SetRenderInterface( 0 );
     Rocket::Core::SetSystemInterface( 0 );

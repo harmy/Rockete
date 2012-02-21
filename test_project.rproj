@@ -3,17 +3,19 @@
 		<!-- all these nodes can be duplicated to allow for several sources. bear in mind the source search is recursive -->
 		<!-- relative paths are also supported-->
 		<Font>font</Font>
-		<Font>P:/creatures/RESOURCE/FONTS</Font>
 		<Texture>textures</Texture>
-		<Texture>P:/creatures/RESOURCE/TEXTURES</Texture>
-		<Localization></Localization> <!-- not used yet -->
 		<Interface>interface</Interface>
+		<Font>P:/creatures/RESOURCE/FONTS</Font>
+		<Texture>P:/creatures/RESOURCE/TEXTURES</Texture>
 		<Interface>P:/creatures/RESOURCE/INTERFACE/ROCKET</Interface>
 	</FilePaths>
 	<Preferences>
 		<!-- project specific preferences: default window size, background color/pic, ... -->
 		<FilePaths>
 			<WordList>C:/Projets/Rockete/word_lists</WordList> <!-- do not duplicate -->
+			<LocalizationFile>P:/creatures/RESOURCE/LOCALIZATION/creatures4_project.xml</LocalizationFile> <!-- takes a pina locada project, other files MUST be in same folder -->
+			<LocalizationOpeningTag>${</LocalizationOpeningTag>
+			<LocalizationClosingTag>}</LocalizationClosingTag>
 		</FilePaths>
 	</Preferences>
 </RocketeProject>

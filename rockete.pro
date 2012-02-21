@@ -19,7 +19,7 @@ SOURCES += \
  ./src/EditionHelper.cpp \
  ./src/EditionHelperColor.cpp \
  ./src/GraphicSystem.cpp \
- ./src/LocalizationManager.cpp \
+ ./src/LocalizationManagerInterface.cpp \
  ./src/main.cpp \
  ./src/OpenedDocument.cpp \
  ./src/OpenedFile.cpp \
@@ -53,7 +53,7 @@ HEADERS += \
  ./src/EditionHelper.h \
  ./src/EditionHelperColor.h \
  ./src/GraphicSystem.h \
- ./src/LocalizationManager.h \
+ ./src/LocalizationManagerInterface.h \
  ./src/OpenedDocument.h \
  ./src/OpenedFile.h \
  ./src/OpenedStyleSheet.h \
@@ -101,7 +101,7 @@ win32 {
     }
     
     CONFIG(release, debug|release) {
-        LIBS += -lRocketCore -lRocketControls
+        LIBS += -lRocketCore -lRocketControls -lRocketFreeType
     }
 }
 unix {

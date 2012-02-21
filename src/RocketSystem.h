@@ -37,6 +37,8 @@ public:
     }
     virtual float GetElapsedTime();
 
+    virtual int TranslateString(Rocket::Core::String& translated, const Rocket::Core::String& input);
+
 private:
 
     class EventListener : public Rocket::Core::EventListener
