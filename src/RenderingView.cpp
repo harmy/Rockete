@@ -71,18 +71,29 @@ void RenderingView::SetClearColor( float red, float green, float blue, float alp
 void RenderingView::zoomIn()
 {
     GraphicSystem::scaleFactor += 0.1f;
+    if(GraphicSystem::scaleFactor > 2.0f)
+    {
+        GraphicSystem::scaleFactor = 2.0f;
+    }
+    Rockete::getInstance().setZoomLevel(GraphicSystem::scaleFactor);
     repaint();
 }
 
 void RenderingView::zoomOut()
 {
     GraphicSystem::scaleFactor -= 0.1f;
+    if(GraphicSystem::scaleFactor < 0.0f)
+    {
+        GraphicSystem::scaleFactor = 0.0f;
+    }
+    Rockete::getInstance().setZoomLevel(GraphicSystem::scaleFactor);
     repaint();
 }
 
 void RenderingView::zoomReset()
 {
     GraphicSystem::scaleFactor = 1.0f;
+    Rockete::getInstance().setZoomLevel(GraphicSystem::scaleFactor);
     repaint();
 }
 
@@ -203,6 +214,18 @@ void RenderingView::dropEvent(QDropEvent *event)
 {
     QString result = event->mimeData()->urls()[0].toString();
     ToolManager::getInstance().getCurrentTool()->onFileDrop(result);
+}
+
+void RenderingView::wheelEvent(QWheelEvent *event)
+{
+    if ( event->delta() > 0 )
+    {
+        zoomIn();
+    }
+    else
+    {
+        zoomOut();
+    }
 }
 
 // Private:

@@ -3,6 +3,7 @@
 
 #include <QtGui/QMainWindow>
 #include <QFileSystemWatcher>
+#include <QLabel>
 #include "ui_rockete.h"
 #include "RenderingView.h"
 #include "OpenedDocument.h"
@@ -36,6 +37,7 @@ public:
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
     OpenedDocument *getCurrentDocument() { return currentDocument; }
     QString getPathForFileName(const QString &filename);
+    void setZoomLevel(float level);
 
 public slots:
     void menuOpenClicked();
@@ -90,6 +92,7 @@ private:
     static Rockete *instance;
     QComboBox *searchBox;
     QComboBox *languageBox;
+    QLabel *labelZoom;
     QFileSystemWatcher *fileWatcher;
     bool isReloadingFile;
     QMap<int, QString> fileChangedOutsideArray;

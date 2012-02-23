@@ -108,6 +108,10 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     languageBox->setEditable(false);
     languageBox->setInsertPolicy( QComboBox::InsertAlphabetically );
 
+    labelZoom = new QLabel(parent);
+    labelZoom->setText("100%");
+
+    ui.statusBar->addPermanentWidget(labelZoom);
 
     if(LocalizationManagerInterface::hasInstance())
     {
@@ -115,6 +119,8 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
         {
             languageBox->addItem(LocalizationManagerInterface::getInstance().getLanguageNameForLanguage(language), (int)language);
         }
+
+        ui.statusBar->showMessage( "Localization Activated", 10000 );
     }
 
     connect(languageBox, SIGNAL(activated(const QString&)), (QObject*)this, SLOT(languageBoxActivated()));
@@ -285,6 +291,17 @@ QString Rockete::getPathForFileName(const QString &filename)
     }
     
     return filename;
+}
+
+void Rockete::setZoomLevel(float level)
+{
+    QString
+        string_level;
+
+    string_level.setNum(level * 100.0f);
+    string_level += "%";
+
+    labelZoom->setText(string_level);
 }
 
 // Public slots:
