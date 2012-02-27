@@ -4,6 +4,7 @@
 #include "CodeEditor.h"
 #include <QFileInfo>
 #include <QTextDocument>
+#include <QSyntaxHighlighter>
 
 class OpenedFile
 {
@@ -22,6 +23,7 @@ public:
     void saveAs(const QString &file_path);
     void setTextEditContent(const QString &content);
     virtual void highlightString(const QString &/*str*/){}
+    virtual void rehighlight(){highlighter->rehighlight();}
 
     //int tabIndex;
     CodeEditor *textEdit;
@@ -29,6 +31,7 @@ public:
     QFileInfo fileInfo;
     QString previousSearch;
     int previousStartingIndex;
+    QSyntaxHighlighter *highlighter;
 };
 
 #endif

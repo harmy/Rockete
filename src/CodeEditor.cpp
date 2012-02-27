@@ -8,13 +8,14 @@
 
 // Public:
 
-CodeEditor::CodeEditor() : QTextEdit()
+CodeEditor::CodeEditor(OpenedFile *parent_file) : QPlainTextEdit()
 {
     QFile 
         tags(ProjectManager::getInstance().getWordListPath() + "tag_list.txt"),
         customs(ProjectManager::getInstance().getWordListPath() + "custom_list.txt"),
         keywords(ProjectManager::getInstance().getWordListPath() + "keyword_list.txt");
 
+    parentFile = parent_file;
     tags.open(QFile::ReadOnly);
     while (!tags.atEnd())
     {
@@ -396,6 +397,8 @@ void CodeEditor::HighlightClosingTag()
 
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
+
+    parentFile->rehighlight();
 }
 
 // Protected:
@@ -487,7 +490,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         }
         else
         {
-            QTextEdit::keyPressEvent(e);
+            QPlainTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Right)
@@ -515,14 +518,14 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         }
         else
         {
-            QTextEdit::keyPressEvent(e);
+            QPlainTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Delete)
     {
         if(textCursor().hasSelection())
         {
-            QTextEdit::keyPressEvent(e);
+            QPlainTextEdit::keyPressEvent(e);
             return;
         }
 
@@ -562,7 +565,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         }
         else
         {
-            QTextEdit::keyPressEvent(e);
+            QPlainTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Backspace)
@@ -590,7 +593,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         }
         else
         {
-            QTextEdit::keyPressEvent(e);
+            QPlainTextEdit::keyPressEvent(e);
         }
     }
     else if (e->key() == Qt::Key_Home) {
@@ -641,7 +644,9 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
 
     }
     else
-        QTextEdit::keyPressEvent(e);
+    {
+        QPlainTextEdit::keyPressEvent(e);
+    }
 
     if(AutoCompleter->popup()->isVisible())
     {
@@ -652,6 +657,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
         AutoCompleter->complete();
     }
+
     if(TagAutoCompleter->popup()->isVisible())
     {
         QTextCursor editingTextCursor = textCursor();

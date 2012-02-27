@@ -16,13 +16,14 @@ OpenedFile::~OpenedFile()
 
 void OpenedFile::initialize()
 {
-    textEdit = new CodeEditor;
-    textEdit->setAcceptRichText(false);
-    textEdit->setLineWrapMode(QTextEdit::NoWrap);
+    textEdit = new CodeEditor(this);
+    //textEdit->setAcceptRichText(false);
+    textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
     textEdit->setTabChangesFocus(false);
 
     textDocument = new QTextDocument();
     textDocument->setDefaultFont(QFont("Courier",10));
+    textDocument->setDocumentLayout(new QPlainTextDocumentLayout(textDocument));
 
     fillTextEdit();
 }

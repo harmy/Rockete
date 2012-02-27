@@ -9,13 +9,14 @@ OpenedDocument::OpenedDocument() : selectedElement(NULL)
 
 void OpenedDocument::initialize()
 {
-    textEdit = new CodeEditor();
-    textEdit->setAcceptRichText(false);
-    textEdit->setLineWrapMode(QTextEdit::NoWrap);
+    textEdit = new CodeEditor(this);
+    //textEdit->setAcceptRichText(false);
+    textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
     textEdit->setTabChangesFocus(false);
 
     textDocument = new QTextDocument();
     textDocument->setDefaultFont(QFont("Courier",10));
+    textDocument->setDocumentLayout(new QPlainTextDocumentLayout(textDocument));
     highlighter = new XMLHighlighter(textDocument);
 
     fillTextEdit();
@@ -92,11 +93,11 @@ void OpenedDocument::highlightString(const QString &str)
 {
     if(str.isEmpty())
     {
-        highlighter->setHighlightedString("placeholder_for_highlighted_string");
+        ((XMLHighlighter *)highlighter)->setHighlightedString("placeholder_for_highlighted_string");
     }
     else if(highlightedString!=str)
     {
-        highlighter->setHighlightedString(str);
+        ((XMLHighlighter *)highlighter)->setHighlightedString(str);
     }
 
     highlightedString = str;

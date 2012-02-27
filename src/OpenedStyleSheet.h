@@ -11,8 +11,6 @@ public:
     OpenedStyleSheet();
     virtual void initialize();
     virtual void highlightString(const QString &str);
-    
-    CssHighlighter *highlighter;
 };
 
 #endif
