@@ -4,6 +4,8 @@
 #include <QString>
 #include <QStringList>
 #include <QMessageBox>
+#include <QTextStream>
+#include "Rockete.h"
 
 OpenedFile::OpenedFile()
 {
@@ -35,9 +37,19 @@ void OpenedFile::fillTextEdit()
     QString content;
 
     file.open(QIODevice::ReadOnly);
-    content = file.readAll().data();
-    content.replace("\t", "    ");
 
+    if(fileInfo.filePath().endsWith(".rml"))
+    {
+        QTextStream in(&file);
+        in.setCodec("UTF-8");
+        content = in.readAll();
+    }
+    else
+    {
+        content = file.readAll().data();
+    }
+
+    content.replace("\t", "    ");
     setTextEditContent(content);
 
     file.close();
@@ -91,15 +103,21 @@ void OpenedFile::find(const QString &str)
 
 int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
 {
-    QStringList lines;
+    QTextCursor parsingCursor = textEdit->textCursor();
+    
+    parsingCursor.setPosition(0);
+    
+    while(parsingCursor.blockNumber() != start_line_number)
+    {
+        parsingCursor.movePosition(QTextCursor::Down);
+    }
 
-    lines = textEdit->toPlainText().split("\n");
+    while(!parsingCursor.atEnd())
+    {
+        if(parsingCursor.block().text().contains(str))
+            return parsingCursor.blockNumber();
 
-    Q_ASSERT(start_line_number < lines.size());
-
-    for (int i=start_line_number; i<lines.size(); ++i) {
-        if(lines[i].contains(str))
-            return i;
+        parsingCursor.movePosition(QTextCursor::Down);
     }
 
     return -1;
@@ -107,66 +125,96 @@ int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
 
 void OpenedFile::replaceLine(const int line_number, const QString &new_line)
 {
-    QStringList lines;
+    QString old_text;
+    QString new_text = new_line;
+    QTextCursor parsingCursor = textEdit->textCursor();
+    int space_count = 0;
 
-    lines = textEdit->toPlainText().split("\n");
+    parsingCursor.setPosition(0);
 
-    Q_ASSERT(line_number < lines.size());
+    while(parsingCursor.blockNumber() != line_number)
+    {
+        parsingCursor.movePosition(QTextCursor::Down);
+    }
 
-    lines[line_number] = new_line;
+    parsingCursor.movePosition(QTextCursor::StartOfLine);
+    parsingCursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
 
-    textEdit->clear();
+    old_text = parsingCursor.selectedText();
 
-    setTextEditContent(lines.join("\n"));
+    while(old_text.startsWith(" "))
+    {
+        old_text.remove(0,1);
+        space_count++;
+    }
 
-    // :TODO: Set cursor position on modified line.
-    textEdit->textCursor().setPosition(1);
+    while(space_count>0)
+    {
+        new_text.prepend(" ");
+        space_count--;
+    }
+    new_text.remove(".0000");
+    parsingCursor.insertText(new_text);
+    parsingCursor.clearSelection();
+
+    textEdit->setTextCursor(parsingCursor);
 }
 
 int OpenedFile::insertLineBeforeBracket(const int start_line, const QString &new_line)
 {
-    QStringList lines;
-    int line_number;
+    QTextCursor parsingCursor = textEdit->textCursor();
+    QString new_text = new_line;
 
-    lines = textEdit->toPlainText().split("\n");
+    parsingCursor.setPosition(0);
 
-    Q_ASSERT(start_line < lines.size());
-
-    for (line_number=start_line;line_number<lines.size();++line_number) {
-        if(lines[line_number].indexOf('}') != -1)
-            break;
+    while(parsingCursor.blockNumber() != start_line)
+    {
+        parsingCursor.movePosition(QTextCursor::Down);
     }
 
-    lines.insert(line_number,new_line);
+    while(!parsingCursor.atEnd())
+    {
+        if(parsingCursor.block().text().contains('}'))
+            break;
 
-    textEdit->clear();
+        parsingCursor.movePosition(QTextCursor::Down);
+    }
 
-    setTextEditContent(lines.join("\n"));
+    parsingCursor.movePosition(QTextCursor::StartOfLine);
 
-    // :TODO: Set cursor position on modified line.
-    textEdit->textCursor().setPosition(1);
+    new_text.remove(".0000", Qt::CaseInsensitive);
+    parsingCursor.insertText(new_text);
+    parsingCursor.insertText("\n");
+    parsingCursor.movePosition(QTextCursor::Up);
+    textEdit->setTextCursor(parsingCursor);
+    return parsingCursor.blockNumber();
 
-    return line_number;
 }
 
 void OpenedFile::removeLine(const int line_number)
 {
-    QStringList lines;
+    printf("WARNING: OpenedFile::removeLine(const int line_number) never tested!!!!\n");
 
-    lines = textEdit->toPlainText().split("\n");
+    QTextCursor parsingCursor = textEdit->textCursor();
 
-    Q_ASSERT(line_number < lines.size());
+    parsingCursor.setPosition(0);
 
-    lines.removeAt(line_number);
+    while(parsingCursor.blockNumber() != line_number)
+    {
+        parsingCursor.movePosition(QTextCursor::Down);
+    }
 
-    setTextEditContent(lines.join("\n"));
+    parsingCursor.movePosition(QTextCursor::StartOfLine);
+    parsingCursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+
+    parsingCursor.deleteChar();
 }
 
 void OpenedFile::save()
 {
     QFile file(fileInfo.filePath());
     QString error_message;
-
+    Rockete::getInstance().getFileWatcher()->removePath(fileInfo.filePath());
     if (!textEdit->CheckXmlCorrectness(error_message))
     {
         QMessageBox msgBox;
@@ -174,11 +222,24 @@ void OpenedFile::save()
         msgBox.exec();
     }
 
-    if (file.open(QFile::WriteOnly|QFile::Truncate)) {
-        file.write(textEdit->toPlainText().toAscii().data());
+    if (file.open(QFile::WriteOnly|QFile::Truncate|QIODevice::Text)) {
+        if(fileInfo.filePath().endsWith(".rml"))
+        {
+            QTextStream out(&file);
+            out.setCodec("UTF-8");
+            out.setGenerateByteOrderMark(true);
+            out << textEdit->toPlainText();
+            out.flush();
+        }
+        else
+        {
+            file.write(textEdit->toPlainText().toAscii().data());
+        }
         file.close();
         textDocument->setModified( false );
     }
+
+    Rockete::getInstance().getFileWatcher()->addPath(fileInfo.filePath());
 }
 
 void OpenedFile::saveAs(const QString &file_path)
@@ -194,7 +255,18 @@ void OpenedFile::saveAs(const QString &file_path)
     }
 
     if (file.open(QFile::WriteOnly|QFile::Truncate)) {
-        file.write(textEdit->toPlainText().toAscii().data());
+        if(fileInfo.filePath().endsWith(".rml"))
+        {
+            QTextStream out(&file);
+            out.setCodec("UTF-8");
+            out.setGenerateByteOrderMark(true);
+            out << textEdit->toPlainText();
+            out.flush();
+        }
+        else
+        {
+            file.write(textEdit->toPlainText().toAscii().data());
+        }
         file.close();
     }
 }

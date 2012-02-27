@@ -24,7 +24,7 @@ void ActionManager::applyNew(Action * action)
 
 void ActionManager::applyPrevious()
 {
-    if (previousActionList.size()) {
+    if (!previousActionList.isEmpty()) {
         Action *action = previousActionList.takeLast();
         action->unapply();
         nextActionList.push_back(action);
@@ -33,7 +33,7 @@ void ActionManager::applyPrevious()
 
 void ActionManager::applyNext()
 {
-    if (nextActionList.size()) {
+    if (!nextActionList.isEmpty()) {
         Action *action = nextActionList.takeLast();
         action->apply();
         previousActionList.push_back(action);

@@ -148,25 +148,31 @@ void Rockete::repaintRenderingView()
 
 void Rockete::fillAttributeView()
 {
-    attributeTreeModel->setupData(currentDocument, currentDocument->selectedElement);
-    ui.attributeTreeView->reset();
-    ui.attributeTreeView->setModel(attributeTreeModel);
-    ui.attributeTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-    ui.attributeTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
-    ui.attributeTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-    ui.attributeTreeView->header()->setStretchLastSection(false);
+    if(currentDocument)
+    {
+        attributeTreeModel->setupData(currentDocument, currentDocument->selectedElement);
+        ui.attributeTreeView->reset();
+        ui.attributeTreeView->setModel(attributeTreeModel);
+        ui.attributeTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+        ui.attributeTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
+        ui.attributeTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+        ui.attributeTreeView->header()->setStretchLastSection(false);
+    }
 }
 
 void Rockete::fillPropertyView()
 {
-    propertyTreeModel->setupData(currentDocument, currentDocument->selectedElement);
-    ui.propertyTreeView->reset();
-    ui.propertyTreeView->setModel(propertyTreeModel);
-    ui.propertyTreeView->expandAll();
-    ui.propertyTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-    ui.propertyTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
-    //ui.propertyTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-    //ui.propertyTreeView->header()->setStretchLastSection(false);
+    if(currentDocument)
+    {
+        propertyTreeModel->setupData(currentDocument, currentDocument->selectedElement);
+        ui.propertyTreeView->reset();
+        ui.propertyTreeView->setModel(propertyTreeModel);
+        ui.propertyTreeView->expandAll();
+        ui.propertyTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+        ui.propertyTreeView->header()->setResizeMode(1, QHeaderView::Stretch);
+        //ui.propertyTreeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+        //ui.propertyTreeView->header()->setStretchLastSection(false);
+    }
 }
 
 void Rockete::selectElement(Element *element)
@@ -337,10 +343,8 @@ void Rockete::menuSaveClicked()
     }
     if ((current_file = getOpenedFile(tab_text.toAscii().data())))
     {
-        fileWatcher->removePath(current_file->fileInfo.filePath());
         current_file->save();
         ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), tab_text);
-        fileWatcher->addPath(current_file->fileInfo.filePath());
         //reloadCurrentDocument();
     }
 }
@@ -410,9 +414,9 @@ void Rockete::codeTabRequestClose(int index, bool must_save)
     }
     if ((current_file = getOpenedFile(tab_text.toAscii().data()))) 
     {
-        fileWatcher->removePath(current_file->fileInfo.filePath());
         if(must_save)
             current_file->save();
+        fileWatcher->removePath(current_file->fileInfo.filePath());
         openedFileList.removeOne( current_file );
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data())))

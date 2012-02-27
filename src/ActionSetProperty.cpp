@@ -32,7 +32,7 @@ void ActionSetProperty::apply()
             QString new_line;
 
             source_line_number = opened_file->findLineNumber(targetProperty->name, targetProperty->sourceLineNumber);
-            new_line = "    " + targetProperty->name + ": " + newValue + ";";
+            new_line = targetProperty->name + ": " + newValue + ";";
 
             if(source_line_number != -1)
                 opened_file->replaceLine(source_line_number, new_line);

@@ -21,7 +21,7 @@ void OpenedDocument::initialize()
 
     fillTextEdit();
 }
-
+/*
 void OpenedDocument::replaceInnerRMLFromId(const QString &tag_name, const QString &id, const QString &new_content)
 {
     QString content;
@@ -30,6 +30,8 @@ void OpenedDocument::replaceInnerRMLFromId(const QString &tag_name, const QStrin
     int id_index;
     int start_index;
     int end_index;
+
+    printf("WARNING: OpenedFile::removeLine(const int line_number) never tested!!!!\n");
 
     content = textDocument->toPlainText();
 
@@ -47,15 +49,17 @@ void OpenedDocument::replaceInnerRMLFromId(const QString &tag_name, const QStrin
 
     setTextEditContent(content);
 }
-
+*/
 void OpenedDocument::replaceInnerRMLFromTagName(const QString &tag_name, const QString &new_content)
 {
     QString content;
     QString tag;
+    QString new_text = new_content;
     QString end_string;
     int tag_index;
     int start_index;
     int end_index;
+    QTextCursor replacingCursor = textEdit->textCursor();
 
     tag = "<" + tag_name;
 
@@ -65,12 +69,18 @@ void OpenedDocument::replaceInnerRMLFromTagName(const QString &tag_name, const Q
 
     Q_ASSERT(tag_index != -1);
 
-    start_index = content.indexOf('>',tag_index);
+    start_index = content.indexOf('>',tag_index) + 1;
     end_index = content.indexOf(end_string,start_index+1);
 
-    content.replace(start_index+1, end_index-start_index-1,new_content);
+    replacingCursor.setPosition(start_index);
+    replacingCursor.setPosition(end_index, QTextCursor::KeepAnchor);
 
-    setTextEditContent(content);
+    new_text.remove(".0000", Qt::CaseInsensitive);
+    replacingCursor.insertText(new_text);
+
+    //content.replace(start_index+1, end_index-start_index-1,new_content);
+
+    //setTextEditContent(content);
 }
 
 void OpenedDocument::regenerateBodyContent()

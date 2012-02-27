@@ -38,6 +38,7 @@ public:
     OpenedDocument *getCurrentDocument() { return currentDocument; }
     QString getPathForFileName(const QString &filename);
     void setZoomLevel(float level);
+    QFileSystemWatcher *getFileWatcher(){return fileWatcher;}
 
 public slots:
     void menuOpenClicked();

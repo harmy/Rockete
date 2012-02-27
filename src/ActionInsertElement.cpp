@@ -23,7 +23,7 @@ void ActionInsertElement::unapply()
 {
     targetElement->RemoveChild(elementToInsert);
 
-    if (targetDocument->selectedElement == elementToInsert)
+    if (targetDocument->selectedElement && targetDocument->selectedElement == elementToInsert)
         targetDocument->selectedElement = NULL;
 
     targetDocument->regenerateBodyContent();
