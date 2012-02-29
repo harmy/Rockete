@@ -7,7 +7,8 @@
 #include <QCompleter>
 #include <QTextBlockUserData>
 
-class OpenedFile;
+class OpenedFile; 
+class LineNumberArea;
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -16,8 +17,10 @@ class CodeEditor : public QPlainTextEdit
 public:
     CodeEditor(OpenedFile *parent_file);
 
-    // this function is intended as basic "check before saving/commiting" that are meant to be extented upon, even rewritten completely if need be
+    // this function is intended as basic "check before saving/commiting" that is meant to be extented upon, even rewritten completely if need be
     bool CheckXmlCorrectness(QString & error_message);
+    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    int lineNumberAreaWidth();
 
     struct BlockData : public QTextBlockUserData
     {
@@ -33,9 +36,15 @@ public slots:
 protected:
     virtual void keyPressEvent(QKeyEvent * e);
     virtual void keyReleaseEvent(QKeyEvent * e);
+    void resizeEvent(QResizeEvent *event);
 
     QCompleter *AutoCompleter;
     QCompleter *TagAutoCompleter;
+
+private slots:
+    void updateLineNumberAreaWidth(int newBlockCount);
+    void highlightCurrentLine();
+    void updateLineNumberArea(const QRect &, int);
 
 private:
     QStringList tag_list;
@@ -44,6 +53,30 @@ private:
     QPoint PreviousHighlightedOpeningTag;
     QPoint PreviousHighlightedClosingTag;
     OpenedFile *parentFile;
+    QWidget *lineNumberArea;
+};
+
+
+
+
+class LineNumberArea : public QWidget
+{
+public:
+    LineNumberArea(CodeEditor *editor) : QWidget(editor) {
+        codeEditor = editor;
+    }
+
+    QSize sizeHint() const {
+        return QSize(codeEditor->lineNumberAreaWidth(), 0);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) {
+        codeEditor->lineNumberAreaPaintEvent(event);
+    }
+
+private:
+    CodeEditor *codeEditor;
 };
 
 #endif
