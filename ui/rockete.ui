@@ -228,6 +228,8 @@
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
     <addaction name="actionUnselect"/>
+    <addaction name="separator"/>
+    <addaction name="actionFormat_Text"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -433,6 +435,14 @@
   <action name="actionOpen_project">
    <property name="text">
     <string>Open project...</string>
+   </property>
+  </action>
+  <action name="actionFormat_Text">
+   <property name="text">
+    <string>Format Text</string>
+   </property>
+   <property name="toolTip">
+    <string>Re-indent/format the whole file</string>
    </property>
   </action>
  </widget>
@@ -813,6 +823,22 @@
     <hint type="destinationlabel">
      <x>444</x>
      <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFormat_Text</sender>
+   <signal>triggered()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>menuFormatTextClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
     </hint>
    </hints>
   </connection>

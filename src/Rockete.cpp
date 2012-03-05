@@ -586,6 +586,29 @@ void Rockete::menuReloadAssetsClicked()
     }
 }
 
+void Rockete::menuFormatTextClicked()
+{
+    OpenedFile *current_file;
+    QDomDocument dom_document;
+    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+
+    if (tab_text.startsWith("*"))
+    {
+        tab_text = tab_text.remove(0,1);
+    }
+    if (!tab_text.contains("rml"))
+    {
+        return;
+    }
+
+    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) 
+    {
+        dom_document.setContent(current_file->textEdit->toPlainText());
+        QString reformatted_content = dom_document.toString(Settings::getTabSize());
+        current_file->setTextEditContent(reformatted_content, true);
+    }
+}
+
 void Rockete::propertyViewClicked(const QModelIndex &/*index*/)
 {
 }

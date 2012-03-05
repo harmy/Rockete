@@ -73,7 +73,6 @@ CodeEditor::CodeEditor(OpenedFile *parent_file) : QPlainTextEdit()
     PreviousHighlightedClosingTag.setX(0);
     PreviousHighlightedClosingTag.setY(0);
 
-
     lineNumberArea = new LineNumberArea(this);
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));

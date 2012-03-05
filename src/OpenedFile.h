@@ -21,7 +21,7 @@ public:
     void removeLine(const int line_number);
     void save();
     void saveAs(const QString &file_path);
-    void setTextEditContent(const QString &content);
+    void setTextEditContent(const QString &content, bool undo_friendly = false);
     virtual void highlightString(const QString &/*str*/){}
     virtual void rehighlight(){highlighter->rehighlight();}
 

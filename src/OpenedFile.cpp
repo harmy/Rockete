@@ -271,9 +271,22 @@ void OpenedFile::saveAs(const QString &file_path)
     }
 }
 
-void OpenedFile::setTextEditContent(const QString &content)
+void OpenedFile::setTextEditContent(const QString &content, bool undo_friendly)
 {
-    textDocument->setPlainText(content);
-    textEdit->setDocument(textDocument);
-    textDocument->setModified( true );
+    if(undo_friendly)
+    {
+        QTextCursor replacingCursor = textEdit->textCursor();
+
+        replacingCursor.setPosition(0);
+        replacingCursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        replacingCursor.insertText(content);
+        replacingCursor.setPosition(0);
+        textEdit->setTextCursor(replacingCursor);
+    }
+    else
+    {
+        textDocument->setPlainText(content);
+        textEdit->setDocument(textDocument);
+        textDocument->setModified( true );
+    }
 }
