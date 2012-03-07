@@ -84,9 +84,6 @@ private:
     void generateMenuRecent();
     void populateTreeView(const QString &top_item_name, const QString &directory_path);
     void loadPlugins();
-    /*QWizardPage *createButtonInfoPage();
-    QWizardPage *createButtonSizePage();
-    QWizardPage *createButtonPositionPage();*/
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
