@@ -36,3 +36,13 @@ void OpenedStyleSheet::highlightString(const QString &str)
         ((CssHighlighter *)highlighter)->setHighlightedString(str);
     }
 }
+
+void OpenedStyleSheet::addStyleSheetTextAtEnd(const QString &new_content)
+{
+    QTextCursor replacingCursor = textEdit->textCursor();
+    replacingCursor.movePosition(QTextCursor::End);
+    replacingCursor.insertText("\n");
+    replacingCursor.insertText(new_content);
+    textEdit->setTextCursor(replacingCursor);
+    save();
+}

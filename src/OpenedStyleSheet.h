@@ -11,6 +11,7 @@ public:
     OpenedStyleSheet();
     virtual void initialize();
     virtual void highlightString(const QString &str);
+    void addStyleSheetTextAtEnd(const QString &new_content);
 };
 
 #endif

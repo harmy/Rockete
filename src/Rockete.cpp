@@ -43,7 +43,7 @@ struct LocalScreenSizeItem
 };
 
 Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
-: QMainWindow(parent, flags), currentDocument(NULL), isReloadingFile(false)
+    : QMainWindow(parent, flags), currentDocument(NULL), isReloadingFile(false)
 {
     loadPlugins();
 
@@ -108,11 +108,6 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     languageBox->setEditable(false);
     languageBox->setInsertPolicy( QComboBox::InsertAlphabetically );
 
-    labelZoom = new QLabel(parent);
-    labelZoom->setText("100%");
-
-    ui.statusBar->addPermanentWidget(labelZoom);
-
     if(LocalizationManagerInterface::hasInstance())
     {
         foreach(LocalizationManagerInterface::LocalizationLanguage language, LocalizationManagerInterface::getInstance().getSupportedLanguages())
@@ -127,9 +122,21 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     ui.mainToolBar->addSeparator();
     ui.mainToolBar->addWidget(languageBox);
 
+
+    QAction *new_action = new QAction(QIcon(":/images/new_button.png"), "create button", this);
+    connect(new_action, SIGNAL(triggered()), (QObject*)this, SLOT(newButtonWizardActivated()));
+    ui.mainToolBar->addAction(new_action);
+    
+
+    labelZoom = new QLabel(parent);
+    labelZoom->setText("100%");
+
+    ui.statusBar->addPermanentWidget(labelZoom);
+
     fileWatcher = new QFileSystemWatcher();
 
     setFocusPolicy(Qt::StrongFocus);
+    wizard = NULL;
 
     connect(fileWatcher, SIGNAL(fileChanged(const QString &)), (QObject*)this, SLOT(fileHasChanged(const QString &)));
 }
@@ -213,6 +220,8 @@ void Rockete::reloadCurrentDocument()
         currentDocument->rocketDocument = RocketHelper::loadDocument(currentDocument->fileInfo.filePath().toAscii().data());
         currentDocument->rocketDocument->RemoveReference();
         renderingView->changeCurrentDocument(currentDocument);
+        selectedTreeViewItem = NULL;
+        currentDocument->populateHierarchyTreeView(ui.documentHierarchyTreeWidget);
     }
 }
 
@@ -286,7 +295,7 @@ QString Rockete::getPathForFileName(const QString &filename)
     if(!filename.contains("."))
         searched_string += ".";
     
-    items_found = ui.treeWidget->findItems(searched_string, Qt::MatchStartsWith | Qt::MatchRecursive);
+    items_found = ui.projectFilesTreeWidget->findItems(searched_string, Qt::MatchStartsWith | Qt::MatchRecursive);
 
     if(!items_found.isEmpty())
     {
@@ -395,8 +404,13 @@ void Rockete::codeTabChanged( int index )
     }
     if ((document = getDocumentFromFileName(tab_text.toAscii().data())))
     {
-        renderingView->changeCurrentDocument(document);
-        currentDocument = document;
+        if(document != currentDocument)
+        {
+            renderingView->changeCurrentDocument(document);
+            currentDocument = document;
+            selectedTreeViewItem = NULL;
+            currentDocument->populateHierarchyTreeView(ui.documentHierarchyTreeWidget);
+        }
     }
 }
 
@@ -672,9 +686,19 @@ void Rockete::searchBoxActivated()
 
 void Rockete::languageBoxActivated()
 {
-
     if(LocalizationManagerInterface::hasInstance())
         LocalizationManagerInterface::getInstance().setLanguage((LocalizationManagerInterface::LocalizationLanguage)languageBox->itemData(languageBox->currentIndex()).toInt());
+}
+
+void Rockete::newButtonWizardActivated()
+{
+    if(!currentDocument)
+        return;
+    if(wizard)
+        delete(wizard);
+    wizard = new WizardButton(this);
+    wizard->setModal(true);
+    wizard->show();
 }
 
 void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
@@ -682,6 +706,65 @@ void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
     if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss") || item->text(column).endsWith("txt") || item->text(column).endsWith("rproj"))
     {
         openFile(item->text(1));
+    }
+}
+
+void Rockete::documentHierarchyDoubleClicked(QTreeWidgetItem *item, int/* column*/)
+{
+    QString elementId;
+    QTreeWidgetItem *nextItem = NULL;
+    int parentCount = 0;
+    
+    selectElement((Element *)item->data(0,Qt::UserRole).toUInt());
+    ui.statusBar->clearMessage();
+    QTextCursor cursor = currentDocument->textEdit->textCursor();
+    cursor.clearSelection();
+    currentDocument->textEdit->setTextCursor(cursor);
+    ui.codeTabWidget->setCurrentIndex(getTabIndexFromFileName(currentDocument->fileInfo.fileName().toAscii().data()));
+
+    if(selectedTreeViewItem)
+    {
+        selectedTreeViewItem->setTextColor(0, QColor::fromRgb(0,0,0));
+    }
+
+    nextItem = item;
+    do 
+    {
+        elementId = nextItem->text(1);
+        
+        if(elementId.isEmpty() && ( !nextItem->parent()))
+        {
+            ui.statusBar->showMessage( "No ID", 3000 );
+            return;
+        }
+        
+        if(elementId.isEmpty())
+        {
+            nextItem = nextItem->parent();
+        }
+
+        parentCount++;
+    } while (elementId.isEmpty());
+
+    elementId = "id=\"" + elementId;
+    elementId += "\"";
+
+    if(!currentDocument->textEdit->find(elementId) && !currentDocument->textEdit->find(elementId,QTextDocument::FindBackward))
+    {
+        QString message = "This (" + QString::number(parentCount - 1);
+        message += " higher) ID is in another file";
+        ui.statusBar->showMessage( message, 3000 );
+        return;
+    }
+
+    selectedTreeViewItem = nextItem;
+    selectedTreeViewItem->setTextColor(0, QColor::fromRgb(0,255,0));
+
+    if(parentCount>1)
+    {
+        QString message = "ID not set, went " + QString::number(parentCount - 1);
+        message += " parent(s) higher";
+        ui.statusBar->showMessage(message, 3000);
     }
 }
 
@@ -808,8 +891,8 @@ void Rockete::openFile(const QString &filePath)
     if (file_info.suffix() == "rml")
     {
         new_tab_index = openDocument(file_info.filePath().toAscii().data());
-        renderingView->changeCurrentDocument(documentList.last());
-        currentDocument = documentList.last();
+        //renderingView->changeCurrentDocument(documentList.last());
+        //currentDocument = documentList.last();
         ui.codeTabWidget->setCurrentIndex(new_tab_index);
         success = true;
     }
@@ -843,8 +926,8 @@ void Rockete::openProject(const QString &filePath)
 
         ProjectManager::getInstance().Initialize(filePath);
 
-        ui.treeWidget->clear();
-        ui.treeWidget->clear();
+        ui.projectFilesTreeWidget->clear();
+        ui.projectFilesTreeWidget->clear();
         Settings::setProject(filePath);
 
         foreach( QString path, ProjectManager::getInstance().getFontPaths())
@@ -946,7 +1029,7 @@ void Rockete::generateMenuRecent()
 
 void Rockete::populateTreeView(const QString &top_item_name, const QString &directory_path)
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui.treeWidget, QStringList(top_item_name));
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui.projectFilesTreeWidget, QStringList(top_item_name));
     QList<QTreeWidgetItem *> items;
 
     QDirIterator directory_walker(directory_path, QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
@@ -965,7 +1048,7 @@ void Rockete::populateTreeView(const QString &top_item_name, const QString &dire
     }
 
     item->addChildren(items);
-    ui.treeWidget->addTopLevelItem(item);
+    ui.projectFilesTreeWidget->addTopLevelItem(item);
     item->sortChildren(0,Qt::AscendingOrder);
 }
 

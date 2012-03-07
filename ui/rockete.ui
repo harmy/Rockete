@@ -91,7 +91,7 @@
             <enum>QTabWidget::Triangular</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <property name="tabsClosable">
             <bool>false</bool>
@@ -145,18 +145,86 @@
         </size>
        </property>
       </widget>
-      <widget class="QTreeWidget" name="treeWidget">
-       <property name="indentation">
-        <number>10</number>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string notr="true">Files</string>
-        </property>
-       </column>
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Project Files</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QTreeWidget" name="projectFilesTreeWidget">
+              <property name="headerHidden">
+               <bool>true</bool>
+              </property>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="tabWidget_2">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_7">
+           <attribute name="title">
+            <string>Document Hierarchy</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QTreeWidget" name="documentHierarchyTreeWidget">
+              <property name="indentation">
+               <number>10</number>
+              </property>
+              <property name="headerHidden">
+               <bool>false</bool>
+              </property>
+              <property name="expandsOnDoubleClick">
+               <bool>false</bool>
+              </property>
+              <attribute name="headerVisible">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="headerMinimumSectionSize">
+               <number>10</number>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Tag</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Id</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Class</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -795,22 +863,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>treeWidget</sender>
-   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
-   <receiver>rocketeClass</receiver>
-   <slot>fileTreeDoubleClicked(QTreeWidgetItem*,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1184</x>
-     <y>409</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>656</x>
-     <y>402</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>propertyTreeView</sender>
    <signal>clicked(QModelIndex)</signal>
    <receiver>rocketeClass</receiver>
@@ -835,6 +887,38 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>projectFilesTreeWidget</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>fileTreeDoubleClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1231</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>documentHierarchyTreeWidget</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>documentHierarchyDoubleClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1170</x>
+     <y>607</y>
     </hint>
     <hint type="destinationlabel">
      <x>656</x>

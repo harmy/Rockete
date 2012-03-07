@@ -524,10 +524,38 @@ scrollbarvertical sliderarrowinc
     icon-image: invader.png 28px 152px 55px 176px;
 }
 
-
-
 scrollbarhorizontal
 {
     width: 0px;
     height: 0px;
 }
+
+
+
+button.test
+{
+display: block;
+position: absolute;
+width: 150;
+height: 150;
+z-index: 100;
+background-decorator: image;
+background-image-src: default_button;
+}
+
+button.test:hover
+{
+width: 150;
+height: 150;
+background-decorator: image;
+background-image-src: default_button_over;
+}
+
+button.test:active
+{
+width: 150;
+height: 150;
+background-decorator: image;
+background-image-src: default_button_pressed;
+}
+

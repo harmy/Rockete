@@ -36,12 +36,18 @@
         <p/>
         <img width="256" height="256" color="red" src="present.tga"/>
         <p/>
+        <!-- TEst -->
         <div class="monstyle" id="test">
-        block testfdgdfgdfgdfdfgdfgdfgdfgfg<br/>
-        test blabla
-        <div style="width:50px; height:50px;display:inline-block;float:right;">
-            Hehe
-        </div>
+            <button class="test" onclick="click">
+                <span id="mouaha" class="erf">
+                    texte
+                </span>
+            </button>
+            block testfdgdfgdfgdfdfgdfgdfgdfgfg<br/>
+            test blabla
+            <div style="width:50px; height:50px;display:inline-block;float:right;">
+                Hehe
+            </div>
             <div style="width:50px; height:50px;display:inline-block;float:right;"/>
             <div style="width:50px; height:50px;"/>
             <div style="width:50px; height:50px;"/>

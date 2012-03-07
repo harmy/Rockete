@@ -2,6 +2,7 @@
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/FreeType/FontProvider.h>
+#include <Rocket/Controls.h>
 #include <QDir>
 #include "ToolManager.h"
 #include "LocalizationManagerInterface.h"
@@ -83,6 +84,7 @@ bool RocketSystem::initialize()
     Rocket::Core::Initialise();
 
     Rocket::Core::FreeType::FontProvider::Initialise();
+    Rocket::Controls::Initialise();
 
     // :TODO: Save last screen size.
     return createContext(1024, 768);

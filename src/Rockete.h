@@ -4,6 +4,7 @@
 #include <QtGui/QMainWindow>
 #include <QFileSystemWatcher>
 #include <QLabel>
+#include "WizardButton.h"
 #include "ui_rockete.h"
 #include "RenderingView.h"
 #include "OpenedDocument.h"
@@ -39,6 +40,7 @@ public:
     QString getPathForFileName(const QString &filename);
     void setZoomLevel(float level);
     QFileSystemWatcher *getFileWatcher(){return fileWatcher;}
+    void openFile(const QString &file_path);
 
 public slots:
     void menuOpenClicked();
@@ -64,7 +66,9 @@ public slots:
     void menuBackgroundChangeImage();
     void searchBoxActivated();
     void languageBoxActivated();
+    void newButtonWizardActivated();
     void fileTreeDoubleClicked(QTreeWidgetItem *item, int column);
+    void documentHierarchyDoubleClicked(QTreeWidgetItem *item, int column);
     void fileHasChanged(const QString &path);
 
 protected:
@@ -73,7 +77,6 @@ protected:
     virtual void closeEvent(QCloseEvent *event);
 
 private:
-    void openFile(const QString &file_path);
     void openProject(const QString &filePath);
     int openDocument(const char *);
     int openStyleSheet(const char *);
@@ -81,6 +84,9 @@ private:
     void generateMenuRecent();
     void populateTreeView(const QString &top_item_name, const QString &directory_path);
     void loadPlugins();
+    /*QWizardPage *createButtonInfoPage();
+    QWizardPage *createButtonSizePage();
+    QWizardPage *createButtonPositionPage();*/
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
@@ -98,6 +104,8 @@ private:
     QFileSystemWatcher *fileWatcher;
     bool isReloadingFile;
     QMap<int, QString> fileChangedOutsideArray;
+    WizardButton *wizard;
+    QTreeWidgetItem *selectedTreeViewItem;
 };
 
 #endif // ROCKETE_H

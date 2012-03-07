@@ -133,6 +133,7 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
 
         if(opened_brace_counter > 1 || tag_delimiter_balance > 1)
         {
+            // TODO: makes problems with comments. Detect commented parts and skip them completely
             error_message = "found two opening character('<' or '{') in a row";
             parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
             setTextCursor(parsingTextCursor);
