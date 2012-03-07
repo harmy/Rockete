@@ -145,86 +145,89 @@
         </size>
        </property>
       </widget>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QTabWidget" name="tabWidget">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="tab_4">
-           <attribute name="title">
-            <string>Project Files</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QTreeWidget" name="projectFilesTreeWidget">
-              <property name="headerHidden">
-               <bool>true</bool>
-              </property>
-              <column>
-               <property name="text">
-                <string notr="true">1</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTabWidget" name="tabWidget_2">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="tab_7">
-           <attribute name="title">
-            <string>Document Hierarchy</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <widget class="QTreeWidget" name="documentHierarchyTreeWidget">
-              <property name="indentation">
-               <number>10</number>
-              </property>
-              <property name="headerHidden">
-               <bool>false</bool>
-              </property>
-              <property name="expandsOnDoubleClick">
-               <bool>false</bool>
-              </property>
-              <attribute name="headerVisible">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="headerDefaultSectionSize">
-               <number>100</number>
-              </attribute>
-              <attribute name="headerMinimumSectionSize">
-               <number>10</number>
-              </attribute>
-              <column>
-               <property name="text">
-                <string>Tag</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Id</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Class</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
+      <widget class="QSplitter" name="rightPaneSplitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Project Files</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QTreeWidget" name="projectFilesTreeWidget">
+            <property name="headerHidden">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QTabWidget" name="tabWidget_2">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_7">
+         <attribute name="title">
+          <string>Document Hierarchy</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QTreeWidget" name="documentHierarchyTreeWidget">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="indentation">
+             <number>10</number>
+            </property>
+            <property name="headerHidden">
+             <bool>false</bool>
+            </property>
+            <property name="expandsOnDoubleClick">
+             <bool>false</bool>
+            </property>
+            <attribute name="headerVisible">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="headerDefaultSectionSize">
+             <number>100</number>
+            </attribute>
+            <attribute name="headerMinimumSectionSize">
+             <number>10</number>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>Tag</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Id</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Class</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -901,7 +904,7 @@
    <slot>fileTreeDoubleClicked(QTreeWidgetItem*,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1231</x>
+     <x>1171</x>
      <y>229</y>
     </hint>
     <hint type="destinationlabel">
@@ -917,8 +920,8 @@
    <slot>documentHierarchyDoubleClicked(QTreeWidgetItem*,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1170</x>
-     <y>607</y>
+     <x>1171</x>
+     <y>608</y>
     </hint>
     <hint type="destinationlabel">
      <x>656</x>

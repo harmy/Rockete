@@ -190,6 +190,14 @@ void Rockete::selectElement(Element *element)
         repaintRenderingView();
         fillAttributeView();
         fillPropertyView();
+        
+        foreach(QTreeWidgetItem *item, ui.documentHierarchyTreeWidget->findItems(element->GetTagName().CString(), Qt::MatchRecursive))
+        {
+            if((Element *)item->data(0,Qt::UserRole).toUInt() == element)
+            {
+                ui.documentHierarchyTreeWidget->setCurrentItem(item);
+            }
+        }
     }
 }
 
