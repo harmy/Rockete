@@ -121,7 +121,7 @@ bool GraphicSystem::loadTexture(Rocket::Core::TextureHandle &texture_handle, Roc
 
             if(!final_file_info.exists())
             {
-                printf("texture not found: %s.", final_file_info.fileName().toAscii().data());
+                printf("texture not found: %s.\n", final_file_info.fileName().toAscii().data());
             }
         }
     }

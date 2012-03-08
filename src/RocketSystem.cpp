@@ -7,6 +7,7 @@
 #include "ToolManager.h"
 #include "LocalizationManagerInterface.h"
 #include "ProjectManager.h"
+#include "RocketFileInterface.h"
 
 RocketSystem::RocketSystem() :
     renderInterface(),
@@ -81,6 +82,7 @@ bool RocketSystem::initialize()
 {
     Rocket::Core::SetRenderInterface(&renderInterface);
     Rocket::Core::SetSystemInterface(this);
+    Rocket::Core::SetFileInterface(new RocketFileInterface());
     Rocket::Core::Initialise();
 
     Rocket::Core::FreeType::FontProvider::Initialise();
@@ -94,8 +96,9 @@ void RocketSystem::finalize()
 {
     //Rocket::Core::FreeType::FontProvider::Shutdown();
     Rocket::Core::Shutdown();
-    Rocket::Core::SetRenderInterface( 0 );
-    Rocket::Core::SetSystemInterface( 0 );
+    Rocket::Core::SetRenderInterface(0);
+    Rocket::Core::SetSystemInterface(0);
+    Rocket::Core::SetFileInterface(0);
 }
 
 bool RocketSystem::createContext(const int width, const int height)

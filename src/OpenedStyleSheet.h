@@ -7,6 +7,7 @@
 
 class OpenedStyleSheet : public OpenedFile
 {
+    Q_OBJECT
 public:
     OpenedStyleSheet();
     virtual void initialize();

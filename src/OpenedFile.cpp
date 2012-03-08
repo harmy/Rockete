@@ -8,6 +8,7 @@
 #include "Rockete.h"
 
 OpenedFile::OpenedFile()
+    : highlighter(NULL)
 {
     previousStartingIndex = -1;
 }
@@ -18,16 +19,11 @@ OpenedFile::~OpenedFile()
 
 void OpenedFile::initialize()
 {
-    textEdit = new CodeEditor(this);
-    //textEdit->setAcceptRichText(false);
-    textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    textEdit->setTabChangesFocus(false);
+    setLineWrapMode(QPlainTextEdit::NoWrap);
+    setTabChangesFocus(false);
 
-    textDocument = new QTextDocument();
-    textDocument->setDefaultFont(QFont("Courier",10));
-    textDocument->setDocumentLayout(new QPlainTextDocumentLayout(textDocument));
-
-    fillTextEdit();
+    document()->setDefaultFont(QFont("Courier",10));
+    document()->setDocumentLayout(new QPlainTextDocumentLayout(document()));
 }
 
 
@@ -59,14 +55,14 @@ QString OpenedFile::getLine(const int line_number)
 {
     QStringList lines;
 
-    lines = textEdit->toPlainText().split("\n");
+    lines = toPlainText().split("\n");
 
     Q_ASSERT(line_number < lines.size());
 
     return lines[line_number];
 }
 
-void OpenedFile::find(const QString &str)
+void OpenedFile::cursorFind(const QString &str)
 {
     QString plain_text;
     int starting_index;
@@ -82,16 +78,16 @@ void OpenedFile::find(const QString &str)
         previousStartingIndex = -1;
     }
 
-    plain_text = textEdit->toPlainText();
+    plain_text = toPlainText();
 
     starting_index = plain_text.indexOf(previousSearch, previousStartingIndex == -1 ? 0 : previousStartingIndex);
     if (starting_index>=0)
     {
-        textEdit->setFocus();
-        QTextCursor newTextCursor = textEdit->textCursor();
+        setFocus();
+        QTextCursor newTextCursor = textCursor();
         newTextCursor.setPosition(starting_index);
         newTextCursor.setPosition(starting_index+str.size(), QTextCursor::KeepAnchor);
-        textEdit->setTextCursor(newTextCursor);
+        setTextCursor(newTextCursor);
         previousStartingIndex = starting_index+str.size();
     }
     else if (starting_index != previousStartingIndex)
@@ -103,7 +99,7 @@ void OpenedFile::find(const QString &str)
 
 int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
 {
-    QTextCursor parsingCursor = textEdit->textCursor();
+    QTextCursor parsingCursor = textCursor();
     
     parsingCursor.setPosition(0);
     
@@ -127,7 +123,7 @@ void OpenedFile::replaceLine(const int line_number, const QString &new_line)
 {
     QString old_text;
     QString new_text = new_line;
-    QTextCursor parsingCursor = textEdit->textCursor();
+    QTextCursor parsingCursor = textCursor();
     int space_count = 0;
 
     parsingCursor.setPosition(0);
@@ -157,12 +153,12 @@ void OpenedFile::replaceLine(const int line_number, const QString &new_line)
     parsingCursor.insertText(new_text);
     parsingCursor.clearSelection();
 
-    textEdit->setTextCursor(parsingCursor);
+    setTextCursor(parsingCursor);
 }
 
 int OpenedFile::insertLineBeforeBracket(const int start_line, const QString &new_line)
 {
-    QTextCursor parsingCursor = textEdit->textCursor();
+    QTextCursor parsingCursor = textCursor();
     QString new_text = new_line;
 
     parsingCursor.setPosition(0);
@@ -186,7 +182,7 @@ int OpenedFile::insertLineBeforeBracket(const int start_line, const QString &new
     parsingCursor.insertText(new_text);
     parsingCursor.insertText("\n");
     parsingCursor.movePosition(QTextCursor::Up);
-    textEdit->setTextCursor(parsingCursor);
+    setTextCursor(parsingCursor);
     return parsingCursor.blockNumber();
 
 }
@@ -195,7 +191,7 @@ void OpenedFile::removeLine(const int line_number)
 {
     printf("WARNING: OpenedFile::removeLine(const int line_number) never tested!!!!\n");
 
-    QTextCursor parsingCursor = textEdit->textCursor();
+    QTextCursor parsingCursor = textCursor();
 
     parsingCursor.setPosition(0);
 
@@ -215,7 +211,7 @@ void OpenedFile::save()
     QFile file(fileInfo.filePath());
     QString error_message;
     Rockete::getInstance().getFileWatcher()->removePath(fileInfo.filePath());
-    if (!textEdit->CheckXmlCorrectness(error_message))
+    if (!CheckXmlCorrectness(error_message))
     {
         QMessageBox msgBox;
         msgBox.setText(fileInfo.fileName() + " is not valid: " + error_message );
@@ -228,15 +224,15 @@ void OpenedFile::save()
             QTextStream out(&file);
             out.setCodec("UTF-8");
             out.setGenerateByteOrderMark(true);
-            out << textEdit->toPlainText();
+            out << toPlainText();
             out.flush();
         }
         else
         {
-            file.write(textEdit->toPlainText().toAscii().data());
+            file.write(toPlainText().toAscii().data());
         }
         file.close();
-        textDocument->setModified( false );
+        document()->setModified( false );
     }
 
     Rockete::getInstance().getFileWatcher()->addPath(fileInfo.filePath());
@@ -247,7 +243,7 @@ void OpenedFile::saveAs(const QString &file_path)
     QFile file(file_path);
     QString error_message;
 
-    if (!textEdit->CheckXmlCorrectness(error_message))
+    if (!CheckXmlCorrectness(error_message))
     {
         QMessageBox msgBox;
         msgBox.setText("the document is not valid: " + error_message );
@@ -260,12 +256,12 @@ void OpenedFile::saveAs(const QString &file_path)
             QTextStream out(&file);
             out.setCodec("UTF-8");
             out.setGenerateByteOrderMark(true);
-            out << textEdit->toPlainText();
+            out << toPlainText();
             out.flush();
         }
         else
         {
-            file.write(textEdit->toPlainText().toAscii().data());
+            file.write(toPlainText().toAscii().data());
         }
         file.close();
     }
@@ -275,18 +271,16 @@ void OpenedFile::setTextEditContent(const QString &content, bool undo_friendly)
 {
     if(undo_friendly)
     {
-        QTextCursor replacingCursor = textEdit->textCursor();
+        QTextCursor replacingCursor = textCursor();
 
         replacingCursor.setPosition(0);
         replacingCursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
         replacingCursor.insertText(content);
         replacingCursor.setPosition(0);
-        textEdit->setTextCursor(replacingCursor);
+        setTextCursor(replacingCursor);
     }
     else
     {
-        textDocument->setPlainText(content);
-        textEdit->setDocument(textDocument);
-        textDocument->setModified( true );
+        setPlainText(content);
     }
 }

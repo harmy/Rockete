@@ -60,6 +60,22 @@ void RenderingView::changeCurrentDocument(OpenedDocument *document)
     repaint();
 }
 
+void RenderingView::reloadDocument()
+{
+    if(currentDocument->rocketDocument)
+        currentDocument->rocketDocument->Hide();
+    
+    currentDocument->selectedElement = NULL;
+    
+    if(currentDocument->rocketDocument)
+        RocketHelper::unloadDocument(currentDocument->rocketDocument);
+
+    currentDocument->rocketDocument = RocketHelper::loadDocumentFromMemory(currentDocument->toPlainText());
+    currentDocument->rocketDocument->RemoveReference();
+    currentDocument->rocketDocument->Show();
+    repaint();
+}
+
 void RenderingView::SetClearColor( float red, float green, float blue, float alpha )
 {
     glClearColor( red, green, blue, alpha );

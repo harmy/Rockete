@@ -26,21 +26,18 @@ public:
     void fillAttributeView();
     void fillPropertyView();
     void selectElement(Element *element);
-    void clear();
     void reloadCurrentDocument();
     int getTabIndexFromFileName(const char * name);
-    //OpenedDocument *getDocumentFromTabIndex(const int tab_index);
-    //OpenedStyleSheet *getStyleSheetFromTabIndex(const int tab_index);
-    OpenedDocument *getDocumentFromFileName(const char *name);
-    OpenedStyleSheet *getStyleSheetFromFileName(const char *name);
+    OpenedDocument *getCurrentTabDocument(int index = -1);
+    OpenedStyleSheet *getCurrentTabStyleSheet(int index = -1);
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
     //OpenedFile *getOpenedFileFromTabIndex(const int tab_index);
     QWidget *getCurrentToolTab() { return ui.currentToolTab; }
-    OpenedDocument *getCurrentDocument() { return currentDocument; }
+    OpenedDocument *getCurrentDocument() { return renderingView->getCurrentDocument(); }
     QString getPathForFileName(const QString &filename);
     void setZoomLevel(float level);
     QFileSystemWatcher *getFileWatcher(){return fileWatcher;}
-    void openFile(const QString &file_path);
+    int openFile(const QString &file_path);
 
 public slots:
     void menuOpenClicked();
@@ -87,10 +84,6 @@ private:
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
-    QList<OpenedDocument*> documentList;
-    QList<OpenedStyleSheet*> styleSheetList;
-    QList<OpenedFile*> openedFileList;
-    OpenedDocument *currentDocument;
     AttributeTreeModel *attributeTreeModel;
     PropertyTreeModel *propertyTreeModel;
     QList<QAction*> recentFileActionList;

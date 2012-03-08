@@ -16,6 +16,8 @@ public:
     RenderingView(QWidget *parent = NULL);
     void keyPressEvent(QKeyEvent *event);
     void changeCurrentDocument(OpenedDocument *document);
+    OpenedDocument *getCurrentDocument(){return currentDocument;};
+    void reloadDocument();
     void SetClearColor(float red, float green, float blue, float alpha);
 
 public slots:

@@ -15,7 +15,7 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(OpenedFile *parent_file);
+    CodeEditor();
 
     // this function is intended as basic "check before saving/commiting" that is meant to be extented upon, even rewritten completely if need be
     bool CheckXmlCorrectness(QString & error_message);
@@ -30,7 +30,7 @@ public:
 public slots:
     void completeText(const QString &text);
     void completeTagText(const QString &text);
-    void HighlightClosingTag();
+    virtual void HighlightClosingTag();
 
 
 protected:
@@ -52,7 +52,6 @@ private:
     QStringList keyword_list;
     QPoint PreviousHighlightedOpeningTag;
     QPoint PreviousHighlightedClosingTag;
-    OpenedFile *parentFile;
     QWidget *lineNumberArea;
 };
 

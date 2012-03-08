@@ -107,7 +107,8 @@ void WizardButton::accept()
 
     Rockete::getInstance().openFile(styleSheetName.toAscii().data());
 
-    OpenedStyleSheet *affectedStyleSheet = Rockete::getInstance().getStyleSheetFromFileName(styleSheetName.toAscii().data());
+    OpenedStyleSheet *affectedStyleSheet = Rockete::getInstance().getCurrentTabStyleSheet();
+    Q_ASSERT(affectedStyleSheet->fileInfo.fileName() == styleSheetName);
 
     if(affectedStyleSheet)
     {
@@ -116,7 +117,7 @@ void WizardButton::accept()
     else
     {
         QDialog::accept();
-        printf("WARNING: could not find stylesheet\n");
+        printf("WARNING: could not find style sheet\n");
         return; // TODO: properly warn user
     }
     Rockete::getInstance().reloadCurrentDocument();

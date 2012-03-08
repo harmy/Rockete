@@ -6,15 +6,16 @@
 #include <QTextDocument>
 #include <QSyntaxHighlighter>
 
-class OpenedFile
+class OpenedFile : public CodeEditor
 {
+    Q_OBJECT
 public:
     OpenedFile();
     virtual ~OpenedFile();
     virtual void initialize();
     void fillTextEdit();
     QString getLine(const int line_number);
-    void find(const QString &str);
+    void cursorFind(const QString &str);
     int findLineNumber(const QString &str, const int start_line_number=0);
     void replaceLine(const int line_number, const QString &new_line);
     int insertLineBeforeBracket(const int start_line, const QString &new_line);
@@ -23,15 +24,19 @@ public:
     void saveAs(const QString &file_path);
     void setTextEditContent(const QString &content, bool undo_friendly = false);
     virtual void highlightString(const QString &/*str*/){}
-    virtual void rehighlight(){highlighter->rehighlight();}
+    virtual void rehighlight(){if(highlighter)highlighter->rehighlight();}
 
-    //int tabIndex;
-    CodeEditor *textEdit;
-    QTextDocument * textDocument;
     QFileInfo fileInfo;
+
+public slots:
+    virtual void HighlightClosingTag(){CodeEditor::HighlightClosingTag(); rehighlight();};
+
+protected:
+    QSyntaxHighlighter *highlighter;
+
+private:
     QString previousSearch;
     int previousStartingIndex;
-    QSyntaxHighlighter *highlighter;
 };
 
 #endif

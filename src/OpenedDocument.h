@@ -11,6 +11,7 @@
 
 class OpenedDocument : public OpenedFile
 {
+    Q_OBJECT
 public:
     OpenedDocument();
 

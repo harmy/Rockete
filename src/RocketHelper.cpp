@@ -9,9 +9,9 @@
 #include <QString>
 #include "OpenedDocument.h"
 
-RMLDocument * RocketHelper::loadDocument(const char * file_path)
+RMLDocument * RocketHelper::loadDocumentFromMemory(const QString &file_content)
 {
-    return RocketSystem::getInstance().getContext()->LoadDocument( file_path );
+    return RocketSystem::getInstance().getContext()->LoadDocumentFromMemory(file_content.toUtf8().data());
 }
 
 void RocketHelper::unloadDocument(RMLDocument * rml_document)
@@ -19,6 +19,13 @@ void RocketHelper::unloadDocument(RMLDocument * rml_document)
     RocketSystem::getInstance().getContext()->UnloadDocument(rml_document);
     Rocket::Core::Factory::ClearStyleSheetCache();
     RocketSystem::getInstance().getContext()->Update(); // force the actual unload instead of setting a flag
+}
+
+void RocketHelper::unloadAllDocument()
+{
+    RocketSystem::getInstance().getContext()->UnloadAllDocuments();
+    Rocket::Core::Factory::ClearStyleSheetCache();
+    RocketSystem::getInstance().getContext()->Update();
 }
 
 void RocketHelper::highlightElement(Element * element)

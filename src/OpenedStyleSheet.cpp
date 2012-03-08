@@ -12,15 +12,8 @@ OpenedStyleSheet::OpenedStyleSheet()
 
 void OpenedStyleSheet::initialize()
 {
-    textEdit = new CodeEditor(this);
-    //textEdit->setAcceptRichText(false);
-    textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    textEdit->setTabChangesFocus(false);
-
-    textDocument = new QTextDocument();
-    textDocument->setDefaultFont(QFont("Courier",10));
-    textDocument->setDocumentLayout(new QPlainTextDocumentLayout(textDocument));
-    highlighter = new CssHighlighter(textDocument);
+    OpenedFile::initialize();
+    highlighter = new CssHighlighter(document());
 
     fillTextEdit();
 }
@@ -39,10 +32,10 @@ void OpenedStyleSheet::highlightString(const QString &str)
 
 void OpenedStyleSheet::addStyleSheetTextAtEnd(const QString &new_content)
 {
-    QTextCursor replacingCursor = textEdit->textCursor();
+    QTextCursor replacingCursor = textCursor();
     replacingCursor.movePosition(QTextCursor::End);
     replacingCursor.insertText("\n");
     replacingCursor.insertText(new_content);
-    textEdit->setTextCursor(replacingCursor);
+    setTextCursor(replacingCursor);
     save();
 }

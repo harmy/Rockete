@@ -10,16 +10,8 @@ OpenedDocument::OpenedDocument() : selectedElement(NULL)
 
 void OpenedDocument::initialize()
 {
-    textEdit = new CodeEditor(this);
-    //textEdit->setAcceptRichText(false);
-    textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    textEdit->setTabChangesFocus(false);
-
-    textDocument = new QTextDocument();
-    textDocument->setDefaultFont(QFont("Courier",10));
-    textDocument->setDocumentLayout(new QPlainTextDocumentLayout(textDocument));
-    highlighter = new XMLHighlighter(textDocument);
-
+    OpenedFile::initialize();
+    highlighter = new XMLHighlighter(document());
     fillTextEdit();
 }
 
@@ -32,11 +24,11 @@ void OpenedDocument::replaceInnerRMLFromTagName(const QString &tag_name, const Q
     int tag_index;
     int start_index;
     int end_index;
-    QTextCursor replacingCursor = textEdit->textCursor();
+    QTextCursor replacingCursor = textCursor();
 
     tag = "<" + tag_name;
 
-    content = textDocument->toPlainText();
+    content = toPlainText();
     end_string = "</" + tag_name + ">";
     tag_index = content.indexOf(tag);
 
@@ -61,8 +53,12 @@ void OpenedDocument::regenerateBodyContent()
 
     content_element = rocketDocument->GetElementById("content");
 
-    Q_ASSERT(content_element); // :TODO: Handle document without template.
-
+    //Q_ASSERT(content_element); // :TODO: Handle document without template.
+    if(!content_element)
+    {
+        printf("WARNING: nothing done: :TODO: Handle document without template.\n");
+        return;
+    }
     content_element->GetInnerRML(rocket_string_content);
 
     replaceInnerRMLFromTagName("body", QString(rocket_string_content.CString()));
@@ -84,9 +80,9 @@ void OpenedDocument::highlightString(const QString &str)
 
 void OpenedDocument::addDocumentTextAtCursor(const QString &new_content)
 {
-    QTextCursor replacingCursor = textEdit->textCursor();
+    QTextCursor replacingCursor = textCursor();
     replacingCursor.insertText(new_content);
-    textEdit->setTextCursor(replacingCursor);
+    setTextCursor(replacingCursor);
     save();
 }
 

@@ -8,14 +8,13 @@
 
 // Public:
 
-CodeEditor::CodeEditor(OpenedFile *parent_file) : QPlainTextEdit()
+CodeEditor::CodeEditor() : QPlainTextEdit()
 {
     QFile 
         tags(ProjectManager::getInstance().getWordListPath() + "tag_list.txt"),
         customs(ProjectManager::getInstance().getWordListPath() + "custom_list.txt"),
         keywords(ProjectManager::getInstance().getWordListPath() + "keyword_list.txt");
 
-    parentFile = parent_file;
     tags.open(QFile::ReadOnly);
     while (!tags.atEnd())
     {
@@ -65,7 +64,6 @@ CodeEditor::CodeEditor(OpenedFile *parent_file) : QPlainTextEdit()
 
     QObject::connect(AutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeText(const QString &)));
     QObject::connect(TagAutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeTagText(const QString &)));
-
     QObject::connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(HighlightClosingTag()));
 
     PreviousHighlightedOpeningTag.setX(0);
@@ -91,11 +89,28 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
     int opened_quote = 0;
     QStringList opened_tag_list;
     QString plain_text = toPlainText();
+    bool isComentary = false;
 
     parsingTextCursor.setPosition(0);
 
     while(!parsingTextCursor.atEnd())
     {
+        if(isComentary)
+        {
+            if(plain_text[parsingTextCursor.position()] == '>')
+            {
+                if(plain_text[parsingTextCursor.position()-1] == '-'&&plain_text[parsingTextCursor.position()-2] == '-')
+                {
+                    isComentary = false;
+                    parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+                    continue;
+                }
+            }
+
+            parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
+            continue;
+        }
+
         if( opened_quote == 0 && plain_text[parsingTextCursor.position()] == '"' && plain_text[parsingTextCursor.position()-1] != '\\')
         {
             opened_quote++;
@@ -121,6 +136,16 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
             }
             else if(plain_text[parsingTextCursor.position()] == '<')
             {
+                if(toPlainText().count() > parsingTextCursor.position()+3 &&
+                    plain_text[parsingTextCursor.position()+1] == '!' && 
+                    plain_text[parsingTextCursor.position()+2] == '-' &&
+                    plain_text[parsingTextCursor.position()+3] == '-')
+                {
+                    isComentary = true;
+                    parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor, 3);
+                    continue;
+                }
+
                 if (opened_brace_counter > 0 && plain_text[parsingTextCursor.position() + 1] != '!')
                 {
                     error_message = "xml tag detected inside css class";
@@ -133,7 +158,6 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
 
         if(opened_brace_counter > 1 || tag_delimiter_balance > 1)
         {
-            // TODO: makes problems with comments. Detect commented parts and skip them completely
             error_message = "found two opening character('<' or '{') in a row";
             parsingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
             setTextCursor(parsingTextCursor);
@@ -203,13 +227,17 @@ bool CodeEditor::CheckXmlCorrectness(QString & error_message)
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
 
+    if(isComentary)
+    {
+        error_message = "Comment section is not closed";
+        return false;
+    }
     opened_tag_list.removeAll( "!--" );
 
     if(!opened_tag_list.isEmpty())
     {
         error_message = opened_tag_list.first() + " is not closed";
     }
-
     return opened_tag_list.isEmpty();
 }
 
@@ -446,8 +474,6 @@ void CodeEditor::HighlightClosingTag()
 
         parsingTextCursor.movePosition(QTextCursor::Right, tag_delimiter_balance > 0 ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
     }
-
-    parentFile->rehighlight();
 }
 
 // Protected:
