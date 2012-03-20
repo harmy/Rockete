@@ -62,7 +62,7 @@ QString OpenedFile::getLine(const int line_number)
     return lines[line_number];
 }
 
-void OpenedFile::cursorFind(const QString &str)
+void OpenedFile::cursorFind(const QString &str, bool from_start)
 {
     QString plain_text;
     int starting_index;
@@ -72,7 +72,7 @@ void OpenedFile::cursorFind(const QString &str)
         return;
     }
 
-    if (previousSearch != str || previousStartingIndex == -1)
+    if (previousSearch != str || previousStartingIndex == -1 || from_start)
     {
         previousSearch = str;
         previousStartingIndex = -1;

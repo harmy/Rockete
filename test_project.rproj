@@ -8,14 +8,15 @@
 		<Font>P:/creatures/RESOURCE/FONTS</Font>
 		<Texture>P:/creatures/RESOURCE/TEXTURES</Texture>
 		<Interface>P:/creatures/RESOURCE/INTERFACE/ROCKET</Interface>
+		<LocalizationFile>P:/creatures/RESOURCE/LOCALIZATION/creatures4_project.xml</LocalizationFile> <!-- takes a pina locada project, other files MUST be in same folder -->
 	</FilePaths>
 	<Preferences>
 		<!-- project specific preferences: default window size, background color/pic, ... -->
 		<FilePaths>
 			<WordList>C:/Projets/Rockete/word_lists</WordList> <!-- do not duplicate -->
-			<LocalizationFile>P:/creatures/RESOURCE/LOCALIZATION/creatures4_project.xml</LocalizationFile> <!-- takes a pina locada project, other files MUST be in same folder -->
-			<LocalizationOpeningTag>${</LocalizationOpeningTag>
-			<LocalizationClosingTag>}</LocalizationClosingTag>
+			<LocalizationOpeningTag>${</LocalizationOpeningTag> <!-- do not duplicate -->
+			<LocalizationClosingTag>}</LocalizationClosingTag> <!-- do not duplicate -->
+			<SnippetsFolder>C:/Projets/Rockete/snippets</SnippetsFolder><!-- do not duplicate; can have subfolder full of snippets... -->
 		</FilePaths>
 	</Preferences>
 </RocketeProject>

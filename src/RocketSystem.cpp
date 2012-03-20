@@ -43,19 +43,19 @@ int RocketSystem::TranslateString(Rocket::Core::String& translated, const Rocket
 
     input_string = input.CString();
 
-    if(input_string.contains(ProjectManager::getInstance().getlocalizationOpeningTag()))
+    if(input_string.contains(ProjectManager::getInstance().getLocalizationOpeningTag()))
     {
         QString localization_identifier;
-        int starting_index = input_string.indexOf(ProjectManager::getInstance().getlocalizationOpeningTag()) + ProjectManager::getInstance().getlocalizationOpeningTag().size();
+        int starting_index = input_string.indexOf(ProjectManager::getInstance().getLocalizationOpeningTag()) + ProjectManager::getInstance().getLocalizationOpeningTag().size();
         
         
-        int identifier_size = input_string.indexOf(ProjectManager::getInstance().getlocalizationClosingTag(),starting_index) - starting_index;
+        int identifier_size = input_string.indexOf(ProjectManager::getInstance().getLocalizationClosingTag(),starting_index) - starting_index;
 
         localization_identifier = input_string.mid(starting_index, identifier_size);
         
         translated_string = LocalizationManagerInterface::getInstance().getLocalizationForIdentifier(localization_identifier.trimmed());
         
-        translated_string = input_string.replace(ProjectManager::getInstance().getlocalizationOpeningTag()+localization_identifier+ProjectManager::getInstance().getlocalizationClosingTag(), translated_string);
+        translated_string = input_string.replace(ProjectManager::getInstance().getLocalizationOpeningTag()+localization_identifier+ProjectManager::getInstance().getLocalizationClosingTag(), translated_string);
 
         if(translated_string.isEmpty())
         {

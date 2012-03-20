@@ -11,6 +11,7 @@
 #include "OpenedStyleSheet.h"
 #include "AttributeTreeModel.h"
 #include "PropertyTreeModel.h"
+#include "DocumentHierarchyEventFilter.h"
 
 class Rockete : public QMainWindow
 {
@@ -47,7 +48,7 @@ public slots:
     void menuCloseClicked();
     void codeTextChanged();
     void codeTabChanged(int index);
-    void codeTabRequestClose(int index, bool must_save = true);
+    void codeTabRequestClose(int index);
     void unselectElement();
     void menuReloadClicked();
     void menuSetScreenSizeClicked();
@@ -81,6 +82,7 @@ private:
     void generateMenuRecent();
     void populateTreeView(const QString &top_item_name, const QString &directory_path);
     void loadPlugins();
+    void closeTab(int index, bool must_save = true);
 
     Ui::rocketeClass ui;
     RenderingView *renderingView;
@@ -96,6 +98,7 @@ private:
     QMap<int, QString> fileChangedOutsideArray;
     WizardButton *wizard;
     QTreeWidgetItem *selectedTreeViewItem;
+    DocumentHierarchyEventFilter *hierarchyEventFilter;
 };
 
 #endif // ROCKETE_H

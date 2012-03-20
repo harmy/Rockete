@@ -15,7 +15,7 @@ public:
     virtual void initialize();
     void fillTextEdit();
     QString getLine(const int line_number);
-    void cursorFind(const QString &str);
+    void cursorFind(const QString &str, bool from_start = false);
     int findLineNumber(const QString &str, const int start_line_number=0);
     void replaceLine(const int line_number, const QString &new_line);
     int insertLineBeforeBracket(const int start_line, const QString &new_line);

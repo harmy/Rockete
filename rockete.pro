@@ -28,10 +28,12 @@ SOURCES += \
  ./src/PropertyTreeModel.cpp \
  ./src/RenderingView.cpp \
  ./src/Rockete.cpp \
+ ./src/RocketFileInterface.cpp \
  ./src/RocketHelper.cpp \
  ./src/RocketRenderInterface.cpp \
  ./src/RocketSystem.cpp \
  ./src/Settings.cpp \
+ ./src/SnippetsManager.cpp \
  ./src/StyleSheet.cpp \
  ./src/Tool.cpp \
  ./src/ToolDiv.cpp \
@@ -63,10 +65,12 @@ HEADERS += \
  ./src/PropertyTreeModel.h \
  ./src/RenderingView.h \
  ./src/Rockete.h \
+ ./src/RocketFileInterface.h \
  ./src/RocketHelper.h \
  ./src/RocketRenderInterface.h \
  ./src/RocketSystem.h \
  ./src/Settings.h \
+ ./src/SnippetsManager.h \
  ./src/StyleSheet.h \
  ./src/Tool.h \
  ./src/ToolManager.h \

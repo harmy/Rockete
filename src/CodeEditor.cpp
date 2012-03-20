@@ -79,6 +79,7 @@ CodeEditor::CodeEditor() : QPlainTextEdit()
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+    setAcceptDrops(true);
 }
 
 bool CodeEditor::CheckXmlCorrectness(QString & error_message)
@@ -758,6 +759,28 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 
     QRect cr = contentsRect();
     lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
+void CodeEditor::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("text/plain"))
+        event->acceptProposedAction();
+}
+
+void CodeEditor::dragMoveEvent ( QDragMoveEvent * e )
+{
+    if (e->mimeData()->hasFormat("text/plain"))
+    {
+        e->acceptProposedAction();
+    }
+}
+
+void CodeEditor::dropEvent(QDropEvent *event)
+{
+    QTextCursor insertingCursor = cursorForPosition(event->pos());
+    insertingCursor.insertText(event->mimeData()->text());
+    setTextCursor(insertingCursor);
+    event->acceptProposedAction();
 }
 
 // private slots

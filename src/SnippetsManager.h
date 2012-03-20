@@ -1,0 +1,52 @@
+#ifndef SNIPPETSMANAGER_H
+#define SNIPPETSMANAGER_H
+
+#include <QListWidget>
+#include <QXmlDefaultHandler>
+
+enum CodeLanguage {
+    Rml,
+    Rcss,
+    Count,
+    None
+};
+
+struct CodeSnippet
+{
+    QString Title;
+    QString ToolTip;
+    CodeLanguage Language;
+    QString Code;
+};
+
+class SnippetsManager : public QListWidget,
+                        public QXmlDefaultHandler
+{
+public:
+    SnippetsManager(QWidget *parent = 0);
+    void Initialize();
+
+    virtual bool startDocument();
+    virtual bool startElement(const QString &, const QString &localName, const QString &, const QXmlAttributes &atts);
+    virtual bool endElement(const QString &, const QString &, const QString &);
+    virtual bool characters(const QString &ch);
+    virtual bool endDocument();
+
+public slots:
+
+protected:
+
+    virtual QStringList mimeTypes() const override;
+    virtual QMimeData *mimeData(const QList<QListWidgetItem *> items) const override;
+
+private slots:
+
+private:
+    QString currentTag;
+    QString currentTitle;
+    QString currentToolTip;
+    QString currentCode;
+    CodeLanguage currentLanguage;
+};
+
+#endif

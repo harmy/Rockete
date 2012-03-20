@@ -37,6 +37,9 @@ protected:
     virtual void keyPressEvent(QKeyEvent * e);
     virtual void keyReleaseEvent(QKeyEvent * e);
     void resizeEvent(QResizeEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragMoveEvent ( QDragMoveEvent * e );
+    virtual void dropEvent(QDropEvent *event);
 
     QCompleter *AutoCompleter;
     QCompleter *TagAutoCompleter;

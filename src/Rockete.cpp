@@ -139,6 +139,11 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     wizard = NULL;
 
     connect(fileWatcher, SIGNAL(fileChanged(const QString &)), (QObject*)this, SLOT(fileHasChanged(const QString &)));
+
+    hierarchyEventFilter = new DocumentHierarchyEventFilter();
+    ui.documentHierarchyTreeWidget->viewport()->installEventFilter(hierarchyEventFilter);
+
+    ui.snippetsListWidget->Initialize();
 }
 
 Rockete::~Rockete()
@@ -325,35 +330,23 @@ void Rockete::menuOpenProjectClicked()
 
 void Rockete::menuSaveClicked()
 {
-    OpenedFile *current_file;
-    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
 
-    if (tab_text.startsWith("*"))
-    {
-        tab_text = tab_text.remove(0,1);
-    }
-    if ((current_file = getOpenedFile(tab_text.toAscii().data())))
-    {
-        current_file->save();
-        ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), tab_text);
-    }
+    Q_ASSERT(file);
+
+    file->save();
+    ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), file->fileInfo.fileName());
 }
 
 void Rockete::menuSaveAsClicked()
 {
-    OpenedFile *current_file;
-    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+
+    Q_ASSERT(file);
     QString file_path = QFileDialog::getSaveFileName( this, tr( "Save as..." ), "", tr("libRocket Markup Language (*.rml);;libRocket CSS (*.rcss)") );
 
-    if (tab_text.startsWith("*"))
-    {
-        tab_text = tab_text.remove(0,1);
-    }
-    if ((current_file = getOpenedFile(tab_text.toAscii().data())) && !file_path.isEmpty() )
-    {
-        current_file->saveAs(file_path);
-        openFile(file_path);
-    }
+    file->saveAs(file_path);
+    openFile(file_path);
 }
 
 void Rockete::menuCloseClicked()
@@ -389,31 +382,30 @@ void Rockete::codeTabChanged( int index )
     }
 }
 
-void Rockete::codeTabRequestClose(int index, bool must_save)
+void Rockete::codeTabRequestClose(int index)
 {
-    OpenedFile *current_file;
-    QString tab_text = ui.codeTabWidget->tabText(index);
-    QWidget *removed_widget;
+    int
+        response;
 
-
-    if (tab_text.startsWith("*"))
+    if(ui.codeTabWidget->tabText(index).contains("*"))
     {
-        tab_text = tab_text.remove(0,1);
+        OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->widget(0));
+        QString question;
+        question = "Save ";
+        question += file->fileInfo.absoluteFilePath();
+        question += " before closing?";
+
+        response = QMessageBox::question(this, "file modified", question, QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
     }
-    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) 
+    else // if we have no changes, save anyway. I don't want changes to be lost if rockete simply didn't detect a change
     {
-        if(must_save)
-            current_file->save();
-        fileWatcher->removePath(current_file->fileInfo.filePath());
+        response = QMessageBox::Yes;
     }
 
-    ui.documentHierarchyTreeWidget->clear();
-    renderingView->changeCurrentDocument(NULL);
-    removed_widget = ui.codeTabWidget->widget(index);
-    OpenedDocument *file = qobject_cast<OpenedDocument *>(removed_widget);
-    if(file)
-        RocketHelper::unloadDocument(file->rocketDocument);
-    delete(removed_widget);
+    if(response==QMessageBox::Yes)
+        closeTab(index,true);
+    else if(response==QMessageBox::No)
+        closeTab(index,false);
 }
 
 void Rockete::unselectElement()
@@ -527,25 +519,18 @@ void Rockete::menuReloadAssetsClicked()
 
 void Rockete::menuFormatTextClicked()
 {
-    OpenedFile *current_file;
     QDomDocument dom_document;
-    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
 
-    if (tab_text.startsWith("*"))
-    {
-        tab_text = tab_text.remove(0,1);
-    }
-    if (!tab_text.contains("rml"))
+    if (!file->fileInfo.fileName().contains("rml"))
     {
         return;
     }
 
-    if ((current_file = getOpenedFile(tab_text.toAscii().data()))) 
-    {
-        dom_document.setContent(current_file->toPlainText());
-        QString reformatted_content = dom_document.toString(Settings::getTabSize());
-        current_file->setTextEditContent(reformatted_content, true);
-    }
+    dom_document.setContent(file->toPlainText());
+    QString reformatted_content = dom_document.toString(Settings::getTabSize());
+    file->setTextEditContent(reformatted_content, true);
 }
 
 void Rockete::propertyViewClicked(const QModelIndex &/*index*/)
@@ -591,22 +576,15 @@ void Rockete::menuBackgroundChangeImage()
 
 void Rockete::searchBoxActivated()
 {
-    OpenedFile *current_file;
-    QString tab_text = ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex());
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
 
-    if (tab_text.startsWith("*"))
+    if(!searchBox->currentText().isEmpty())
     {
-        tab_text = tab_text.remove(0,1);
+        file->cursorFind(searchBox->currentText());
     }
-    if ((current_file = getOpenedFile(tab_text.toAscii().data())))
-    {
-        if(!searchBox->currentText().isEmpty())
-        {
-            current_file->cursorFind(searchBox->currentText());
-        }
 
-        current_file->highlightString(searchBox->currentText());
-    }
+    file->highlightString(searchBox->currentText());
 }
 
 void Rockete::languageBoxActivated()
@@ -639,8 +617,77 @@ void Rockete::documentHierarchyDoubleClicked(QTreeWidgetItem *item, int/* column
     QString elementId;
     QTreeWidgetItem *nextItem = NULL;
     int parentCount = 0;
-    
+    QStringList rcssList;
+
     selectElement((Element *)item->data(0,Qt::UserRole).toUInt());
+    rcssList = getCurrentDocument()->getRCSSFileList();
+
+    if(hierarchyEventFilter->ShiftPressed)
+    {
+        //getCurrentDocument()->selectedElement->;
+        QStringList strings_to_find;
+        QString string_to_find;
+
+        ui.statusBar->clearMessage();
+
+        // "full" definition by id
+        if(!item->text(1).isEmpty())
+        {
+            string_to_find = item->text(0);
+            string_to_find += "#";
+            string_to_find += item->text(1);
+
+            strings_to_find << string_to_find;
+        }
+
+        // specific definition by class
+        if(!item->text(2).isEmpty())
+        {
+            foreach(QString rcss_class, item->text(2).split(' ')){
+                string_to_find = item->text(0);
+                string_to_find += ".";
+                string_to_find += rcss_class;
+
+                strings_to_find << string_to_find;
+            }
+        }
+
+        // class definition
+        if(!item->text(2).isEmpty())
+        {
+            foreach(QString rcss_class, item->text(2).split(' ')){
+                string_to_find = ".";
+                string_to_find += rcss_class;
+
+                strings_to_find << string_to_find;
+            }
+        }
+
+        // tag definition
+        strings_to_find << item->text(0);
+
+        foreach(QString search_string, strings_to_find) {
+            foreach (QString file, rcssList) {
+                OpenedFile *opened_file = getOpenedFile(file.toAscii().data(), true);
+
+                QTextCursor cursor = opened_file->textCursor();
+                cursor.clearSelection();
+                opened_file->setTextCursor(cursor);
+
+                if(opened_file->find(search_string) || opened_file->find(search_string, QTextDocument::FindBackward))
+                {
+                    ui.codeTabWidget->setCurrentIndex(getTabIndexFromFileName(opened_file->fileInfo.fileName().toAscii().data()));
+                    opened_file->cursorFind(search_string, true);
+                    return;
+                }
+            }
+        }
+
+        ui.statusBar->showMessage( "Definition in RCSS not found, it is either in a template file or not defined", 5000 );
+
+        return;
+    }
+
     ui.statusBar->clearMessage();
     QTextCursor cursor = getCurrentDocument()->textCursor();
     cursor.clearSelection();
@@ -723,7 +770,7 @@ void Rockete::changeEvent(QEvent *event)
                 QFileInfo file_info = i.value();
                 QWidget *widget;
                 isReloadingFile = true;
-                codeTabRequestClose(i.key(), false);
+                closeTab(i.key(), false);
                 openFile(i.value());
                 new_tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
 
@@ -740,30 +787,34 @@ void Rockete::changeEvent(QEvent *event)
 void Rockete::closeEvent(QCloseEvent *event)
 {
     int
-        response = QMessageBox::No;
-
-    for (int i = 0; i < ui.codeTabWidget->count(); ++i)
-    {
-        if(ui.codeTabWidget->tabText(i).contains("*"))
-        {
-            response = QMessageBox::NoButton;
-        }
-    }
+        response;
     
-    if(response==QMessageBox::NoButton)
-        response = QMessageBox::question(this, "Some files are modified", "Save modified files before closing?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
-
-    if(response==QMessageBox::Yes)
+    while(ui.codeTabWidget->count()>0)
     {
-        while(ui.codeTabWidget->count()>0)
+        if(ui.codeTabWidget->tabText(0).contains("*"))
         {
-            codeTabRequestClose(0,true);
+            OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->widget(0));
+            QString question;
+            question = "Save ";
+            question += file->fileInfo.absoluteFilePath();
+            question += " before closing?";
+
+            response = QMessageBox::question(this, "file modified", question, QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
         }
-    }
-    else if(response==QMessageBox::Cancel)
-    {
-        event->ignore();
-        return;
+        else // if we have no changes, save anyway. I don't want changes to be lost if rockete simply didn't detect a change
+        {
+            response = QMessageBox::Yes;
+        }
+
+        if(response==QMessageBox::Yes)
+            closeTab(0,true);
+        else if(response==QMessageBox::No)
+            closeTab(0,false);
+        else
+        {
+            event->ignore();
+            return;
+        }
     }
     
     event->accept();
@@ -778,6 +829,9 @@ int Rockete::openFile(const QString &filePath)
     QFileInfo file_info(filePath);
     bool success = true;
     int new_tab_index;
+
+    if(filePath.contains("memory]")) //librocket name for files in memory is [document in memory] since its not opened it tries to open it...
+        return -1;
 
     if(!file_info.exists())
     {
@@ -837,6 +891,7 @@ int Rockete::openFile(const QString &filePath)
     if (success)
     {
         ui.codeTabWidget->setCurrentIndex(new_tab_index);
+        ui.codeTabWidget->setTabToolTip(new_tab_index, file_info.absoluteFilePath());
         fileWatcher->addPath(file_info.filePath());
         Settings::setMostRecentFile(file_info.filePath());
         generateMenuRecent();
@@ -991,6 +1046,31 @@ void Rockete::loadPlugins()
             }
         }
     }
+}
+
+void Rockete::closeTab(int index, bool must_save)
+{
+    QWidget *removed_widget = ui.codeTabWidget->widget(index);
+    OpenedFile *file = qobject_cast<OpenedFile *>(removed_widget);
+    OpenedDocument *doc = qobject_cast<OpenedDocument *>(removed_widget);
+
+    Q_ASSERT(file);
+
+    if(must_save)
+        file->save();
+    fileWatcher->removePath(file->fileInfo.filePath());
+
+    if(doc)
+    {
+        if(getCurrentDocument()->rocketDocument == doc->rocketDocument)
+        {
+            ui.documentHierarchyTreeWidget->clear();
+            renderingView->changeCurrentDocument(NULL);
+        }
+
+        RocketHelper::unloadDocument(doc->rocketDocument);
+    }
+    delete(removed_widget);
 }
 
 Rockete *Rockete::instance = NULL;

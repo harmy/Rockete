@@ -126,4 +126,15 @@ void ProjectManager::Initialize(const QString &filename)
             localizationClosingTag = node.firstChild().toText().data();
         }
     }
+
+    node_list = domDocument.elementsByTagName("SnippetsFolder");
+
+    if(!node_list.isEmpty())
+    {
+        QDomNode node = node_list.at(0);
+        if(node.firstChild().isText())
+        {
+            snippetsFolderPath = node.firstChild().toText().data();
+        }
+    }
 }

@@ -20,8 +20,9 @@ public:
     const QStringList &getTexturePaths(){return texturePaths;}
     const QStringList &getInterfacePaths(){return interfacePaths;}
     const QString &getWordListPath(){return wordListsPath;}
-    const QString &getlocalizationOpeningTag(){return localizationOpeningTag;}
-    const QString &getlocalizationClosingTag(){return localizationClosingTag;}
+    const QString &getSnippetsFolderPath(){return snippetsFolderPath;}
+    const QString &getLocalizationOpeningTag(){return localizationOpeningTag;}
+    const QString &getLocalizationClosingTag(){return localizationClosingTag;}
 private:
     QDomDocument domDocument;
     QString projectName;
@@ -29,6 +30,7 @@ private:
     QStringList texturePaths;
     QStringList interfacePaths;
     QString wordListsPath;
+    QString snippetsFolderPath;
     QString localizationOpeningTag;
     QString localizationClosingTag;
 };
