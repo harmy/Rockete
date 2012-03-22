@@ -34,7 +34,7 @@ void ToolManager::setup(QToolBar *tool_bar,QMenu *menu)
 
         menu->addAction(tool->getAction());
 
-        shortcut_string = "F" + QString::number(tool_index+1);
+        shortcut_string = "F" + QString::number(tool_index+9);
 
         tool->getAction()->setShortcut(QKeySequence(shortcut_string));
         tool->getAction()->setCheckable(true);

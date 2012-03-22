@@ -17,6 +17,7 @@
 #include "EditionHelper.h"
 #include "Settings.h"
 #include <QDirIterator>
+#include <QShortcut>
 #include "ProjectManager.h"
 #include <QPluginLoader>
 #include "LocalizationManagerInterface.h"
@@ -89,21 +90,6 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     attributeTreeModel = new AttributeTreeModel();
     propertyTreeModel = new PropertyTreeModel();
 
-    ui.mainToolBar->addSeparator();
-
-    searchBox = new QComboBox(this);
-    searchBox->setEditable(true);
-    searchBox->setInsertPolicy( QComboBox::InsertAtTop );
-    QAction *action = new QAction(QIcon(":/images/search.png"), "search", searchBox);
-
-    QString shortcut_string = "F" + QString::number(4);
-    action->setShortcut(QKeySequence(shortcut_string));
-
-    connect( searchBox, SIGNAL(activated(const QString&)), (QObject*)this, SLOT(searchBoxActivated()));
-    connect( action, SIGNAL(triggered()), (QObject*)this, SLOT(searchBoxActivated()));
-    ui.mainToolBar->addWidget(searchBox);
-    ui.mainToolBar->addAction(action);
-
     languageBox = new QComboBox(this);
     languageBox->setEditable(false);
     languageBox->setInsertPolicy( QComboBox::InsertAlphabetically );
@@ -144,6 +130,17 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     ui.documentHierarchyTreeWidget->viewport()->installEventFilter(hierarchyEventFilter);
 
     ui.snippetsListWidget->Initialize();
+
+    QShortcut *triggerFindNext = new QShortcut(QKeySequence::FindNext, this);
+    connect(triggerFindNext, SIGNAL(activated()), (QObject*)this, SLOT(findNextTriggered()));
+
+    QShortcut *triggerFindPrevious = new QShortcut(QKeySequence::FindPrevious, this);
+    connect(triggerFindPrevious, SIGNAL(activated()), (QObject*)this, SLOT(findPreviousTriggered()));
+
+    QShortcut *triggerFind = new QShortcut(QKeySequence::Find, this);
+    connect(triggerFind, SIGNAL(activated()), (QObject*)this, SLOT(findTriggered()));
+
+    ui.searchReplaceDockWidget->hide();
 }
 
 Rockete::~Rockete()
@@ -282,14 +279,12 @@ QString Rockete::getPathForFileName(const QString &filename)
     if(!filename.contains("."))
         searched_string += ".";
     
-    items_found = ui.projectFilesTreeWidget->findItems(searched_string, Qt::MatchStartsWith | Qt::MatchRecursive);
+    items_found = ui.projectFilesTreeWidget->findItems(searched_string, Qt::MatchStartsWith | Qt::MatchRecursive, 1);
 
     if(!items_found.isEmpty())
     {
         item = items_found.first();
-
-        if(item->columnCount()>1)
-            return item->text(1);
+        return item->data(0,Qt::UserRole).toString();
     }
     
     return filename;
@@ -330,6 +325,9 @@ void Rockete::menuOpenProjectClicked()
 
 void Rockete::menuSaveClicked()
 {
+    if(ui.codeTabWidget->count()==0)
+        return;
+
     OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
 
     Q_ASSERT(file);
@@ -340,6 +338,9 @@ void Rockete::menuSaveClicked()
 
 void Rockete::menuSaveAsClicked()
 {
+    if(ui.codeTabWidget->count()==0)
+        return;
+
     OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
 
     Q_ASSERT(file);
@@ -519,6 +520,9 @@ void Rockete::menuReloadAssetsClicked()
 
 void Rockete::menuFormatTextClicked()
 {
+    if(ui.codeTabWidget->count()==0)
+        return;
+
     QDomDocument dom_document;
     OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
     Q_ASSERT(file);
@@ -574,19 +578,6 @@ void Rockete::menuBackgroundChangeImage()
     }
 }
 
-void Rockete::searchBoxActivated()
-{
-    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
-    Q_ASSERT(file);
-
-    if(!searchBox->currentText().isEmpty())
-    {
-        file->cursorFind(searchBox->currentText());
-    }
-
-    file->highlightString(searchBox->currentText());
-}
-
 void Rockete::languageBoxActivated()
 {
     if(LocalizationManagerInterface::hasInstance())
@@ -606,9 +597,19 @@ void Rockete::newButtonWizardActivated()
 
 void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    if(item->text(column).endsWith("rml") || item->text(column).endsWith("rcss") || item->text(column).endsWith("txt") || item->text(column).endsWith("rproj") || item->text(column).endsWith("lua"))
+    if(item->text(1).endsWith("rml") || item->text(1).endsWith("rcss") || item->text(1).endsWith("txt") || item->text(1).endsWith("rproj") || item->text(1).endsWith("lua") || item->text(1).endsWith("snippet"))
     {
         openFile(item->text(1));
+    }
+}
+
+void Rockete::fileTreeClicked(QTreeWidgetItem *item, int column)
+{
+    if(item->text(1).endsWith("png")||item->text(1).endsWith("jpg")) // no native support for tga
+    {
+        QPixmap pixmap(getPathForFileName(item->text(1)));
+        pixmap.scaled(QSize(ui.texturePreviewLabel->width(),ui.texturePreviewLabel->height()),Qt::KeepAspectRatio);
+        ui.texturePreviewLabel->setPixmap(pixmap.scaled(QSize(ui.texturePreviewLabel->width(),ui.texturePreviewLabel->height()),Qt::KeepAspectRatio));
     }
 }
 
@@ -677,7 +678,7 @@ void Rockete::documentHierarchyDoubleClicked(QTreeWidgetItem *item, int/* column
                 if(opened_file->find(search_string) || opened_file->find(search_string, QTextDocument::FindBackward))
                 {
                     ui.codeTabWidget->setCurrentIndex(getTabIndexFromFileName(opened_file->fileInfo.fileName().toAscii().data()));
-                    opened_file->cursorFind(search_string, true);
+                    //opened_file->cursorFind(search_string, true);
                     return;
                 }
             }
@@ -745,6 +746,184 @@ void Rockete::fileHasChanged(const QString &path)
     QFileInfo file_info = path;
     int tab_index = getTabIndexFromFileName(file_info.fileName().toAscii().data());
     fileChangedOutsideArray[tab_index] = path;
+}
+
+void Rockete::findTriggered()
+{
+    ui.searchReplaceDockWidget->show();
+}
+
+void Rockete::findPreviousTriggered()
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
+
+    bool found_string;
+
+    file->highlightString(ui.searchComboBox->currentText());
+
+    if(!ui.searchComboBox->currentText().isEmpty())
+    {
+        if(ui.matchCaseCheckBox->isChecked())
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward);
+        }
+    }
+    else
+    {
+        return;
+    }
+
+    if(!found_string)
+    {
+        QTextCursor previousCursor = file->textCursor();
+        QTextCursor findCursor = file->textCursor();
+        findCursor.movePosition(QTextCursor::End);
+        file->setTextCursor(findCursor);
+
+        if(ui.matchCaseCheckBox->isChecked())
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward);
+        }
+
+        if(!found_string)
+            file->setTextCursor(previousCursor);
+    }
+
+}
+
+void Rockete::findNextTriggered()
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
+
+    bool found_string;
+    file->highlightString(ui.searchComboBox->currentText());
+
+    if(!ui.searchComboBox->currentText().isEmpty())
+    {
+        if(ui.matchCaseCheckBox->isChecked())
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            found_string = file->find(ui.searchComboBox->currentText());
+        }
+    }
+    else
+    {
+        return;
+    }
+
+    if(!found_string)
+    {
+        QTextCursor previousCursor = file->textCursor();
+        QTextCursor findCursor = file->textCursor();
+        findCursor.setPosition(0);
+        file->setTextCursor(findCursor);
+
+        if(ui.matchCaseCheckBox->isChecked())
+        {
+            found_string = file->find(ui.searchComboBox->currentText(), QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            found_string = file->find(ui.searchComboBox->currentText());
+        }
+
+        if(!found_string)
+            file->setTextCursor(previousCursor);
+    }
+}
+
+void Rockete::replaceTriggered()
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
+
+    if(file->textCursor().hasSelection())
+    {
+        file->textCursor().insertText(ui.replaceComboBox->currentText());
+    }
+
+    checkTextChanged(-1);
+
+    // return; here to behave like a "real" replace instead of a "replace & find"
+
+    if(!file->find(ui.searchComboBox->currentText(),(ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )) &&
+        file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward | (ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )) )
+    { // reached end of file but there are more text to find
+        QTextCursor findCursor = file->textCursor();
+        findCursor.setPosition(0);
+        file->setTextCursor(findCursor);
+        file->find(ui.searchComboBox->currentText(),(ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 ));
+    }
+}
+
+void Rockete::replaceAllTriggered()
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->currentWidget());
+    Q_ASSERT(file);
+
+    file->textCursor().beginEditBlock();
+    while (file->find(ui.searchComboBox->currentText(),(ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )) ||
+            file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward | (ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )))
+    {
+        if(file->textCursor().hasSelection())
+        {
+            file->textCursor().insertText(ui.replaceComboBox->currentText());
+        }
+    }
+    file->textCursor().endEditBlock();
+    checkTextChanged(-1);
+}
+
+void Rockete::replaceAllInAllTriggered()
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    if(QMessageBox::question(this,"Please confirm", "Are you sure?", QMessageBox::Yes, QMessageBox::Cancel) != QMessageBox::Yes)
+        return;
+
+    for(int i = 0; i < ui.codeTabWidget->count(); i++)
+    {
+        OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->widget(i));
+        Q_ASSERT(file);
+
+        file->textCursor().beginEditBlock();
+        while (file->find(ui.searchComboBox->currentText(),(ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )) ||
+            file->find(ui.searchComboBox->currentText(), QTextDocument::FindBackward | (ui.matchCaseCheckBox->isChecked() ? QTextDocument::FindCaseSensitively : (QTextDocument::FindFlags)0 )))
+        {
+            if(file->textCursor().hasSelection())
+            {
+                file->textCursor().insertText(ui.replaceComboBox->currentText());
+            }
+        }
+        file->textCursor().endEditBlock();
+        checkTextChanged(i);
+    }
 }
 
 // Protected:
@@ -830,7 +1009,7 @@ int Rockete::openFile(const QString &filePath)
     bool success = true;
     int new_tab_index;
 
-    if(filePath.contains("memory]")) //librocket name for files in memory is [document in memory] since its not opened it tries to open it...
+    if(filePath.contains("memory]")) //librocket name for files in memory is [document in memory] since its not opened in the tabs it tries to open it...
         return -1;
 
     if(!file_info.exists())
@@ -851,8 +1030,13 @@ int Rockete::openFile(const QString &filePath)
             
             if(!file_info.exists())
             {
-                printf("file not found: %s\n", filePath.toAscii().data());
-                return -1;
+                file_info = ProjectManager::getInstance().getSnippetsFolderPath() + filePath;
+
+                if(!file_info.exists())
+                {
+                    printf("file not found: %s\n", file_info.absoluteFilePath().toAscii().data());
+                    return -1;
+                }
             }
         }
     }
@@ -878,7 +1062,7 @@ int Rockete::openFile(const QString &filePath)
     {
         new_tab_index = openStyleSheet(file_info.filePath().toAscii().data());
     }
-    else if (file_info.suffix() == "rproj" || file_info.suffix() == "txt" || file_info.suffix() == "lua")
+    else if (file_info.suffix() == "rproj" || file_info.suffix() == "txt" || file_info.suffix() == "lua" || file_info.suffix() == "snippet")
     {
         new_tab_index = openASCIIFile(file_info.filePath().toAscii().data());
     }
@@ -899,6 +1083,28 @@ int Rockete::openFile(const QString &filePath)
     }
 
     return -1;
+}
+
+void Rockete::checkTextChanged(int index)
+{
+    if(ui.codeTabWidget->count()==0)
+        return;
+
+    if(index<0)
+        index = ui.codeTabWidget->currentIndex();
+
+    OpenedFile *file = qobject_cast<OpenedFile *>(ui.codeTabWidget->widget(index));
+
+    Q_ASSERT(file);
+
+    if(file->document()->isModified())
+    {
+        QString tab_text = ui.codeTabWidget->tabText(index);
+        if (!tab_text.startsWith("*"))
+        {
+            ui.codeTabWidget->setTabText(ui.codeTabWidget->currentIndex(), "*" + tab_text);
+        }
+    }
 }
 
 void Rockete::openProject(const QString &filePath)
@@ -931,6 +1137,7 @@ void Rockete::openProject(const QString &filePath)
         }
 
         populateTreeView("Word Lists", ProjectManager::getInstance().getWordListPath());
+        populateTreeView("Snippets", ProjectManager::getInstance().getSnippetsFolderPath());
 
     }
 }
@@ -1006,14 +1213,40 @@ void Rockete::populateTreeView(const QString &top_item_name, const QString &dire
             QStringList
                 list;
             list << directory_walker.fileInfo().fileName();
-            list << directory_walker.fileInfo().filePath();
-            items.append(new QTreeWidgetItem(item, list));
+
+            QTreeWidgetItem *new_item = new QTreeWidgetItem(item);
+            new_item->setText(1,directory_walker.fileInfo().fileName());
+            new_item->setToolTip(1, directory_walker.fileInfo().absoluteFilePath());
+            new_item->setData(0, Qt::UserRole, directory_walker.fileInfo().filePath());
+
+            if(directory_walker.fileInfo().suffix() == "png" || directory_walker.fileInfo().suffix() == "tga" || directory_walker.fileInfo().suffix() == "jpg")
+            {
+                new_item->setIcon(0, QIcon(directory_walker.fileInfo().absoluteFilePath()));
+            }
+            else if(directory_walker.fileInfo().suffix() == "snippet")
+            {
+                new_item->setIcon(0, QIcon(":/images/icon_snippets.png"));
+            }
+            else if(directory_walker.fileInfo().suffix() == "rml")
+            {
+                new_item->setIcon(0, QIcon(":/images/icon_rml.png"));
+            }
+            else if(directory_walker.fileInfo().suffix() == "rcss")
+            {
+                new_item->setIcon(0, QIcon(":/images/icon_rcss.png"));
+            }
+            else if(directory_walker.fileInfo().suffix() == "lua")
+            {
+                new_item->setIcon(0, QIcon(":/images/icon_lua.png"));
+            }
+
+            items.append(new_item);
         }
     }
 
     item->addChildren(items);
     ui.projectFilesTreeWidget->addTopLevelItem(item);
-    item->sortChildren(0,Qt::AscendingOrder);
+    item->sortChildren(1,Qt::AscendingOrder);
 }
 
 void Rockete::loadPlugins()
@@ -1050,6 +1283,9 @@ void Rockete::loadPlugins()
 
 void Rockete::closeTab(int index, bool must_save)
 {
+    if(ui.codeTabWidget->count()==0)
+        return;
+
     QWidget *removed_widget = ui.codeTabWidget->widget(index);
     OpenedFile *file = qobject_cast<OpenedFile *>(removed_widget);
     OpenedDocument *doc = qobject_cast<OpenedDocument *>(removed_widget);

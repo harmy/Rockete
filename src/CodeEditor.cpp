@@ -744,9 +744,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         TagAutoCompleter->complete();
     }
 
-    if (document()->isModified())
-        Rockete::getInstance().codeTextChanged();
-
+    Rockete::getInstance().checkTextChanged(-1);
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * /*e*/)

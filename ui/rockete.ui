@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1313</width>
-    <height>806</height>
+    <width>1317</width>
+    <height>811</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,7 +60,7 @@
             <enum>QTabWidget::Triangular</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>-1</number>
            </property>
            <property name="tabsClosable">
             <bool>true</bool>
@@ -68,11 +68,6 @@
            <property name="movable">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="tab">
-            <attribute name="title">
-             <string>New...</string>
-            </attribute>
-           </widget>
           </widget>
           <widget class="QTabWidget" name="bottomTabWidget">
            <property name="minimumSize">
@@ -151,7 +146,7 @@
        </property>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
@@ -160,12 +155,32 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QTreeWidget" name="projectFilesTreeWidget">
+            <property name="iconSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="indentation">
+             <number>10</number>
+            </property>
             <property name="headerHidden">
              <bool>true</bool>
             </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <attribute name="headerDefaultSectionSize">
+             <number>75</number>
+            </attribute>
             <column>
              <property name="text">
               <string notr="true">1</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string notr="true">2</string>
              </property>
             </column>
            </widget>
@@ -222,7 +237,7 @@
        </widget>
        <widget class="QTabWidget" name="tabWidget_2">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_7">
          <attribute name="title">
@@ -241,13 +256,13 @@
              <number>10</number>
             </property>
             <property name="headerHidden">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="expandsOnDoubleClick">
              <bool>false</bool>
             </property>
             <attribute name="headerVisible">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
             <attribute name="headerDefaultSectionSize">
              <number>100</number>
@@ -274,6 +289,29 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>TexturePreview</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="texturePreviewLabel">
+            <property name="minimumSize">
+             <size>
+              <width>1</width>
+              <height>1</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </widget>
@@ -285,7 +323,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1313</width>
+     <width>1317</width>
      <height>21</height>
     </rect>
    </property>
@@ -368,6 +406,144 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="searchReplaceDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>307</width>
+     <height>154</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>500</width>
+     <height>500</height>
+    </size>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <property name="floating">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string notr="true">Search &amp; Replace</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="1">
+        <widget class="QComboBox" name="searchComboBox">
+         <property name="focusPolicy">
+          <enum>Qt::WheelFocus</enum>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="currentIndex">
+          <number>-1</number>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtTop</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="replaceComboBox">
+         <property name="focusPolicy">
+          <enum>Qt::WheelFocus</enum>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtTop</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QPushButton" name="findPreviousButton">
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="text">
+            <string>Previous</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="findNextButton">
+           <property name="text">
+            <string>Next</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="replaceButton">
+         <property name="text">
+          <string>Replace</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="matchCaseCheckBox">
+         <property name="text">
+          <string>Match Case</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="replaceAllButton">
+         <property name="text">
+          <string>Replace All</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="replaceAllInAllButton">
+         <property name="text">
+          <string>Replace All In All Files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Search</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Replace</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../rockete.qrc">
@@ -978,6 +1154,134 @@
     <hint type="destinationlabel">
      <x>656</x>
      <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findNextButton</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>findNextTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findPreviousButton</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>findPreviousTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>370</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchComboBox</sender>
+   <signal>activated(QString)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>findNextTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replaceComboBox</sender>
+   <signal>activated(QString)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>replaceTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>106</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replaceButton</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>replaceTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replaceAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>replaceAllTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replaceAllInAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>replaceAllInAllTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>projectFilesTreeWidget</sender>
+   <signal>itemClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>fileTreeClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1175</x>
+     <y>346</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
     </hint>
    </hints>
   </connection>

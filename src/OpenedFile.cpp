@@ -62,41 +62,6 @@ QString OpenedFile::getLine(const int line_number)
     return lines[line_number];
 }
 
-void OpenedFile::cursorFind(const QString &str, bool from_start)
-{
-    QString plain_text;
-    int starting_index;
-
-    if(str.isEmpty())
-    {
-        return;
-    }
-
-    if (previousSearch != str || previousStartingIndex == -1 || from_start)
-    {
-        previousSearch = str;
-        previousStartingIndex = -1;
-    }
-
-    plain_text = toPlainText();
-
-    starting_index = plain_text.indexOf(previousSearch, previousStartingIndex == -1 ? 0 : previousStartingIndex);
-    if (starting_index>=0)
-    {
-        setFocus();
-        QTextCursor newTextCursor = textCursor();
-        newTextCursor.setPosition(starting_index);
-        newTextCursor.setPosition(starting_index+str.size(), QTextCursor::KeepAnchor);
-        setTextCursor(newTextCursor);
-        previousStartingIndex = starting_index+str.size();
-    }
-    else if (starting_index != previousStartingIndex)
-    {
-        previousStartingIndex = starting_index+str.size();
-        find(previousSearch);
-    }
-}
-
 int OpenedFile::findLineNumber(const QString &str, const int start_line_number)
 {
     QTextCursor parsingCursor = textCursor();
@@ -211,11 +176,15 @@ void OpenedFile::save()
     QFile file(fileInfo.filePath());
     QString error_message;
     Rockete::getInstance().getFileWatcher()->removePath(fileInfo.filePath());
-    if (!CheckXmlCorrectness(error_message))
+
+    if(fileInfo.suffix() == "rml" || fileInfo.suffix() == "rcss")
     {
-        QMessageBox msgBox;
-        msgBox.setText(fileInfo.fileName() + " is not valid: " + error_message );
-        msgBox.exec();
+        if (!CheckXmlCorrectness(error_message))
+        {
+            QMessageBox msgBox;
+            msgBox.setText(fileInfo.fileName() + " is not valid: " + error_message );
+            msgBox.exec();
+        }
     }
 
     if (file.open(QFile::WriteOnly|QFile::Truncate|QIODevice::Text)) {
@@ -233,6 +202,11 @@ void OpenedFile::save()
         }
         file.close();
         document()->setModified( false );
+    }
+
+    if(fileInfo.suffix() == "snippet")
+    {
+        Rockete::getInstance().GetSnippetsManager()->Initialize();
     }
 
     Rockete::getInstance().getFileWatcher()->addPath(fileInfo.filePath());

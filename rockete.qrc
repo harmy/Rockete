@@ -17,5 +17,9 @@
         <file>images/new_button.png</file>
         <file>images/banner.png</file>
         <file>images/logo.png</file>
+        <file>images/icon_snippets.png</file>
+        <file>images/icon_lua.png</file>
+        <file>images/icon_rcss.png</file>
+        <file>images/icon_rml.png</file>
     </qresource>
 </RCC>

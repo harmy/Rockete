@@ -135,6 +135,10 @@ void ProjectManager::Initialize(const QString &filename)
         if(node.firstChild().isText())
         {
             snippetsFolderPath = node.firstChild().toText().data();
+            if(!snippetsFolderPath.endsWith('/'))
+            {
+                snippetsFolderPath.append("/");
+            }
         }
     }
 }

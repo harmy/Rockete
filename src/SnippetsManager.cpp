@@ -18,6 +18,8 @@ void SnippetsManager::Initialize()
     if(ProjectManager::getInstance().getSnippetsFolderPath().isEmpty())
         return;
 
+    clear();
+
     QDirIterator directory_walker(ProjectManager::getInstance().getSnippetsFolderPath(), QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
     QStringList snippetsFileList;
 

@@ -16,6 +16,7 @@ SOURCES += \
  ./src/AttributeTreeModel.cpp \
  ./src/CodeEditor.cpp \
  ./src/CSSHighlighter.cpp \
+ ./src/DocumentHierarchyEventFilter.cpp \
  ./src/EditionHelper.cpp \
  ./src/EditionHelperColor.cpp \
  ./src/GraphicSystem.cpp \
@@ -41,7 +42,7 @@ SOURCES += \
  ./src/ToolManager.cpp \
  ./src/ToolSelecter.cpp \
  ./src/XMLHighlighter.cpp \
-    src/WizardButton.cpp
+ ./src/WizardButton.cpp
 HEADERS += \
  ./src/Action.h \
  ./src/ActionGroup.h \
@@ -53,6 +54,7 @@ HEADERS += \
  ./src/AttributeTreeModel.h \
  ./src/CodeEditor.h \
  ./src/CSSHighlighter.h \
+ ./src/DocumentHierarchyEventFilter.h \
  ./src/EditionHelper.h \
  ./src/EditionHelperColor.h \
  ./src/GraphicSystem.h \
@@ -78,7 +80,7 @@ HEADERS += \
  ./src/ToolImage.h \
  ./src/ToolSelecter.h \
  ./src/XMLHighlighter.h \
-    src/WizardButton.h
+ ./src/WizardButton.h
 FORMS += ./ui/rockete.ui \
 
 INCLUDEPATH = ./src

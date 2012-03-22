@@ -28,7 +28,7 @@ public:
     void fillPropertyView();
     void selectElement(Element *element);
     void reloadCurrentDocument();
-    int getTabIndexFromFileName(const char * name);
+    int getTabIndexFromFileName(const char * name); // TODO: clean up this... its a bit dirty. At least use full path.
     OpenedDocument *getCurrentTabDocument(int index = -1);
     OpenedStyleSheet *getCurrentTabStyleSheet(int index = -1);
     OpenedFile *getOpenedFile(const char * file_path, const bool try_to_open=false);
@@ -39,6 +39,8 @@ public:
     void setZoomLevel(float level);
     QFileSystemWatcher *getFileWatcher(){return fileWatcher;}
     int openFile(const QString &file_path);
+    void checkTextChanged(int index);
+    SnippetsManager *GetSnippetsManager(){return ui.snippetsListWidget;}
 
 public slots:
     void menuOpenClicked();
@@ -62,12 +64,18 @@ public slots:
     void menuRecentFileClicked(QAction *action);
     void menuBackgroundChangeColor();
     void menuBackgroundChangeImage();
-    void searchBoxActivated();
     void languageBoxActivated();
     void newButtonWizardActivated();
     void fileTreeDoubleClicked(QTreeWidgetItem *item, int column);
+    void fileTreeClicked(QTreeWidgetItem *item, int column);
     void documentHierarchyDoubleClicked(QTreeWidgetItem *item, int column);
     void fileHasChanged(const QString &path);
+    void findTriggered();
+    void findPreviousTriggered();
+    void findNextTriggered();
+    void replaceTriggered();
+    void replaceAllTriggered();
+    void replaceAllInAllTriggered();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
