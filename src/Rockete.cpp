@@ -751,6 +751,8 @@ void Rockete::fileHasChanged(const QString &path)
 void Rockete::findTriggered()
 {
     ui.searchReplaceDockWidget->show();
+    ui.searchReplaceDockWidget->activateWindow();
+    ui.searchComboBox->setFocus(Qt::OtherFocusReason);
 }
 
 void Rockete::findPreviousTriggered()
@@ -800,7 +802,6 @@ void Rockete::findPreviousTriggered()
         if(!found_string)
             file->setTextCursor(previousCursor);
     }
-
 }
 
 void Rockete::findNextTriggered()

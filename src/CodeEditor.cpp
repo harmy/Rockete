@@ -54,6 +54,7 @@ CodeEditor::CodeEditor() : QPlainTextEdit()
     AutoCompleter->setWidget(this);
     AutoCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     AutoCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    AutoCompleter->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
 
     tag_list.sort();
 
@@ -61,6 +62,7 @@ CodeEditor::CodeEditor() : QPlainTextEdit()
     TagAutoCompleter->setWidget(this);
     TagAutoCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     TagAutoCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    TagAutoCompleter->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
 
     QObject::connect(AutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeText(const QString &)));
     QObject::connect(TagAutoCompleter, SIGNAL(activated(const QString &)), this, SLOT(completeTagText(const QString &)));
@@ -287,13 +289,32 @@ void CodeEditor::completeText(const QString &text)
 {
     textCursor().beginEditBlock();
     QTextCursor editingTextCursor = textCursor();
+    int spacesCount;
 
-    editingTextCursor.setPosition(textCursor().selectionStart());
-    editingTextCursor.movePosition( QTextCursor::EndOfWord, QTextCursor::MoveAnchor );
-    editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
+    editingTextCursor.setPosition(textCursor().selectionEnd());
+    editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
+    editingTextCursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
+    if(editingTextCursor.selectedText().contains('-'))
+    {
+        editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
+    }
+    else
+    {
+        editingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+    }
     editingTextCursor.removeSelectedText();
 
-    editingTextCursor.insertText(text);
+    QString addedText;
+
+    while(spacesCount>0)
+    {
+        addedText += ' ';
+        spacesCount--;
+    }
+
+    addedText += text;
+
+    editingTextCursor.insertText(addedText);
     setTextCursor(editingTextCursor);
 
     textCursor().endEditBlock();
@@ -694,10 +715,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         if (AutoCompleter->popup()->isVisible())
         {
             AutoCompleter->popup()->hide();
+            return;
         }
         if (TagAutoCompleter->popup()->isVisible())
         {
             TagAutoCompleter->popup()->hide();
+            return;
         }
 
         editingTextCursor.setPosition(textCursor().selectionStart());
@@ -707,15 +730,18 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
             character_position = editingTextCursor.position() - 1;
         }
 
+        QRect cursor_rect = cursorRect();
+        cursor_rect.setWidth(150);
+
         if (toPlainText()[character_position] == '<')
         {
             TagAutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
-            TagAutoCompleter->complete();
+            TagAutoCompleter->complete(cursor_rect);
         }
         else
         {
             AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
-            AutoCompleter->complete();
+            AutoCompleter->complete(cursor_rect);
         }
 
     }
@@ -724,27 +750,91 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         QPlainTextEdit::keyPressEvent(e);
     }
 
-    if(AutoCompleter->popup()->isVisible())
-    {
-        QTextCursor editingTextCursor = textCursor();
-
-        editingTextCursor.setPosition(textCursor().selectionStart());
-        editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
-        AutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
-        AutoCompleter->complete();
-    }
-
-    if(TagAutoCompleter->popup()->isVisible())
-    {
-        QTextCursor editingTextCursor = textCursor();
-
-        editingTextCursor.setPosition(textCursor().selectionStart());
-        editingTextCursor.movePosition( QTextCursor::StartOfWord, QTextCursor::KeepAnchor );
-        TagAutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
-        TagAutoCompleter->complete();
-    }
-
     Rockete::getInstance().checkTextChanged(-1);
+
+    // end of event is dedicated to auto completion pop up/out. Do not place anything important under this comment
+
+    if(e->key()==Qt::Key_Space||e->key()==Qt::Key_Control||(e->modifiers() & Qt::ControlModifier) != 0||(e->modifiers() & Qt::AltModifier) != 0)
+        return;
+
+    if (!AutoCompleter->popup()->isVisible()&&!TagAutoCompleter->popup()->isVisible())
+    {
+        if(e->key()==Qt::Key_Left||e->key()==Qt::Key_Right||e->key()==Qt::Key_Up||e->key()==Qt::Key_Down)
+            return;
+    }
+
+    QTextCursor editingTextCursor = textCursor();
+    
+    QRect cursor_rect = cursorRect();
+    cursor_rect.setWidth(150);
+    
+    editingTextCursor.setPosition(textCursor().selectionEnd());
+    editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
+    editingTextCursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
+    if(editingTextCursor.selectedText().contains('-'))
+    {
+        editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
+    }
+
+    printf("%s\n",editingTextCursor.selectedText().trimmed().toAscii().data());
+
+    if(!editingTextCursor.selectedText().trimmed().isEmpty())
+    {
+        if(editingTextCursor.selectedText().trimmed().startsWith('<'))
+        {
+            editingTextCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+            TagAutoCompleter->setCompletionPrefix( editingTextCursor.selectedText().trimmed() );
+            if(TagAutoCompleter->completionCount()>0)
+            {
+                TagAutoCompleter->complete(cursor_rect);
+                if (AutoCompleter->popup()->isVisible())
+                {
+                    AutoCompleter->popup()->hide();
+                }
+            }
+            else
+            {
+                if (TagAutoCompleter->popup()->isVisible())
+                {
+                    TagAutoCompleter->popup()->hide();
+                }
+            }
+        }
+        else
+        {
+
+            AutoCompleter->setCompletionPrefix(editingTextCursor.selectedText().trimmed());
+            if(AutoCompleter->completionCount()>0)
+            {
+                AutoCompleter->complete(cursor_rect);
+                if (TagAutoCompleter->popup()->isVisible())
+                {
+                    TagAutoCompleter->popup()->hide();
+                }
+            }
+            else
+            {
+                if (AutoCompleter->popup()->isVisible())
+                {
+                    AutoCompleter->popup()->hide();
+                }
+            }
+        }
+    }
+    else
+    {
+        if (AutoCompleter->popup()->isVisible())
+        {
+            AutoCompleter->popup()->hide();
+        }
+        if (TagAutoCompleter->popup()->isVisible())
+        {
+            TagAutoCompleter->popup()->hide();
+        }
+    }
+
+    // end of event is dedicated to auto completion pop up/out. Do not place anything important under this comment
+
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * /*e*/)
