@@ -8,7 +8,7 @@
 		<Font>P:/creatures/RESOURCE/FONTS</Font>
 		<Texture>P:/creatures/RESOURCE/TEXTURES</Texture>
 		<Interface>P:/creatures/RESOURCE/INTERFACE/ROCKET</Interface>
-		<LocalizationFile>P:/creatures/RESOURCE/LOCALIZATION/creatures4_project.xml</LocalizationFile> <!-- takes a pina locada project, other files MUST be in same folder -->
+		<LocalizationFile>P:/creatures/RESOURCE/LOCALIZATION/creatures4_project.xml</LocalizationFile> <!-- do not duplicate; takes a pina locada project, other files MUST be in same folder -->
 	</FilePaths>
 	<Preferences>
 		<!-- project specific preferences: default window size, background color/pic, ... -->

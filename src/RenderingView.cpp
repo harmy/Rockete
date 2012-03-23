@@ -30,8 +30,7 @@ void RenderingView::keyPressEvent(QKeyEvent* event)
 
     switch (event->key()) {
     case Qt::Key_Escape:
-        currentDocument->selectedElement = 0;
-        repaint();
+        Rockete::getInstance().unselectElement();
         break;
 
     case Qt::Key_Delete:
@@ -149,6 +148,7 @@ void RenderingView::paintGL()
     RocketSystem::getInstance().getContext()->Render();
 
     glDisable(GL_TEXTURE_2D);
+    glDisable(GL_SCISSOR_TEST);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

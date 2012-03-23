@@ -21,6 +21,7 @@
 #include "ProjectManager.h"
 #include <QPluginLoader>
 #include "LocalizationManagerInterface.h"
+#include "OpenedLuaScript.h"
 
 struct LocalScreenSizeItem
 {
@@ -185,7 +186,7 @@ void Rockete::fillPropertyView()
 
 void Rockete::selectElement(Element *element)
 {
-    if(element != getCurrentDocument()->selectedElement)
+    //if(element != getCurrentDocument()->selectedElement)
     {
         getCurrentDocument()->selectedElement = element;
         repaintRenderingView();
@@ -197,6 +198,7 @@ void Rockete::selectElement(Element *element)
             if((Element *)item->data(0,Qt::UserRole).toUInt() == element)
             {
                 ui.documentHierarchyTreeWidget->setCurrentItem(item);
+                break;
             }
         }
     }
@@ -595,7 +597,7 @@ void Rockete::newButtonWizardActivated()
     wizard->show();
 }
 
-void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
+void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int /*column*/)
 {
     if(item->text(1).endsWith("rml") || item->text(1).endsWith("rcss") || item->text(1).endsWith("txt") || item->text(1).endsWith("rproj") || item->text(1).endsWith("lua") || item->text(1).endsWith("snippet"))
     {
@@ -603,7 +605,7 @@ void Rockete::fileTreeDoubleClicked(QTreeWidgetItem *item, int column)
     }
 }
 
-void Rockete::fileTreeClicked(QTreeWidgetItem *item, int column)
+void Rockete::fileTreeClicked(QTreeWidgetItem *item, int /*column*/)
 {
     if(item->text(1).endsWith("png")||item->text(1).endsWith("jpg")) // no native support for tga
     {
@@ -927,6 +929,54 @@ void Rockete::replaceAllInAllTriggered()
     }
 }
 
+void Rockete::addSnippetClicked()
+{
+    QString new_snippet = ui.snippetsListWidget->addSnippet();
+    
+    if(new_snippet.isEmpty())
+        return;
+    
+    QFileInfo file_info = ProjectManager::getInstance().getSnippetsFolderPath() + new_snippet;
+    QTreeWidgetItem *item = ui.projectFilesTreeWidget->findItems("Snippets", Qt::MatchRecursive).at(0);
+
+    QTreeWidgetItem *new_item = new QTreeWidgetItem(item);
+    new_item->setText(1,file_info.fileName());
+    new_item->setToolTip(1, file_info.absoluteFilePath());
+    new_item->setData(0, Qt::UserRole, file_info.filePath());
+
+    new_item->setIcon(0, QIcon(":/images/icon_snippets.png"));
+
+
+    item->addChild(new_item);
+    ui.projectFilesTreeWidget->addTopLevelItem(item);
+    item->sortChildren(1,Qt::AscendingOrder);
+}
+
+void Rockete::removeSnippetClicked()
+{
+    QString file_path = ui.snippetsListWidget->removeSnippet();
+    QString file_name = QFileInfo(file_path).fileName();
+    if(!file_path.isEmpty())
+    {
+        if(ui.projectFilesTreeWidget->findItems(file_name, Qt::MatchRecursive, 1).count() > 0)
+        {
+            Q_ASSERT(ui.projectFilesTreeWidget->findItems(file_name, Qt::MatchRecursive, 1).count() == 1);
+            QTreeWidgetItem *item = ui.projectFilesTreeWidget->findItems(file_name, Qt::MatchRecursive, 1).at(0);
+            ui.projectFilesTreeWidget->findItems("Snippets", Qt::MatchRecursive).at(0)->removeChild(item);
+        }
+        if(getTabIndexFromFileName(file_name.toAscii().data()) > -1)
+        {
+            closeTab(getTabIndexFromFileName(file_name.toAscii().data()), false);
+        }
+        QFile::remove(file_path);
+    }
+}
+
+void Rockete::snippetsListDoubleClicked(QListWidgetItem *item)
+{
+    openFile(((CodeSnippet *)item->data(Qt::UserRole).toUInt())->FilePath);
+}
+
 // Protected:
 
 void Rockete::keyPressEvent(QKeyEvent *event)
@@ -1063,7 +1113,11 @@ int Rockete::openFile(const QString &filePath)
     {
         new_tab_index = openStyleSheet(file_info.filePath().toAscii().data());
     }
-    else if (file_info.suffix() == "rproj" || file_info.suffix() == "txt" || file_info.suffix() == "lua" || file_info.suffix() == "snippet")
+    else if (file_info.suffix() == "lua")
+    {
+        new_tab_index = openLuaScript(file_info.filePath().toAscii().data());
+    }
+    else if (file_info.suffix() == "rproj" || file_info.suffix() == "txt" || file_info.suffix() == "snippet")
     {
         new_tab_index = openASCIIFile(file_info.filePath().toAscii().data());
     }
@@ -1077,6 +1131,7 @@ int Rockete::openFile(const QString &filePath)
     {
         ui.codeTabWidget->setCurrentIndex(new_tab_index);
         ui.codeTabWidget->setTabToolTip(new_tab_index, file_info.absoluteFilePath());
+        printf("adding path: %s\n", file_info.filePath().toAscii().data());
         fileWatcher->addPath(file_info.filePath());
         Settings::setMostRecentFile(file_info.filePath());
         generateMenuRecent();
@@ -1173,6 +1228,17 @@ int Rockete::openStyleSheet(const char *file_path)
     new_style_sheet->fileInfo = file_info;
     new_style_sheet->initialize();
     return ui.codeTabWidget->addTab(new_style_sheet, file_info.fileName());
+}
+
+int Rockete::openLuaScript(const char *file_path)
+{
+    OpenedLuaScript *new_lua_script;
+    QFileInfo file_info(file_path);
+
+    new_lua_script = new OpenedLuaScript;
+    new_lua_script->fileInfo = file_info;
+    new_lua_script->initialize();
+    return ui.codeTabWidget->addTab(new_lua_script, file_info.fileName());
 }
 
 int Rockete::openASCIIFile(const char *file_path)
@@ -1295,6 +1361,7 @@ void Rockete::closeTab(int index, bool must_save)
 
     if(must_save)
         file->save();
+    printf("removing path: %s\n", file->fileInfo.filePath().toAscii().data());
     fileWatcher->removePath(file->fileInfo.filePath());
 
     if(doc)

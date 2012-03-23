@@ -17,6 +17,7 @@ struct CodeSnippet
     QString ToolTip;
     CodeLanguage Language;
     QString Code;
+    QString FilePath;
 };
 
 class SnippetsManager : public QListWidget,
@@ -31,6 +32,8 @@ public:
     virtual bool endElement(const QString &, const QString &, const QString &);
     virtual bool characters(const QString &ch);
     virtual bool endDocument();
+    QString addSnippet();
+    QString removeSnippet();
 
 public slots:
 
@@ -43,10 +46,8 @@ private slots:
 
 private:
     QString currentTag;
-    QString currentTitle;
-    QString currentToolTip;
-    QString currentCode;
-    CodeLanguage currentLanguage;
+    CodeSnippet *currentCodeSnippet;
+    QString currentFilePath;
 };
 
 #endif

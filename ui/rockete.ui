@@ -237,7 +237,7 @@
        </widget>
        <widget class="QTabWidget" name="tabWidget_2">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_7">
          <attribute name="title">
@@ -423,7 +423,7 @@
     <enum>Qt::NoFocus</enum>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="floating">
     <bool>true</bool>
@@ -1278,6 +1278,54 @@
     <hint type="sourcelabel">
      <x>1175</x>
      <y>346</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addSnippet</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>addSnippetClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1179</x>
+     <y>462</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>removeSnippet</sender>
+   <signal>clicked()</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>removeSnippetClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1266</x>
+     <y>462</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>658</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>snippetsListWidget</sender>
+   <signal>itemDoubleClicked(QListWidgetItem *)</signal>
+   <receiver>rocketeClass</receiver>
+   <slot>snippetsListDoubleClicked(QListWidgetItem *)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1175</x>
+     <y>331</y>
     </hint>
     <hint type="destinationlabel">
      <x>658</x>

@@ -21,9 +21,11 @@ SOURCES += \
  ./src/EditionHelperColor.cpp \
  ./src/GraphicSystem.cpp \
  ./src/LocalizationManagerInterface.cpp \
+ ./src/LuaHighlighter.cpp \
  ./src/main.cpp \
  ./src/OpenedDocument.cpp \
  ./src/OpenedFile.cpp \
+ ./src/OpenedLuaScript.cpp \
  ./src/OpenedStyleSheet.cpp \
  ./src/ProjectManager.cpp \
  ./src/PropertyTreeModel.cpp \
@@ -59,8 +61,10 @@ HEADERS += \
  ./src/EditionHelperColor.h \
  ./src/GraphicSystem.h \
  ./src/LocalizationManagerInterface.h \
+ ./src/LuaHighlighter.h \
  ./src/OpenedDocument.h \
  ./src/OpenedFile.h \
+ ./src/OpenedLuaScript.h \
  ./src/OpenedStyleSheet.h \
  ./src/OpenGL.h \
  ./src/ProjectManager.h \

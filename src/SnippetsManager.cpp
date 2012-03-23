@@ -3,6 +3,10 @@
 #include <QMimeData>
 #include <QDirIterator>
 #include <QXmlSimpleReader>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMessageBox>
+#include "Rockete.h"
 #include "ProjectManager.h"
 
 // Public:
@@ -15,8 +19,10 @@ SnippetsManager::SnippetsManager(QWidget *parent)
 
 void SnippetsManager::Initialize()
 {
-    if(ProjectManager::getInstance().getSnippetsFolderPath().isEmpty())
+    if(!QFile::exists(ProjectManager::getInstance().getSnippetsFolderPath()))
+    {
         return;
+    }
 
     clear();
 
@@ -42,6 +48,7 @@ void SnippetsManager::Initialize()
 
     foreach(QFile file, snippetsFileList)
     {
+        currentFilePath = file.fileName();
         source = new QXmlInputSource(&file);
         ok = xmlReader.parse(source);
         delete(source);
@@ -62,7 +69,12 @@ bool SnippetsManager::startElement(const QString &/*namespaceURI*/, const QStrin
     currentTag=localName;
     if(currentTag == "Code")
     {
-        currentLanguage=(CodeLanguage)atts.value("Index").toInt();
+        currentCodeSnippet->Language=(CodeLanguage)atts.value("Index").toInt();
+    }
+    else if(currentTag == "CodeSnippet")
+    {
+        currentCodeSnippet = new CodeSnippet;
+        currentCodeSnippet->FilePath = currentFilePath;
     }
     return true;
 }
@@ -71,12 +83,11 @@ bool SnippetsManager::endElement(const QString &/*namespaceURI*/, const QString 
 {
     if(localName == "CodeSnippet")
     {
-
         QListWidgetItem *item = new QListWidgetItem();
 
-        item->setText(currentTitle);
-        item->setToolTip(currentToolTip);
-        item->setData(Qt::UserRole, currentCode);
+        item->setText(currentCodeSnippet->Title);
+        item->setToolTip(currentCodeSnippet->ToolTip);
+        item->setData(Qt::UserRole, QVariant((uint)currentCodeSnippet));
         addItem(item);
     }
     return true;
@@ -92,15 +103,15 @@ bool SnippetsManager::characters(const QString &ch)
 
     if(currentTag=="Title")
     {
-        currentTitle = usable_string;
+        currentCodeSnippet->Title = usable_string;
     }
     else if(currentTag=="ToolTip")
     {
-        currentToolTip = usable_string;
+        currentCodeSnippet->ToolTip = usable_string;
     }
     else if(currentTag=="Code")
     {
-        currentCode = usable_string;
+        currentCodeSnippet->Code = usable_string;
     }
 
     return true;
@@ -109,6 +120,86 @@ bool SnippetsManager::characters(const QString &ch)
 bool SnippetsManager::endDocument()
 {
     return true;
+}
+
+QString SnippetsManager::addSnippet()
+{
+    QDir dir = ProjectManager::getInstance().getSnippetsFolderPath();
+
+    if(!dir.exists())
+    {
+        if(!dir.mkpath(ProjectManager::getInstance().getSnippetsFolderPath()))
+        {
+            dir.mkdir(ProjectManager::getInstance().getSnippetsFolderPath());
+        }
+    }
+
+    Q_ASSERT(dir.exists());
+
+    bool ok;
+    QString text = QInputDialog::getText(this, "New Snippet",
+        "File name", QLineEdit::Normal,
+        "my snippet", &ok);
+
+    if (!ok || text.isEmpty())
+        return "";
+
+    if (!text.contains(".snippet"))
+    {
+        text += ".snippet";
+    }
+
+    QFile file = ProjectManager::getInstance().getSnippetsFolderPath() + text;
+
+    if(file.exists())
+    {
+        Rockete::getInstance().openFile(text);
+        return "";
+    }
+
+    if(!file.open(QIODevice::WriteOnly|QIODevice::Text))
+        return "";
+
+    QString content;
+
+    content = "\
+<CodeSnippet>\n \
+    <Title>\n\
+        new snippet\n\
+    </Title>\n\
+    <ToolTip>\n\
+        new tooltip\n\
+    </ToolTip>\n\
+    <Code Language=\"\">\n\
+        <![CDATA[\n\
+        \n\
+        ]]>\n\
+    </Code>\n\
+</CodeSnippet>";
+
+    file.write(content.toAscii().data());
+    file.close();
+
+    Rockete::getInstance().openFile(text);
+
+    Initialize();
+    return text;
+}
+
+QString SnippetsManager::removeSnippet()
+{
+
+    if(QMessageBox::question(this, "Please confirm.", "Are you really really sure?", QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    {
+        QListWidgetItem *item = takeItem(currentRow());
+        QString file_name = ((CodeSnippet *)item->data(Qt::UserRole).toUInt())->FilePath;
+        delete((CodeSnippet *)item->data(Qt::UserRole).toUInt());
+        delete(item);
+        return file_name;
+    }
+
+    return "";
+    // Remove from lists
 }
 
 // public slots:
@@ -128,7 +219,7 @@ QMimeData *SnippetsManager::mimeData(const QList<QListWidgetItem *> items) const
     QMimeData *mimeData = new QMimeData();
 
     foreach(QListWidgetItem *item, items){
-        text += item->data(Qt::UserRole).toString();
+        text += ((CodeSnippet *)item->data(Qt::UserRole).toUInt())->Code;
     }
 
     mimeData->setText(text);

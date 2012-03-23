@@ -76,6 +76,9 @@ public slots:
     void replaceTriggered();
     void replaceAllTriggered();
     void replaceAllInAllTriggered();
+    void addSnippetClicked();
+    void removeSnippetClicked();
+    void snippetsListDoubleClicked(QListWidgetItem *item);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
@@ -86,6 +89,7 @@ private:
     void openProject(const QString &filePath);
     int openDocument(const char *);
     int openStyleSheet(const char *);
+    int openLuaScript(const char *file_path);
     int openASCIIFile(const char *);
     void generateMenuRecent();
     void populateTreeView(const QString &top_item_name, const QString &directory_path);

@@ -776,8 +776,6 @@ void CodeEditor::keyPressEvent(QKeyEvent * e)
         editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
     }
 
-    printf("%s\n",editingTextCursor.selectedText().trimmed().toAscii().data());
-
     if(!editingTextCursor.selectedText().trimmed().isEmpty())
     {
         if(editingTextCursor.selectedText().trimmed().startsWith('<'))

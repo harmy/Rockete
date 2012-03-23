@@ -141,4 +141,8 @@ void ProjectManager::Initialize(const QString &filename)
             }
         }
     }
+    else
+    {
+        snippetsFolderPath = "snippets/";
+    }
 }
