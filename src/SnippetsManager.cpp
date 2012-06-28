@@ -6,6 +6,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QDebug>
 #include "Rockete.h"
 #include "ProjectManager.h"
 
@@ -46,15 +47,16 @@ void SnippetsManager::Initialize()
     xmlReader.setContentHandler(this);
     xmlReader.setErrorHandler(this);
 
-    foreach(QFile file, snippetsFileList)
+    foreach(QString fileName, snippetsFileList)
     {
-        currentFilePath = file.fileName();
+        QFile file(fileName);
+        currentFilePath = fileName;
         source = new QXmlInputSource(&file);
         ok = xmlReader.parse(source);
         delete(source);
         if(!ok)
         {
-            printf("%s could not be parsed as snippet\n", file.fileName());
+            qDebug() << fileName << " could not be parsed as snippet\n";
         }
     }
 }
@@ -149,7 +151,7 @@ QString SnippetsManager::addSnippet()
         text += ".snippet";
     }
 
-    QFile file = ProjectManager::getInstance().getSnippetsFolderPath() + text;
+    QFile file(ProjectManager::getInstance().getSnippetsFolderPath() + text);
 
     if(file.exists())
     {
