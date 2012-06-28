@@ -40,8 +40,8 @@ public slots:
 
 protected:
 
-    virtual QStringList mimeTypes() const override;
-    virtual QMimeData *mimeData(const QList<QListWidgetItem *> items) const override;
+    virtual QStringList mimeTypes() const;
+    virtual QMimeData *mimeData(const QList<QListWidgetItem *> items) const;
 
 private slots:
 
