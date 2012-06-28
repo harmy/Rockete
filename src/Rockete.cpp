@@ -383,6 +383,8 @@ void Rockete::codeTabChanged( int index )
             getCurrentDocument()->populateHierarchyTreeView(ui.documentHierarchyTreeWidget);
         }
     }
+
+    ui.snippetsListWidget->filterSnippetsForLanguage(ui.codeTabWidget->tabText(ui.codeTabWidget->currentIndex()).split(".").at(1));
 }
 
 void Rockete::codeTabRequestClose(int index)

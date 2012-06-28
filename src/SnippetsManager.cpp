@@ -69,7 +69,7 @@ bool SnippetsManager::startElement(const QString &/*namespaceURI*/, const QStrin
     currentTag=localName;
     if(currentTag == "Code")
     {
-        currentCodeSnippet->Language=(CodeLanguage)atts.value("Index").toInt();
+        currentCodeSnippet->Language= atts.value("Language").toLower();
     }
     else if(currentTag == "CodeSnippet")
     {
@@ -188,7 +188,6 @@ QString SnippetsManager::addSnippet()
 
 QString SnippetsManager::removeSnippet()
 {
-
     if(QMessageBox::question(this, "Please confirm.", "Are you really really sure?", QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
         QListWidgetItem *item = takeItem(currentRow());
@@ -199,7 +198,27 @@ QString SnippetsManager::removeSnippet()
     }
 
     return "";
-    // Remove from lists
+}
+
+void SnippetsManager::filterSnippetsForLanguage(QString language)
+{
+    language = language.toLower();
+
+    if(language != "rml" && language != "rcss" && language != "lua")
+        language = "none";
+
+    for(int i=0;i<count();i++)
+    {
+        if(((CodeSnippet *)item(i)->data(Qt::UserRole).toUInt())->Language == language)
+        {
+            item(i)->setHidden(false);
+        }
+        else
+        {
+            
+            item(i)->setHidden(language!="none");
+        }
+    }
 }
 
 // public slots:

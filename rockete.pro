@@ -43,6 +43,7 @@ SOURCES += \
  ./src/ToolImage.cpp \
  ./src/ToolManager.cpp \
  ./src/ToolSelecter.cpp \
+ ./src/ToolTest.cpp \
  ./src/XMLHighlighter.cpp \
  ./src/WizardButton.cpp
 HEADERS += \
@@ -83,6 +84,7 @@ HEADERS += \
  ./src/ToolDiv.h \
  ./src/ToolImage.h \
  ./src/ToolSelecter.h \
+ ./src/ToolTest.h \
  ./src/XMLHighlighter.h \
  ./src/WizardButton.h
 FORMS += ./ui/rockete.ui \
