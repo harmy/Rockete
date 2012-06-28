@@ -289,9 +289,9 @@ void CodeEditor::completeText(const QString &text)
 {
     textCursor().beginEditBlock();
     QTextCursor editingTextCursor = textCursor();
-    int spacesCount;
 
     editingTextCursor.setPosition(textCursor().selectionEnd());
+
     editingTextCursor.movePosition(QTextCursor::PreviousWord, QTextCursor::KeepAnchor);
     editingTextCursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
     if(editingTextCursor.selectedText().contains('-'))
@@ -304,17 +304,7 @@ void CodeEditor::completeText(const QString &text)
     }
     editingTextCursor.removeSelectedText();
 
-    QString addedText;
-
-    while(spacesCount>0)
-    {
-        addedText += ' ';
-        spacesCount--;
-    }
-
-    addedText += text;
-
-    editingTextCursor.insertText(addedText);
+    editingTextCursor.insertText(text);
     setTextCursor(editingTextCursor);
 
     textCursor().endEditBlock();

@@ -15,7 +15,7 @@ struct CodeSnippet
 {
     QString Title;
     QString ToolTip;
-    CodeLanguage Language;
+    QString Language;
     QString Code;
     QString FilePath;
 };
@@ -34,6 +34,7 @@ public:
     virtual bool endDocument();
     QString addSnippet();
     QString removeSnippet();
+    void filterSnippetsForLanguage(QString language);
 
 public slots:
 
