@@ -1,5 +1,5 @@
 #include "CSSHighlighter.h"
-#include "QTextDocument.h"
+#include <QTextDocument>
 
 CssHighlighter::CssHighlighter(QTextDocument *document)
 : QSyntaxHighlighter(document)

@@ -119,7 +119,7 @@ win32 {
     }
 }
 unix {
-    LIBS += -lRocketCore -lRocketControls
+    LIBS += -lRocketCore -lRocketControls -lRocketFreeType -lGLU
 }
 
 include(./src/modeltest/modeltest.pri)
