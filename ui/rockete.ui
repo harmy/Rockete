@@ -770,7 +770,7 @@
   <customwidget>
    <class>SnippetsManager</class>
    <extends>QWidget</extends>
-   <header>snippetsmanager.h</header>
+   <header>SnippetsManager.h</header>
   </customwidget>
  </customwidgets>
  <resources>
