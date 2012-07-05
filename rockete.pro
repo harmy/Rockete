@@ -119,7 +119,8 @@ win32 {
     }
 }
 unix {
-    LIBS += -lRocketCore -lRocketControls -lRocketFreeType -lGLU
+	INCLUDEPATH += $(LIBROCKET)/include
+    LIBS += -L$(LIBROCKET)/lib -lRocketCore -lRocketControls -lRocketFreeType -lGLU
 }
 
 include(./src/modeltest/modeltest.pri)

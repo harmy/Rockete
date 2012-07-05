@@ -1,0 +1,11 @@
+before_install: 
+  - "sudo apt-get install qt4-dev-tools libqt4-dev libqt4-core libqt4-gui curl"
+  
+before_script:
+  - wget http://fishingcactus.com/files/libRocket-linux.tar.gz
+  - tar -xzf libRocket-linux.tar.gz
+env:
+  - LIBROCKET=.
+script: 
+  - qmake rockete.pro
+  - make
