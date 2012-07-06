@@ -1,28 +1,35 @@
 # Rockete - libRocket files editor
 
+## Status
+[![Build Status](https://secure.travis-ci.org/FishingCactus/Rockete.png?branch=master)](http://travis-ci.org/FishingCactus/Rockete)
+
 ## Description
-    Rockete is a Qt-based libRocket RML/RCSS files editor.
-    The main purpose is to provide a useful tool to create game graphical user interfaces.
-    The second 'e' means "Editor".
-    It is pronunced like "Machete" ;)
+Rockete is a Qt-based libRocket RML/RCSS files editor.
+The main purpose is to provide a useful tool to create game graphical user interfaces.
+The second 'e' means "Editor".
+It is pronunced like "Machete" ;)
 
 ## Requirements
-    * Linux
-        Qt4 library
-        libRocket
-    * Windows
-        Qt4 library
-        libRocket
-        ${LIBROCKET} environment variable referring to libRocket root directory
+
+#### Linux
+- Qt4 library
+- libRocket
+
+#### Windows
+- Qt4 library
+- libRocket
+- ${LIBROCKET} environment variable referring to libRocket root directory
 
 ## Build
-    * Linux
-        # qmake
-        # make
-    * Windows (Visual Studio project)
-        # qmake -tp vc rockete.pro
-        Open VS and build project...
-        
+
+#### Linux
+- qmake
+- make
+
+#### Windows (Visual Studio project)
+- qmake -tp vc rockete.pro
+- Open VS and build project...
+
 ## License (MIT)
  
  Copyright (c) 2011-2012 Fishing Cactus SA
