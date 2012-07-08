@@ -1,7 +1,9 @@
 #include "RocketSystem.h"
 
 #include <Rocket/Core.h>
-#include <Rocket/Core/FreeType/FontProvider.h>
+#ifdef ROCKET_FREETYPE
+    #include <Rocket/Core/FreeType/FontProvider.h>
+#endif
 #include <Rocket/Controls.h>
 #include <QDir>
 #include "ToolManager.h"
@@ -85,7 +87,12 @@ bool RocketSystem::initialize()
     Rocket::Core::SetFileInterface(new RocketFileInterface());
     Rocket::Core::Initialise();
 
-    Rocket::Core::FreeType::FontProvider::Initialise();
+    #ifdef ROCKET_FREETYPE
+        Rocket::Core::FreeType::FontProvider::Initialise();
+    #else
+        Rocket::Core::FontDatabase::Initialise();
+    #endif
+
     Rocket::Controls::Initialise();
 
     // :TODO: Save last screen size.
@@ -142,7 +149,11 @@ void RocketSystem::loadFont(const QString &file)
     Rocket::Core::String
         r_string = file.toAscii().data();
 
-    Rocket::Core::FreeType::FontProvider::LoadFontFace(r_string);
+    #ifdef ROCKET_FREETYPE
+        Rocket::Core::FreeType::FontProvider::LoadFontFace(r_string);
+    #else
+        Rocket::Core::FontDatabase::LoadFontFace(r_string);
+    #endif
 }
 
 void RocketSystem::EventListener::ProcessEvent(Rocket::Core::Event &event)

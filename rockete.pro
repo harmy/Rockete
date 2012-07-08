@@ -89,7 +89,8 @@ HEADERS += \
  ./src/WizardButton.h
 FORMS += ./ui/rockete.ui \
 
-INCLUDEPATH = ./src
+INCLUDEPATH = ./src $(LIBROCKET)/Include
+
 win32 {
     INCLUDEPATH += $(LIBROCKET)/Include
     LIBS += \
@@ -111,16 +112,32 @@ win32 {
         -lglu32
 
     CONFIG(debug, debug|release) {
-        LIBS += -lRocketCore_d -lRocketControls_d -lRocketFreeType_d
+        LIBS += -lRocketCore_d -lRocketControls_d
+        
+        exists( $(LIBROCKET)/Build/RocketFreeType_d.lib ) {
+            LIBS += -lRocketFreeType_d
+            DEFINES += ROCKET_FREETYPE
+        }
     }
     
     CONFIG(release, debug|release) {
-        LIBS += -lRocketCore -lRocketControls -lRocketFreeType
+        LIBS += -lRocketCore -lRocketControls
+        
+        exists( $(LIBROCKET)/Build/RocketFreeType.lib ) {
+            LIBS += -lRocketFreeType -lfreetype
+            DEFINES += ROCKET_FREETYPE
+        }
     }
 }
 unix {
     INCLUDEPATH += $(LIBROCKET)/include
-    LIBS += -L$(LIBROCKET)/lib -lRocketFreeType -lRocketCore -lRocketControls -lGLU -lfreetype
+    LIBS += -L$(LIBROCKET)/lib -L$(LIBROCKET)/Build -lRocketCore -lRocketControls -lGLU 
+    
+    exists( $(LIBROCKET)/Build/libRocketFreeType.a ) {
+        LIBS += -lRocketFreeType -lfreetype
+        DEFINES += ROCKET_FREETYPE
+    }
+    
 }
 
 include(./src/modeltest/modeltest.pri)
