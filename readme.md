@@ -14,6 +14,7 @@ It is pronunced like "Machete" ;)
 #### Linux
 - Qt4 library
 - libRocket
+- ${LIBROCKET} environment variable if libRocket is not in /usr/include and /usr/lib
 
 #### Windows
 - Qt4 library
