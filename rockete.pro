@@ -94,7 +94,7 @@ INCLUDEPATH = ./src $(LIBROCKET)/Include
 win32 {
     INCLUDEPATH += $(LIBROCKET)/Include
     LIBS += \
-        -L$(LIBROCKET)/bin \
+        -L$(LIBROCKET)/Build \
         -lkernel32 \
         -luser32 \
         -lshell32 \
@@ -124,19 +124,19 @@ win32 {
         LIBS += -lRocketCore -lRocketControls
         
         exists( $(LIBROCKET)/Build/RocketFreeType.lib ) {
-            LIBS += -lRocketFreeType -lfreetype
+            LIBS += -lRocketFreeType
             DEFINES += ROCKET_FREETYPE
         }
     }
 }
 unix {
-    INCLUDEPATH += $(LIBROCKET)/include
-    LIBS += -L$(LIBROCKET)/lib -L$(LIBROCKET)/Build -lRocketCore -lRocketControls -lGLU 
-    
+
     exists( $(LIBROCKET)/Build/libRocketFreeType.a ) {
-        LIBS += -lRocketFreeType -lfreetype
+        LIBS +=  -lRocketFreeType -lfreetype 
         DEFINES += ROCKET_FREETYPE
     }
+    
+    LIBS += -L$(LIBROCKET)/Build -lRocketCore -lRocketControls -lGLU 
     
 }
 
