@@ -137,7 +137,7 @@ QTreeWidgetItem *OpenedDocument::getChildrenTree(QTreeWidgetItem *parent, Elemen
     QTreeWidgetItem *item = new QTreeWidgetItem(parent, list);
     item->setTextColor(1, QColor::fromRgb(0,0,255));
     item->setTextColor(2, QColor::fromRgb(255,0,0));
-    item->setData(0, Qt::UserRole, QVariant((uint)element));
+    item->setData(0, Qt::UserRole, qVariantFromValue<void*>(element));
     QList<QTreeWidgetItem *> items;
 
     for (int i = 0; i < element->GetNumChildren(); i++)

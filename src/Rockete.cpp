@@ -195,7 +195,7 @@ void Rockete::selectElement(Element *element)
         
         foreach(QTreeWidgetItem *item, ui.documentHierarchyTreeWidget->findItems(element->GetTagName().CString(), Qt::MatchRecursive))
         {
-            if((Element *)item->data(0,Qt::UserRole).toUInt() == element)
+            if((Element *)item->data(0,Qt::UserRole).value<void*>() == element)
             {
                 ui.documentHierarchyTreeWidget->setCurrentItem(item);
                 break;
@@ -624,7 +624,7 @@ void Rockete::documentHierarchyDoubleClicked(QTreeWidgetItem *item, int/* column
     int parentCount = 0;
     QStringList rcssList;
 
-    selectElement((Element *)item->data(0,Qt::UserRole).toUInt());
+    selectElement((Element *)item->data(0,Qt::UserRole).value<void*>());
     rcssList = getCurrentDocument()->getRCSSFileList();
 
     if(hierarchyEventFilter->ShiftPressed)
@@ -976,7 +976,7 @@ void Rockete::removeSnippetClicked()
 
 void Rockete::snippetsListDoubleClicked(QListWidgetItem *item)
 {
-    openFile(((CodeSnippet *)item->data(Qt::UserRole).toUInt())->FilePath);
+    openFile(((CodeSnippet *)item->data(Qt::UserRole).value<void*>())->FilePath);
 }
 
 // Protected:

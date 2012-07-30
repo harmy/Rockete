@@ -89,7 +89,7 @@ bool SnippetsManager::endElement(const QString &/*namespaceURI*/, const QString 
 
         item->setText(currentCodeSnippet->Title);
         item->setToolTip(currentCodeSnippet->ToolTip);
-        item->setData(Qt::UserRole, QVariant((uint)currentCodeSnippet));
+        item->setData(Qt::UserRole, qVariantFromValue<void*>(currentCodeSnippet));
         addItem(item);
     }
     return true;
@@ -193,8 +193,8 @@ QString SnippetsManager::removeSnippet()
     if(QMessageBox::question(this, "Please confirm.", "Are you really really sure?", QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
         QListWidgetItem *item = takeItem(currentRow());
-        QString file_name = ((CodeSnippet *)item->data(Qt::UserRole).toUInt())->FilePath;
-        delete((CodeSnippet *)item->data(Qt::UserRole).toUInt());
+        QString file_name = ((CodeSnippet *)item->data(Qt::UserRole).value<void*>())->FilePath;
+        delete((CodeSnippet *)item->data(Qt::UserRole).value<void*>());
         delete(item);
         return file_name;
     }
@@ -211,7 +211,7 @@ void SnippetsManager::filterSnippetsForLanguage(QString language)
 
     for(int i=0;i<count();i++)
     {
-        if(((CodeSnippet *)item(i)->data(Qt::UserRole).toUInt())->Language == language)
+        if(((CodeSnippet *)item(i)->data(Qt::UserRole).value<void*>())->Language == language)
         {
             item(i)->setHidden(false);
         }
@@ -240,7 +240,7 @@ QMimeData *SnippetsManager::mimeData(const QList<QListWidgetItem *> items) const
     QMimeData *mimeData = new QMimeData();
 
     foreach(QListWidgetItem *item, items){
-        text += ((CodeSnippet *)item->data(Qt::UserRole).toUInt())->Code;
+        text += ((CodeSnippet *)item->data(Qt::UserRole).value<void*>())->Code;
     }
 
     mimeData->setText(text);
