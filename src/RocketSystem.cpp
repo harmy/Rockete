@@ -135,7 +135,7 @@ void RocketSystem::loadFonts(const QString &directory_path)
     QStringList file_list;
     QString prefix;
 
-    name_filter_list << "*.otf" << "*.ttf";
+    name_filter_list << "*.otf" << "*.ttf" << "*.fnt";
 
     file_list = directory.entryList(name_filter_list);
 
