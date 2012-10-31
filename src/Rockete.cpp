@@ -439,11 +439,14 @@ void Rockete::menuSetScreenSizeClicked()
 
     item_list.push_back(new LocalScreenSizeItem(480, 320, "iPhone3"));
     item_list.push_back(new LocalScreenSizeItem(960, 640, "iPhone4"));
+    item_list.push_back(new LocalScreenSizeItem(800, 480, "WVGA "));
     item_list.push_back(new LocalScreenSizeItem(800, 600));
     item_list.push_back(new LocalScreenSizeItem(1024, 768));
+    item_list.push_back(new LocalScreenSizeItem(1136, 640, "iPhone5"));
     item_list.push_back(new LocalScreenSizeItem(1280, 720));
     item_list.push_back(new LocalScreenSizeItem(1600, 1024));
     item_list.push_back(new LocalScreenSizeItem(1920, 1080, "HD"));
+    item_list.push_back(new LocalScreenSizeItem(2048, 1536, "iPad3"));
 
     for (int i=0; i<item_list.size(); ++i)
     {
