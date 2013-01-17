@@ -9,10 +9,10 @@
 	<Preferences>
 		<!-- project specific preferences: default window size, background color/pic, ... -->
 		<FilePaths>
-			<WordList>C:/Projets/Rockete/word_lists</WordList> <!-- do not duplicate -->
+			<WordList>word_lists</WordList> <!-- do not duplicate -->
 			<LocalizationOpeningTag>${</LocalizationOpeningTag> <!-- do not duplicate -->
 			<LocalizationClosingTag>}</LocalizationClosingTag> <!-- do not duplicate -->
-			<SnippetsFolder>C:/Projets/Rockete/snippets</SnippetsFolder><!-- do not duplicate; can have subfolder full of snippets... -->
+			<SnippetsFolder>snippets</SnippetsFolder><!-- do not duplicate; can have subfolder full of snippets... -->
 		</FilePaths>
 	</Preferences>
 </RocketeProject>
