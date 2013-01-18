@@ -38,7 +38,7 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            QString& nodeText = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
             if(!(nodeText.contains(":") || nodeText.startsWith("/")))
             {
 
@@ -62,7 +62,7 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            QString& nodeText = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
             if(!(nodeText.contains(":") || nodeText.startsWith("/")))
             {
 
@@ -86,7 +86,7 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            QString& nodeText = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
             if(!(nodeText.contains(":") || nodeText.startsWith("/")))
             {
 
@@ -110,7 +110,7 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(0);
         if(node.firstChild().isText())
         {
-            QString& nodeText = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
             if(!(nodeText.contains(":") || nodeText.startsWith("/")))
             {
 
@@ -174,7 +174,7 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(0);
         if(node.firstChild().isText())
         {
-            QString& nodeText = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
             if(!(nodeText.contains(":") || nodeText.startsWith("/")))
             {
 
