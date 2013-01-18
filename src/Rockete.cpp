@@ -368,12 +368,12 @@ void Rockete::codeTextChanged()
 
 void Rockete::codeTabChanged( int index )
 {
-    OpenedDocument *document;
-    if(isReloadingFile)
+    if(index < 0 || isReloadingFile)
     {
         return;
     }
 
+    OpenedDocument *document;
     if ((document = getCurrentTabDocument(index)))
     {
         if(document != getCurrentDocument())

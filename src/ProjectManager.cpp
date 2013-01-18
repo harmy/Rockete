@@ -38,7 +38,16 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            fontPaths << node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
+            if(!(nodeText.contains(":") || nodeText.startsWith("/")))
+            {
+
+	            fontPaths << file_info.path() + "/" + nodeText;
+            } 
+            else
+            {
+	            fontPaths << nodeText;
+            }
             if(!fontPaths.last().endsWith('/'))
             {
                 fontPaths.last().append("/");
@@ -53,7 +62,16 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            texturePaths << node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
+            if(!(nodeText.contains(":") || nodeText.startsWith("/")))
+            {
+
+                texturePaths << file_info.path() + "/" + nodeText;
+            } 
+            else
+            {
+                texturePaths << nodeText;
+            }
             if(!texturePaths.last().endsWith('/'))
             {
                 texturePaths.last().append("/");
@@ -68,7 +86,16 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(i);
         if(node.firstChild().isText())
         {
-            interfacePaths << node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
+            if(!(nodeText.contains(":") || nodeText.startsWith("/")))
+            {
+
+                interfacePaths << file_info.path() + "/" + nodeText;
+            } 
+            else
+            {
+                interfacePaths << nodeText;
+            }
             if(!interfacePaths.last().endsWith('/'))
             {
                 interfacePaths.last().append("/");
@@ -83,12 +110,25 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(0);
         if(node.firstChild().isText())
         {
-            wordListsPath = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
+            if(!(nodeText.contains(":") || nodeText.startsWith("/")))
+            {
+
+                wordListsPath = file_info.path() + "/" + nodeText;
+            } 
+            else
+            {
+                wordListsPath = nodeText;
+            }
             if(!wordListsPath.endsWith('/'))
             {
                 wordListsPath.append("/");
             }
         }
+    }
+    else
+    {
+        wordListsPath = "word_lists/";
     }
 
     node_list = domDocument.elementsByTagName("LocalizationFile");
@@ -134,7 +174,16 @@ void ProjectManager::Initialize(const QString &filename)
         QDomNode node = node_list.at(0);
         if(node.firstChild().isText())
         {
-            snippetsFolderPath = node.firstChild().toText().data();
+            const QString& nodeText = node.firstChild().toText().data();
+            if(!(nodeText.contains(":") || nodeText.startsWith("/")))
+            {
+
+                snippetsFolderPath = file_info.path() + "/" + nodeText;
+            } 
+            else
+            {
+                snippetsFolderPath = nodeText;
+            }
             if(!snippetsFolderPath.endsWith('/'))
             {
                 snippetsFolderPath.append("/");
