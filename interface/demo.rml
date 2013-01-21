@@ -18,42 +18,22 @@
             
             div#content
             {
-                text-align: right;
+                text-align: left;
             }
-
-            div#emptyblock
+            
+            .big
             {
-                width:50px;
-                height: 50;
-              background-color: red;
+                font-size:40px;
             }
         </style>
     </head>
     <body template="window">
         This is a sample.<br/>
         <p/>
-            Clicker sur le bouton ( <img width="25" height="25" src="present.tga"/> ) pour ...
-        <p/>
         <img width="256" height="256" color="red" src="present.tga"/>
         <p/>
-        <!-- TEst -->
-        <div class="monstyle" id="test">
-            <button class="test" onclick="click">
-                <span id="mouaha" class="erf">
-                    texte
-                </span>
-            </button>
-            block testfdgdfgdfgdfdfgdfgdfgdfgfg<br/>
-            test blabla
-            <div style="width:50px; height:50px;display:inline-block;float:right;">
-                Hehe
-            </div>
-            <div style="width:50px; height:50px;display:inline-block;float:right;"/>
-            <div style="width:50px; height:50px;"/>
-            <div style="width:50px; height:50px;"/>
-            <div style="width:50px; height:50px;"/>
+        <div class="big">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eu sem orci, sit amet cursus dui. Donec eget tellus non arcu lobortis consequat. Integer nec elit turpis, vel dictum quam. Aliquam erat volutpat. Sed sit amet tempor sem. Suspendisse potenti. Suspendisse massa risus, congue in euismod quis, sollicitudin ut arcu. Quisque porttitor scelerisque libero, sit amet malesuada purus ultricies sit amet. Sed ullamcorper aliquet ante a dictum. In nec libero in mauris interdum vestibulum id a nisi. Sed vel risus vitae tortor tristique interdum sit amet non libero. 
         </div>
-        <div style="width:166px;" id="emptyblock"/>
-        <p/>
     </body>
 </rml>
