@@ -10,7 +10,7 @@
 
 CodeEditor::CodeEditor() : QPlainTextEdit()
 {
-    QFile 
+    QFile
         tags(ProjectManager::getInstance().getWordListPath() + "tag_list.txt"),
         customs(ProjectManager::getInstance().getWordListPath() + "custom_list.txt"),
         keywords(ProjectManager::getInstance().getWordListPath() + "keyword_list.txt");
@@ -84,7 +84,7 @@ CodeEditor::CodeEditor() : QPlainTextEdit()
     setAcceptDrops(true);
 }
 
-bool CodeEditor::CheckXmlCorrectness(QString & error_message)
+bool CodeEditor::checkXmlCorrectness(QString & error_message)
 {
     QTextCursor parsingTextCursor = textCursor();
     int tag_delimiter_balance = 0;

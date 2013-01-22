@@ -25,7 +25,7 @@ class SnippetsManager : public QListWidget,
 {
 public:
     SnippetsManager(QWidget *parent = 0);
-    void Initialize();
+    void initialize();
 
     virtual bool startDocument();
     virtual bool startElement(const QString &, const QString &localName, const QString &, const QXmlAttributes &atts);

@@ -130,7 +130,7 @@ Rockete::Rockete(QWidget *parent, Qt::WFlags flags)
     hierarchyEventFilter = new DocumentHierarchyEventFilter();
     ui.documentHierarchyTreeWidget->viewport()->installEventFilter(hierarchyEventFilter);
 
-    ui.snippetsListWidget->Initialize();
+    ui.snippetsListWidget->initialize();
 
     QShortcut *triggerFindNext = new QShortcut(QKeySequence::FindNext, this);
     connect(triggerFindNext, SIGNAL(activated()), (QObject*)this, SLOT(findNextTriggered()));

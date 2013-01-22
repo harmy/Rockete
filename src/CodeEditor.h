@@ -18,7 +18,7 @@ public:
     CodeEditor();
 
     // this function is intended as basic "check before saving/commiting" that is meant to be extented upon, even rewritten completely if need be
-    bool CheckXmlCorrectness(QString & error_message);
+    bool checkXmlCorrectness(QString & error_message);
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
 

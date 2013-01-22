@@ -228,7 +228,7 @@ void GraphicSystem::drawTexturedBox(const Vector2f &origin, const Vector2f &dime
 
     if ( gl_error != GL_NO_ERROR )
     {
-        printf( "GL ERROR");
+        printf("GL ERROR");
     }
 }
 
@@ -240,7 +240,7 @@ unsigned char * GraphicSystem::loadTGA(const QString &path, Rocket::Core::Vector
     Rocket::Core::FileHandle file_handle = file_interface->Open(path.toAscii().data()); // TODO: switch to QT file handling
 
     if (!file_handle)
-        return false;
+        return NULL;
 
     file_interface->Seek(file_handle, 0, SEEK_END);
     size_t buffer_size = file_interface->Tell(file_handle);
@@ -258,13 +258,13 @@ unsigned char * GraphicSystem::loadTGA(const QString &path, Rocket::Core::Vector
 
     if (header.dataType != 2) {
         Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24/32bit uncompressed TGAs are supported.");
-        return false;
+        return NULL;
     }
 
     // Ensure we have at least 3 colors
     if (color_mode < 3) {
         Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Only 24 and 32bit textures are supported");
-        return false;
+        return NULL;
     }
 
     const char* image_src = buffer + sizeof(TGAHeader);

@@ -40,7 +40,7 @@ public:
     QFileSystemWatcher *getFileWatcher(){return fileWatcher;}
     int openFile(const QString &file_path);
     void checkTextChanged(int index);
-    SnippetsManager *GetSnippetsManager(){return ui.snippetsListWidget;}
+    SnippetsManager *getSnippetsManager(){return ui.snippetsListWidget;}
 
 public slots:
     void menuOpenClicked();

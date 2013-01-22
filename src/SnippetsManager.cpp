@@ -18,7 +18,7 @@ SnippetsManager::SnippetsManager(QWidget *parent)
 {
 }
 
-void SnippetsManager::Initialize()
+void SnippetsManager::initialize()
 {
     if(!QFile::exists(ProjectManager::getInstance().getSnippetsFolderPath()))
     {
@@ -184,7 +184,7 @@ QString SnippetsManager::addSnippet()
 
     Rockete::getInstance().openFile(text);
 
-    Initialize();
+    initialize();
     return text;
 }
 

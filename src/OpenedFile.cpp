@@ -179,7 +179,7 @@ void OpenedFile::save()
 
     if(fileInfo.suffix() == "rml" || fileInfo.suffix() == "rcss")
     {
-        if (!CheckXmlCorrectness(error_message))
+        if(!checkXmlCorrectness(error_message))
         {
             QMessageBox msgBox;
             msgBox.setText(fileInfo.fileName() + " is not valid: " + error_message );
@@ -187,7 +187,7 @@ void OpenedFile::save()
         }
     }
 
-    if (file.open(QFile::WriteOnly|QFile::Truncate|QIODevice::Text)) {
+    if(file.open(QFile::WriteOnly|QFile::Truncate|QIODevice::Text)) {
         if(fileInfo.filePath().endsWith(".rml"))
         {
             QTextStream out(&file);
@@ -206,7 +206,7 @@ void OpenedFile::save()
 
     if(fileInfo.suffix() == "snippet")
     {
-        Rockete::getInstance().GetSnippetsManager()->Initialize();
+        Rockete::getInstance().getSnippetsManager()->initialize();
     }
 
     Rockete::getInstance().getFileWatcher()->addPath(fileInfo.filePath());
@@ -217,7 +217,7 @@ void OpenedFile::saveAs(const QString &file_path)
     QFile file(file_path);
     QString error_message;
 
-    if (!CheckXmlCorrectness(error_message))
+    if (!checkXmlCorrectness(error_message))
     {
         QMessageBox msgBox;
         msgBox.setText("the document is not valid: " + error_message );
